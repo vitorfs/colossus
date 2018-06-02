@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+  <h1>{% trans 'New list' %}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% trans 'Create list' %}</button>
+    <a href="{% url 'mailing:lists' %}">{% trans 'Never mind' %}</a>
+  </form>
+{% endblock %}

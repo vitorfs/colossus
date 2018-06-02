@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{{ mailing_list.name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ mailing_list.name }}</h1>
+  <p>
+    <a href="{% url 'mailing:subscribers' mailing_list.pk %}">Subscribers</a>
+  </p>
+
+  {% block innercontent %}
+  {% endblock %}
+
+{% endblock %}

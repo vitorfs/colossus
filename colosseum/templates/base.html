@@ -1,0 +1,23 @@
+{% load static i18n %}<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Colosseum{% endblock %}</title>
+  <style type="text/css">
+    body {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 1000px;
+    }
+  </style>
+</head>
+<body>
+  <strong>Colosseum</strong>
+  <a href="">{% trans 'Campaigns' %}</a> /
+  <a href="{% url 'mailing:lists' %}">{% trans 'Lists' %}</a> /
+  <a href="{% url 'accounts:logout' %}">{% trans 'Logout' %}</a>
+  <hr>
+  {% block content %}
+  {% endblock %}
+</body>
+</html>
