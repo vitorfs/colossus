@@ -15,7 +15,7 @@
           {% endblock %}
         </ol>
       </nav>
-      <div class="card">
+      <div class="card mb-3">
         <div class="card-header">
           <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
@@ -26,6 +26,7 @@
             <li class="nav-item">
               <a class="nav-link{% if submenu == 'subscribers' %} active{% endif %}" href="{% url 'mailing:subscribers' mailing_list.pk %}">
                 {% trans 'Subscribers' %}
+                <span class="badge badge-pill badge-light">{{ mailing_list.subscribers.count }}</span>
               </a>
             </li>
           </ul>

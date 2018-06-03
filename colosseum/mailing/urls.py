@@ -14,6 +14,7 @@ urlpatterns = [
         path('subscribers/', include([
             path('', views.SubscriberListView.as_view(), name='subscribers'),
             path('add/', views.SubscriberCreateView.as_view(), name='new_subscriber'),
+            path('import/', views.ImportSubscribersView.as_view(), name='import_subscribers'),
             path('<int:subscriber_pk>/edit/', views.SubscriberUpdateView.as_view(), name='edit_subscriber')
         ])),
     ])),

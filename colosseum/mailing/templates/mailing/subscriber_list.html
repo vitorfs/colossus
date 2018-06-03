@@ -10,7 +10,7 @@
 {% block innercontent %}
   <div class="card-body">
     <a href="{% url 'mailing:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
-    <a href="" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
+    <a href="{% url 'mailing:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
     <a href="" class="btn btn-outline-primary" role="button">{% trans 'Export subscribers' %}</a>
   </div>
   <table class="table table-sm mb-0">

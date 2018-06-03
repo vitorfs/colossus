@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
 
 from .mixins import MailingListMixin
 from .models import MailingList, Subscriber
-from .forms import NewSubscriber
+from .forms import NewSubscriber, ImportSubscribersForm
 
 
 class MailingListListView(ListView):
@@ -36,8 +36,7 @@ class SubscriberListView(MailingListMixin, ListView):
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(mailing_list_id=self.kwargs.get('pk'))
+        queryset = Subscriber.objects.filter(mailing_list_id=self.kwargs.get('pk')).order_by('date_created')
         return queryset
 
 
@@ -60,3 +59,12 @@ class SubscriberUpdateView(MailingListMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('mailing:subscribers', kwargs={'pk': self.kwargs.get('pk')})
+
+
+class ImportSubscribersView(MailingListMixin, FormView):
+    form_class = ImportSubscribersForm
+    template_name = 'mailing/import_subscribers_form.html'
+
+    def form_valid(self, form):
+        form.import_subscribers(self.request, self.kwargs.get('pk'))
+        return redirect('mailing:subscribers', pk=self.kwargs.get('pk'))
