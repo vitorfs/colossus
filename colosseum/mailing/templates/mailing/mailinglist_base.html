@@ -5,12 +5,37 @@
 {% block title %}{{ mailing_list.name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ mailing_list.name }}</h1>
-  <p>
-    <a href="{% url 'mailing:subscribers' mailing_list.pk %}">Subscribers</a>
-  </p>
-
-  {% block innercontent %}
-  {% endblock %}
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'mailing:lists' %}">{% trans 'Lists' %}</a></li>
+          {% block innerbreadcrumb %}
+            <li class="breadcrumb-item active" aria-current="page">{{ mailing_list.name }}</li>
+          {% endblock %}
+        </ol>
+      </nav>
+      <div class="card">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="nav-link{% if submenu == 'details' %} active{% endif %}" href="{% url 'mailing:list' mailing_list.pk %}">
+                {% trans 'Summary' %}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if submenu == 'subscribers' %} active{% endif %}" href="{% url 'mailing:subscribers' mailing_list.pk %}">
+                {% trans 'Subscribers' %}
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% block innercontent %}
+        {% endblock %}
+      </div>
+    </div>
+    {% block rightaside %}
+    {% endblock %}
+  </div>
 
 {% endblock %}

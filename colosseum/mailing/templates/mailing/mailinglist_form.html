@@ -1,13 +1,30 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+{% load crispy_forms_tags i18n %}
 
 {% block content %}
-  <h1>{% trans 'New list' %}</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">{% trans 'Create list' %}</button>
-    <a href="{% url 'mailing:lists' %}">{% trans 'Never mind' %}</a>
-  </form>
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'mailing:lists' %}">{% trans 'Lists' %}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{% trans 'New list' %}</li>
+        </ol>
+      </nav>
+      <div class="card">
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-10 col-lg-6">
+                {{ form|crispy }}
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success" role="button">{% trans 'Create list' %}</button>
+            <a href="{% url 'mailing:lists' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

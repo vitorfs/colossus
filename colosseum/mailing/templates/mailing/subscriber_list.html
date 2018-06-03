@@ -1,15 +1,39 @@
 {% extends 'mailing/mailinglist_base.html' %}
 
-{% block innercontent %}
+{% load i18n %}
 
-  <table border="1">
+{% block innerbreadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'mailing:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Subscribers' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <a href="{% url 'mailing:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
+    <a href="" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
+    <a href="" class="btn btn-outline-primary" role="button">{% trans 'Export subscribers' %}</a>
+  </div>
+  <table class="table table-sm mb-0">
     <thead>
       <tr>
-        <th><input type="checkbox"></th>
-        <th>Email address</th>
-        <th>Name</th>
+        <th>{% trans 'Email address' %}</th>
+        <th>{% trans 'Name' %}</th>
+        <th>{% trans 'Status' %}</th>
+        <th>{% trans 'Date subscribed' %}</th>
       </tr>
     </thead>
+    <tbody>
+      {% for subscriber in subscribers %}
+        <tr>
+          <td><a href="{% url 'mailing:edit_subscriber' mailing_list.pk subscriber.pk %}">{{ subscriber.email }}</a></td>
+          <td>{{ subscriber.name }}</td>
+          <td>{{ subscriber.get_status_display }}</td>
+          <td>{{ subscriber.date_subscribed }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
+{% endblock %}
 
+{% block rightaside %}
 {% endblock %}

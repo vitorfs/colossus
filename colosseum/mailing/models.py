@@ -5,6 +5,25 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 
+class MailingList(models.Model):
+    name = models.CharField(_('name'), max_length=100)
+    subscribers_count = models.PositiveIntegerField(_('subscribers'), default=0)
+    open_rate = models.FloatField(_('opens'), default=0.0)
+    click_rate = models.FloatField(_('clicks'), default=0.0)
+    date_created = models.DateTimeField(_('created'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('list')
+        verbose_name_plural = _('lists')
+        db_table = 'mailing_lists'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('mailing:list', kwargs={'pk': self.pk})
+
+
 class Subscriber(models.Model):
     PENDING = 1
     SUBSCRIBED = 2
@@ -21,10 +40,13 @@ class Subscriber(models.Model):
     name = models.CharField(_('name'), max_length=150, blank=True)
     open_rate = models.FloatField(_('opens'), default=0.0)
     click_rate = models.FloatField(_('clicks'), default=0.0)
-    date_subscribed = models.DateTimeField(_('subscribed'), auto_now_add=True)
+    date_subscribed = models.DateTimeField(_('subscribed'), null=True, blank=True)
+    date_updated = models.DateTimeField(_('updated'), auto_now=True)
+    date_created = models.DateTimeField(_('created'), auto_now_add=True)
     status = models.PositiveSmallIntegerField(_('status'), default=PENDING, choices=STATUS_CHOICES)
     optin_ip_address = models.GenericIPAddressField(_('opt-in IP address'), unpack_ipv4=True, blank=True, null=True)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
+    mailing_list = models.ForeignKey(MailingList, on_delete=models.PROTECT, related_name='subscribers')
 
     class Meta:
         verbose_name = _('subscriber')
@@ -32,26 +54,6 @@ class Subscriber(models.Model):
 
     def __str__(self):
         return self.email
-
-
-class MailingList(models.Model):
-    name = models.CharField(_('name'), max_length=100)
-    subscribers_count = models.PositiveIntegerField(_('subscribers'), default=0)
-    open_rate = models.FloatField(_('opens'), default=0.0)
-    click_rate = models.FloatField(_('clicks'), default=0.0)
-    date_created = models.DateTimeField(_('created'), auto_now_add=True)
-    subscribers = models.ManyToManyField(Subscriber)
-
-    class Meta:
-        verbose_name = _('list')
-        verbose_name_plural = _('lists')
-        db_table = 'mailing_lists'
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse('mailing:list', kwargs={'pk': self.pk})
 
 
 class Campaign(models.Model):
