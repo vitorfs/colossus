@@ -7,8 +7,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.crypto import get_random_string
 
 
+def default_token():
+    return get_random_string(50)
+
+
 class Token(models.Model):
-    text = models.CharField(default=lambda: get_random_string(50), max_length=50, unique=True, editable=False)
+    text = models.CharField(default=default_token, max_length=50, unique=True, editable=False)
     description = models.CharField(max_length=30, db_index=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_used = models.DateTimeField(null=True, blank=True)
