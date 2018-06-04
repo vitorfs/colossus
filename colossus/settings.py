@@ -17,7 +17,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
 
-    'colosseum.mailing',
+    'colossus.mailing',
 ]
 
 MIDDLEWARE = [
@@ -30,13 +30,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'colosseum.urls'
+ROOT_URLCONF = 'colossus.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'colosseum/templates')
+            os.path.join(BASE_DIR, 'colossus/templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -50,7 +50,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'colosseum.wsgi.application'
+WSGI_APPLICATION = 'colossus.wsgi.application'
 
 DATABASES = {
     'default': {
