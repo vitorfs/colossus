@@ -3,6 +3,7 @@ from io import TextIOWrapper
 
 from django import forms
 from django.utils.translation import ugettext as _
+from django.utils import timezone
 
 from .models import Subscriber
 
@@ -31,15 +32,9 @@ class ImportSubscribersForm(forms.Form):
                                optin_ip_address=row[5],
                                confirm_ip_address=row[7],
                                status=Subscriber.SUBSCRIBED,
-                               mailing_list_id=mailing_list_id)
+                               mailing_list_id=mailing_list_id,
+                               date_subscribed=timezone.now())
                 )
             else:
                 continue
         Subscriber.objects.bulk_create(subscribers)
-
-        '''
-        reader = csv.reader(upload_file, delimiter=',', quotechar='"')
-        next(reader)  # skip headings
-        for row in reader:
-            print(row)
-        '''

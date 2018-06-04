@@ -17,5 +17,6 @@ urlpatterns = [
             path('import/', views.ImportSubscribersView.as_view(), name='import_subscribers'),
             path('<int:subscriber_pk>/edit/', views.SubscriberUpdateView.as_view(), name='edit_subscriber')
         ])),
+        path('signup-forms/', views.SignupFormsView.as_view(), name='signup_forms'),
     ])),
 ]

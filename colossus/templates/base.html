@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dancing+Script:700" rel="stylesheet">
     <style type="text/css">
       body {
         background-color: #f9f9f9;
       }
       nav.navbar .navbar-brand {
-        font-family: 'Amatic SC', cursive;
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.4rem;
       }
       .table-sm {
         font-size: 87.5%;
@@ -26,18 +27,33 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-item nav-link active" href="#">Dashboard <span class="sr-only">(current)</span></a>
-          <a class="nav-item nav-link" href="#">Campaigns</a>
-          <a class="nav-item nav-link" href="{% url 'mailing:lists' %}">{% trans 'Lists' %}</a>
+          <a class="nav-item nav-link{% if menu == 'dashboard' %} active{% endif %}" href="#">
+            {% trans 'Dashboard' %}
+            {% if menu == 'dashboard' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+          </a>
+          <a class="nav-item nav-link{% if menu == 'campaigns' %} active{% endif %}" href="#">
+            {% trans 'Campaigns' %}
+            {% if menu == 'campaigns' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+          </a>
+          <a class="nav-item nav-link{% if menu == 'lists' %} active{% endif %}" href="{% url 'mailing:lists' %}">
+            {% trans 'Lists' %}
+            {% if menu == 'lists' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+          </a>
         </div>
       </div>
     </nav>
     <div class="container">
-      {% block content %}
-      {% endblock %}
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    {% block javascript %}
+    {% endblock %}
   </body>
 </html>

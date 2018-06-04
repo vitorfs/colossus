@@ -11,10 +11,18 @@ class MailingListListView(ListView):
     model = MailingList
     context_object_name = 'mailing_lists'
 
+    def get_context_data(self, **kwargs):
+        kwargs['menu'] = 'lists'
+        return super().get_context_data(**kwargs)
+
 
 class MailingListCreateView(CreateView):
     model = MailingList
     fields = ('name',)
+
+    def get_context_data(self, **kwargs):
+        kwargs['menu'] = 'lists'
+        return super().get_context_data(**kwargs)
 
 
 class MailingListDetailView(DetailView):
@@ -22,6 +30,7 @@ class MailingListDetailView(DetailView):
     context_object_name = 'mailing_list'
 
     def get_context_data(self, **kwargs):
+        kwargs['menu'] = 'lists'
         kwargs['submenu'] = 'details'
         return super().get_context_data(**kwargs)
 
@@ -68,3 +77,11 @@ class ImportSubscribersView(MailingListMixin, FormView):
     def form_valid(self, form):
         form.import_subscribers(self.request, self.kwargs.get('pk'))
         return redirect('mailing:subscribers', pk=self.kwargs.get('pk'))
+
+
+class SignupFormsView(MailingListMixin, TemplateView):
+    template_name = 'mailing/signup_forms.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['submenu'] = 'signup'
+        return super().get_context_data(**kwargs)

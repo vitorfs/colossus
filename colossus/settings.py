@@ -17,6 +17,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
 
+    'colossus.api',
     'colossus.mailing',
 ]
 

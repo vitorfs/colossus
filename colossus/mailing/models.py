@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class MailingList(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(_('name'), max_length=100)
     subscribers_count = models.PositiveIntegerField(_('subscribers'), default=0)
     open_rate = models.FloatField(_('opens'), default=0.0)
@@ -51,9 +52,26 @@ class Subscriber(models.Model):
     class Meta:
         verbose_name = _('subscriber')
         verbose_name_plural = _('subscribers')
+        unique_together = (('email', 'mailing_list',),)
 
     def __str__(self):
         return self.email
+
+
+class SubscriptionFormTemplate(models.Model):
+    name = models.CharField(_('name'), max_length=100)
+    is_active = models.BooleanField(_('active status'), default=True)
+    content = models.TextField(_('content'), blank=True)
+    mailing_list = models.ForeignKey(
+        MailingList,
+        on_delete=models.CASCADE,
+        verbose_name=_('mailing list'),
+        related_name='subscription_form_templates'
+    )
+
+    class Meta:
+        verbose_name = _('subscription form template')
+        verbose_name_plural = _('subscription form templates')
 
 
 class Campaign(models.Model):

@@ -3,42 +3,38 @@
 {% load crispy_forms_tags i18n %}
 
 {% block content %}
-  <div class="row justify-content-center">
-    <div class="col-10">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'mailing:lists' %}">{% trans 'Lists' %}</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'mailing:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'mailing:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
-            {% if form.instance.pk %}
-              {% trans 'Edit subscriber' %}
-            {% else %}
-              {% trans 'New subscriber' %}
-            {% endif %}
-          {% endspaceless %}</li>
-        </ol>
-      </nav>
-      <div class="card">
-        <div class="card-body">
-          <form method="post" novalidate>
-            {% csrf_token %}
-            <div class="row">
-              <div class="col-md-10 col-lg-6">
-                {{ form|crispy }}
-              </div>
-            </div>
-            <button type="submit" class="btn btn-success" role="button">
-              {% if form.instance.pk %}
-                {% trans 'Save changes' %}
-              {% else %}
-                {% trans 'Create subscriber' %}
-              {% endif %}
-            </button>
-            <a href="{% url 'mailing:subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
-          </form>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'mailing:lists' %}">{% trans 'Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'mailing:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'mailing:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
+        {% if form.instance.pk %}
+          {% trans 'Edit subscriber' %}
+        {% else %}
+          {% trans 'New subscriber' %}
+        {% endif %}
+      {% endspaceless %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-10 col-lg-6">
+            {{ form|crispy }}
+          </div>
         </div>
-      </div>
+        <button type="submit" class="btn btn-success" role="button">
+          {% if form.instance.pk %}
+            {% trans 'Save changes' %}
+          {% else %}
+            {% trans 'Create subscriber' %}
+          {% endif %}
+        </button>
+        <a href="{% url 'mailing:subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
     </div>
   </div>
 {% endblock %}
