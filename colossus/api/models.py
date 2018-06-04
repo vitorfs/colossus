@@ -1,3 +1,22 @@
-from django.db import models
+import uuid
 
-# Create your models here.
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from django.utils.crypto import get_random_string
+
+
+class Token(models.Model):
+    text = models.CharField(default=lambda: get_random_string(50), max_length=50, unique=True, editable=False)
+    description = models.CharField(max_length=30, db_index=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_used = models.DateTimeField(null=True, blank=True)
+    expires = models.IntegerField(default=7)
+    content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True)
+    object_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey()
+
+    class Meta:
+        verbose_name = _('token')
+        verbose_name_plural = _('tokens')

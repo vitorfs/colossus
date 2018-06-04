@@ -1,8 +1,11 @@
 import uuid
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+
+from colossus.api.models import Token
 
 
 class MailingList(models.Model):
@@ -48,6 +51,7 @@ class Subscriber(models.Model):
     optin_ip_address = models.GenericIPAddressField(_('opt-in IP address'), unpack_ipv4=True, blank=True, null=True)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
     mailing_list = models.ForeignKey(MailingList, on_delete=models.PROTECT, related_name='subscribers')
+    tokens = GenericRelation(Token)
 
     class Meta:
         verbose_name = _('subscriber')
