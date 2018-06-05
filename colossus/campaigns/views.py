@@ -1,20 +1,25 @@
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
 
 from .models import Campaign
+from .mixins import CampaignMixin
 
 
-class CampaignListView(ListView):
+class CampaignListView(CampaignMixin, ListView):
     model = Campaign
-
-    def get_context_data(self, **kwargs):
-        kwargs['menu'] = 'campaigns'
-        return super().get_context_data(**kwargs)
+    context_object_name = 'campaigns'
 
 
-class CampaignCreateView(CreateView):
+class CampaignCreateView(CampaignMixin, CreateView):
     model = Campaign
-    fields = ('campaign_type', 'name', 'mailing_list')
+    fields = ('campaign_type', 'name',)
 
-    def get_context_data(self, **kwargs):
-        kwargs['menu'] = 'campaigns'
-        return super().get_context_data(**kwargs)
+
+class CampaignEditView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_edit.html'
+
+
+class CampaignDetailView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'

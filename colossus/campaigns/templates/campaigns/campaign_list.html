@@ -42,6 +42,23 @@
           <th style="width:15%;">{% trans 'Clicks' %}</th>
         </tr>
       </thead>
+      <tbody>
+        {% for campaign in campaigns %}
+          <tr>
+            <td><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></td>
+            <td>{{ campaign.get_status_display }}</td>
+            <td>0%</td>
+            <td>0%</td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
+  {% if is_paginated %}
+    <div class="card-footer">
+      <nav aria-label="{% trans 'Campaigns listing pages' %}">
+        {% include 'includes/paginator.html' %}
+      </nav>
+    </div>
+  {% endif %}
   </div>
 {% endblock %}

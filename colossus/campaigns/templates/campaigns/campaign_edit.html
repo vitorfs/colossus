@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ campaign.name }}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">{{ campaign.name }}</h2>
+      <span class="badge badge-pill badge-secondary">{{ campaign.get_status_display }}</span>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">{% trans 'To' %}</h5>
+          <p class="text-muted font-italic mb-0">{% trans 'Who are you sending this campaign to?' %}</p>
+        </div>
+        <a href="#" role="button" class="btn btn-secondary">{% trans 'Add recipients' %}</a>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">{% trans 'From' %}</h5>
+          <p class="text-muted font-italic mb-0">{% trans 'Who is sending this campaign?' %}</p>
+        </div>
+        <a href="#" role="button" class="btn btn-secondary">{% trans 'Add from' %}</a>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">{% trans 'Subject' %}</h5>
+          <p class="text-muted font-italic mb-0">{% trans "What's the subject line for this campaign?" %}</p>
+        </div>
+        <a href="#" role="button" class="btn btn-secondary">{% trans 'Add subject' %}</a>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">{% trans 'Content' %}</h5>
+          <p class="text-muted font-italic mb-0">{% trans 'Design the content for your email.' %}</p>
+        </div>
+        <a href="#" role="button" class="btn btn-secondary">{% trans 'Design email' %}</a>
+      </li>
+    </ul>
+    <div class="card-footer text-right">
+      <a href="" class="btn btn-link">{% trans 'Finish later' %}</a>
+      <a href="" class="btn btn-outline-primary">{% trans 'Schedule' %}</a>
+      <a href="" class="btn btn-primary">{% trans 'Send campaign' %}</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from colossus.lists.models import MailingList
@@ -29,7 +30,9 @@ class Campaign(models.Model):
         MailingList,
         on_delete=models.CASCADE,
         verbose_name=_('mailing list'),
-        related_name='campaigns'
+        related_name='campaigns',
+        null=True,
+        blank=True
     )
     status = models.PositiveSmallIntegerField(_('status'), choices=STATUS_CHOICES, default=DRAFT)
 
@@ -39,3 +42,9 @@ class Campaign(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        if self.status in (Campaign.DRAFT, Campaign.SCHEDULED):
+            return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
+        return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
+
