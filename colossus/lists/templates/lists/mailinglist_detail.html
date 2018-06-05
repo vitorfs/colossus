@@ -1,0 +1,29 @@
+{% extends 'lists/base.html' %}
+
+{% block javascript %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      var ctx = document.getElementById("subscriptionProgress").getContext("2d");
+      var progressChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['January', 'February', 'March', 'April'],
+            datasets: [{
+              label: 'Subscription per month',
+              borderColor: '#007bff',
+              backgroundColor: '#007bff',
+              data: [10, 20, 5, 90]
+            }]
+          }
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <p>UUID: {{ mailing_list.uuid }}</p>
+    <canvas id="subscriptionProgress"></canvas>
+  </div>
+{% endblock %}

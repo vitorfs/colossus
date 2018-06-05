@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Lists' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'New list' %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">{% trans 'Create a new list' %}</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-10 col-lg-6">
+            {{ form|crispy }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Create list' %}</button>
+        <a href="{% url 'lists:lists' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

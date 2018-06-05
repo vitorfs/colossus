@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Lists' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Lists' %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">{% trans 'Lists' %}</h3>
+      <a href="{% url 'lists:new_list' %}" class="btn btn-primary">{% trans 'New list' %}</a>
+    </div>
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>{% trans 'Name' %}</th>
+          <th style="width:15%;">{% trans 'Subscribers' %}</th>
+          <th style="width:15%;">{% trans 'Opens' %}</th>
+          <th style="width:15%;">{% trans 'Clicks' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mailing_list in mailing_lists %}
+          <tr>
+            <td><a href="{{ mailing_list.get_absolute_url }}">{{ mailing_list.name }}</a></td>
+            <td>{{ mailing_list.subscribers_count }}</td>
+            <td>{{ mailing_list.open_rate }}</td>
+            <td>{{ mailing_list.click_rate }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -24,9 +24,11 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'crispy_forms',
 
-    'colossus.api',
     'colossus.campaigns',
-    'colossus.mailing',
+    'colossus.core',
+    'colossus.lists',
+    'colossus.pages',
+    'colossus.subscribers',
 ]
 
 MIDDLEWARE = [

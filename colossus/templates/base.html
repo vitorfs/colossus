@@ -20,7 +20,7 @@
             {% trans 'Dashboard' %}
             {% if menu == 'dashboard' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
           </a>
-          <a class="nav-item nav-link{% if menu == 'campaigns' %} active{% endif %}" href="#">
+          <a class="nav-item nav-link{% if menu == 'campaigns' %} active{% endif %}" href="{% url 'campaigns:campaigns' %}">
             {% trans 'Campaigns' %}
             {% if menu == 'campaigns' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
           </a>
@@ -35,14 +35,16 @@
         </div>
       </div>
     </nav>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-10">
-          {% block content %}
-          {% endblock %}
+    {% block main %}
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            {% block content %}
+            {% endblock %}
+          </div>
         </div>
       </div>
-    </div>
+    {% endblock %}
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>

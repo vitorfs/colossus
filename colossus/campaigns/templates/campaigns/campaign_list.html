@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Campaigns' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Campaigns' %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">{% trans 'Campaigns' %}</h2>
+        <a href="" class="btn btn-primary" role="button">{% trans 'Create campaign' %}</a>
+      </div>
+    </div>
+    <div class="list-group list-group-flush">
+      <div class="list-group-item">
+        <div class="row">
+          <div class="col-6">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search campaigns" aria-label="Search campaigns" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>{% trans 'Campaign' %}</th>
+          <th style="width:15%;">{% trans 'Status' %}</th>
+          <th style="width:15%;">{% trans 'Opens' %}</th>
+          <th style="width:15%;">{% trans 'Clicks' %}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+{% endblock %}
