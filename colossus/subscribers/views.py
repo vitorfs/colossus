@@ -5,9 +5,11 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils import timezone
 
-from colossus.mailing.models import MailingList, Token, Subscriber
+from colossus.core.models import Token
+from colossus.lists.models import MailingList
 
 from .forms import SubscribeForm
+from .models import Subscriber
 
 
 class IndexView(View):

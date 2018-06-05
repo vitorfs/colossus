@@ -1,1 +1,1 @@
-default_app_config = 'colossus.mailing.apps.MailingConfig'
+default_app_config = 'colossus.lists.apps.MailingConfig'

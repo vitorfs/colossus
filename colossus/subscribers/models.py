@@ -25,15 +25,15 @@ class Subscriber(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.EmailField(_('email address'), max_length=255)
     name = models.CharField(_('name'), max_length=150, blank=True)
+    mailing_list = models.ForeignKey(MailingList, on_delete=models.PROTECT, related_name='subscribers')
     open_rate = models.FloatField(_('opens'), default=0.0)
     click_rate = models.FloatField(_('clicks'), default=0.0)
-    date_subscribed = models.DateTimeField(_('subscribed'), null=True, blank=True)
-    date_updated = models.DateTimeField(_('updated'), auto_now=True)
-    date_created = models.DateTimeField(_('created'), auto_now_add=True)
+    update_date = models.DateTimeField(_('updated'), auto_now=True)
     status = models.PositiveSmallIntegerField(_('status'), default=PENDING, choices=STATUS_CHOICES)
     optin_ip_address = models.GenericIPAddressField(_('opt-in IP address'), unpack_ipv4=True, blank=True, null=True)
+    optin_date = models.DateTimeField(_('opt-in date'), default=timezone.now)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
-    mailing_list = models.ForeignKey(MailingList, on_delete=models.PROTECT, related_name='subscribers')
+    confirm_date = models.DateTimeField(_('confirm date'), null=True, blank=True)
     tokens = GenericRelation(Token)
 
     class Meta:
@@ -46,16 +46,15 @@ class Subscriber(models.Model):
 
     @transaction.atomic()
     def confirm_subscription(self, request):
-        self.date_subscribed = timezone.now()
         self.status = Subscriber.SUBSCRIBED
         self.confirm_ip_address = get_client_ip(request)
+        self.confirm_date = timezone.now()
         self.save()
         self.tokens.filter(description='confirm_subscription').delete()
 
     def send_mail(self, subject, message, from_email=None, **kwargs):
         """Send an email to this subscriber."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
-
 
 
 class SubscriptionFormTemplate(models.Model):

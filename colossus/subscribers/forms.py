@@ -2,9 +2,11 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import gettext, gettext_lazy as _
+from django.utils import timezone
 from django.template import loader
 
 from colossus.core.models import Token
+from colossus.utils import get_client_ip
 
 from .models import Subscriber
 
@@ -38,6 +40,8 @@ class SubscribeForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         subscriber, created = Subscriber.objects.get_or_create(email=email, mailing_list=self.mailing_list)
         subscriber.status = Subscriber.PENDING
+        subscriber.optin_ip_address = get_client_ip(request)
+        subscriber.optin_date = timezone.now()
         subscriber.save()
 
         if not created:
@@ -57,9 +61,9 @@ class SubscribeForm(forms.ModelForm):
 
         }
 
-        subject = loader.render_to_string('mailing/subscription/confirm_subscription_subject.txt', context)
+        subject = loader.render_to_string('subscribers/confirm_subscription_subject.txt', context)
         subject = ''.join(subject.splitlines())  # Email subject *must not* contain newlines
-        body = loader.render_to_string('mailing/subscription/confirm_subscription_email.txt', context)
+        body = loader.render_to_string('subscribers/confirm_subscription_email.txt', context)
 
         subscriber.send_mail(subject=subject, message=body)
 

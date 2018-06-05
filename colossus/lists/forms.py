@@ -5,6 +5,8 @@ from django import forms
 from django.utils.translation import gettext, gettext_lazy as _
 from django.utils import timezone
 
+import pytz
+
 from colossus.subscribers.models import Subscriber
 
 
@@ -26,15 +28,19 @@ class ImportSubscribersForm(forms.Form):
         subscribers = list()
         for row in reader:
             if '@' in row[0]:
-                subscribers.append(
-                    Subscriber(email=row[0],
-                               name=row[2],
-                               optin_ip_address=row[5],
-                               confirm_ip_address=row[7],
-                               status=Subscriber.SUBSCRIBED,
-                               mailing_list_id=mailing_list_id,
-                               date_subscribed=timezone.now())
+                optin_date = timezone.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S')
+                confirm_date = timezone.datetime.strptime(row[6], '%Y-%m-%d %H:%M:%S')
+                subscriber = Subscriber(
+                    email=row[0],
+                    name=row[2],
+                    optin_date=pytz.utc.localize(optin_date),
+                    optin_ip_address=row[5],
+                    confirm_date=pytz.utc.localize(confirm_date),
+                    confirm_ip_address=row[7],
+                    status=Subscriber.SUBSCRIBED,
+                    mailing_list_id=mailing_list_id
                 )
+                subscribers.append(subscriber)
             else:
                 continue
         Subscriber.objects.bulk_create(subscribers)

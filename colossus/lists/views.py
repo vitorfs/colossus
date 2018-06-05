@@ -41,35 +41,38 @@ class SubscriberListView(MailingListMixin, ListView):
     model = Subscriber
     context_object_name = 'subscribers'
     paginate_by = 100
+    template_name = 'lists/subscriber_list.html'
 
     def get_context_data(self, **kwargs):
         kwargs['submenu'] = 'subscribers'
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
-        queryset = Subscriber.objects.filter(mailing_list_id=self.kwargs.get('pk')).order_by('date_created')
+        queryset = Subscriber.objects.filter(mailing_list_id=self.kwargs.get('pk')).order_by('optin_date')
         return queryset
 
 
 class SubscriberCreateView(MailingListMixin, CreateView):
     model = Subscriber
     fields = ('email', 'name')
+    template_name = 'lists/subscriber_form.html'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.mailing_list_id = self.kwargs.get('pk')
         self.object.status = Subscriber.SUBSCRIBED
         self.object.save()
-        return redirect('mailing:subscribers', pk=self.kwargs.get('pk'))
+        return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
 
 
 class SubscriberUpdateView(MailingListMixin, UpdateView):
     model = Subscriber
-    fields = ('email', 'name', 'status')
+    fields = '__all__'
     pk_url_kwarg = 'subscriber_pk'
+    template_name = 'lists/subscriber_form.html'
 
     def get_success_url(self):
-        return reverse('mailing:subscribers', kwargs={'pk': self.kwargs.get('pk')})
+        return reverse('lists:subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
 class ImportSubscribersView(MailingListMixin, FormView):
@@ -78,7 +81,7 @@ class ImportSubscribersView(MailingListMixin, FormView):
 
     def form_valid(self, form):
         form.import_subscribers(self.request, self.kwargs.get('pk'))
-        return redirect('mailing:subscribers', pk=self.kwargs.get('pk'))
+        return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
 
 
 class SignupFormsView(MailingListMixin, TemplateView):

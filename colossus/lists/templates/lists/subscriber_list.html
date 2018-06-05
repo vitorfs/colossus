@@ -27,7 +27,7 @@
           <td><a href="{% url 'lists:edit_subscriber' mailing_list.pk subscriber.pk %}">{{ subscriber.email }}</a></td>
           <td>{{ subscriber.name }}</td>
           <td>{{ subscriber|status_badge }}</td>
-          <td>{{ subscriber.date_subscribed }}</td>
+          <td>{{ subscriber.optin_date }}</td>
         </tr>
       {% endfor %}
     </tbody>
