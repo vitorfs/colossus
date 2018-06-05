@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Hi there! Please confirm your subscription at {{ site_name }}:{% endblocktrans %}
+
+{% block confirm_link %}
+{{ protocol }}://{{ domain }}{% url 'api:confirm_double_optin_token' mailing_list_uuid=mailing_list.uuid token=token.text %}
+{% endblock %}
+
+{% trans "If you received this email by mistake, simply delete it. You won't be subscribed if you don't click the confirmation link above." %}
+
+{% blocktrans %}For questions about this list, please contact: {{ contact_email }}{% endblocktrans %}
+{% endautoescape %}

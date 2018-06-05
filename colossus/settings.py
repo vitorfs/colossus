@@ -1,12 +1,18 @@
 import os
+import string
+
+from django.contrib.messages import constants as messages_constants
+
+from decouple import config, Csv
+import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'a^bxjfa)_o%1oq5!mtbtupz-_cmvcc%ehubrvk*mtm*!zbxui='
+SECRET_KEY = config('SECRET_KEY', default=string.ascii_letters)
 
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -15,13 +21,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'debug_toolbar',
     'crispy_forms',
 
     'colossus.api',
+    'colossus.campaigns',
     'colossus.mailing',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,10 +63,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'colossus.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='sqlite:///%s' % os.path.join(BASE_DIR, 'db.sqlite3'))
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -75,9 +83,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = config('TIME_ZONE', default='UTC')
 
 USE_I18N = True
 
@@ -86,5 +94,75 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'colossus/static'),
+]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
+
+X_FRAME_OPTIONS = 'DENY'
+
+CSRF_COOKIE_SECURE = not DEBUG
+
+CSRF_COOKIE_HTTPONLY = not DEBUG
+
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7 * 52  # one year
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+
+SECURE_SSL_REDIRECT = not DEBUG
+
+SECURE_BROWSER_XSS_FILTER = not DEBUG
+
+SECURE_CONTENT_TYPE_NOSNIFF = not DEBUG
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SESSION_COOKIE_SECURE = not DEBUG
+
+MESSAGE_TAGS = {
+    messages_constants.DEBUG: 'alert-dark',
+    messages_constants.INFO: 'alert-primary',
+    messages_constants.SUCCESS: 'alert-success',
+    messages_constants.WARNING: 'alert-warning',
+    messages_constants.ERROR: 'alert-danger',
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+
+EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='root')
+
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+
+
+'''
+    First-Party Apps Settings
+'''
+
+
+'''
+    Third-Party Apps Settings
+'''
+
+DEBUG_TOOLBAR_CONFIG = {
+    'JQUERY_URL': '',
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

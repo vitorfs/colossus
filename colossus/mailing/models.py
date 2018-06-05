@@ -1,11 +1,14 @@
 import uuid
 
+from django.core.mail import send_mail
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from colossus.api.models import Token
+from colossus.utils import get_client_ip
 
 
 class MailingList(models.Model):
@@ -61,6 +64,18 @@ class Subscriber(models.Model):
     def __str__(self):
         return self.email
 
+    @transaction.atomic()
+    def confirm_subscription(self, request):
+        self.date_subscribed = timezone.now()
+        self.status = Subscriber.SUBSCRIBED
+        self.confirm_ip_address = get_client_ip(request)
+        self.save()
+        self.tokens.filter(description='confirm_subscription').delete()
+
+    def send_mail(self, subject, message, from_email=None, **kwargs):
+        """Send an email to this subscriber."""
+        send_mail(subject, message, from_email, [self.email], **kwargs)
+
 
 class SubscriptionFormTemplate(models.Model):
     name = models.CharField(_('name'), max_length=100)
@@ -76,27 +91,3 @@ class SubscriptionFormTemplate(models.Model):
     class Meta:
         verbose_name = _('subscription form template')
         verbose_name_plural = _('subscription form templates')
-
-
-class Campaign(models.Model):
-    REGULAR = 1
-    AUTOMATED = 2
-    CAMPAIGN_TYPE_CHOICES = (
-        (REGULAR, _('Regular')),
-        (AUTOMATED, _('Automated')),
-    )
-    name = models.CharField(_('name'), max_length=100)
-    campaign_type = models.PositiveSmallIntegerField(_('type'), choices=CAMPAIGN_TYPE_CHOICES, default=REGULAR)
-    mailing_list = models.ForeignKey(
-        MailingList,
-        on_delete=models.CASCADE,
-        verbose_name=_('mailing list'),
-        related_name='campaigns'
-    )
-
-    class Meta:
-        verbose_name = _('campaign')
-        verbose_name_plural = _('campaigns')
-
-    def __str__(self):
-        return self.name

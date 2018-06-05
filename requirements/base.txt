@@ -1,3 +1,6 @@
 celery==4.1.1
+dj-database-url==0.5.0
 Django==2.0.6
 django-crispy-forms==1.7.2
+django-debug-toolbar==1.9.1
+python-decouple==3.1

@@ -1,0 +1,12 @@
+body {
+  background-color: #f9f9f9;
+}
+
+nav.navbar .navbar-brand {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.4rem;
+}
+
+.table-sm {
+  font-size: 87.5%;
+}

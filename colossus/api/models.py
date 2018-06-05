@@ -12,6 +12,10 @@ def default_token():
 
 
 class Token(models.Model):
+    EXPIRE = {
+        '5MIN': 5 * 60,
+        '7DAYS': 7 * 24 * 60 * 60
+    }
     text = models.CharField(default=default_token, max_length=50, unique=True, editable=False)
     description = models.CharField(max_length=30, db_index=True)
     date_created = models.DateTimeField(auto_now_add=True)
