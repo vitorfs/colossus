@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% trans 'Create new campaign' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Create new campaign' %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Create new campaign' %}</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Create campaign' %}</button>
+        <a href="{% url 'campaigns:campaigns' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

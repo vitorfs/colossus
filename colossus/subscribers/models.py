@@ -57,6 +57,9 @@ class Subscriber(models.Model):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
+class Activity(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+
 class SubscriptionFormTemplate(models.Model):
     name = models.CharField(_('name'), max_length=100)
     is_active = models.BooleanField(_('active status'), default=True)

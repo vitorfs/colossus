@@ -11,6 +11,18 @@ class Campaign(models.Model):
         (REGULAR, _('Regular')),
         (AUTOMATED, _('Automated')),
     )
+
+    SENT = 1
+    SCHEDULED = 2
+    DRAFT = 3
+    TRASH = 4
+    STATUS_CHOICES = (
+        (SENT, _('Sent')),
+        (SCHEDULED, _('Scheduled')),
+        (DRAFT, _('Draft')),
+        (TRASH, _('Trashed')),
+    )
+
     name = models.CharField(_('name'), max_length=100)
     campaign_type = models.PositiveSmallIntegerField(_('type'), choices=CAMPAIGN_TYPE_CHOICES, default=REGULAR)
     mailing_list = models.ForeignKey(
@@ -19,6 +31,7 @@ class Campaign(models.Model):
         verbose_name=_('mailing list'),
         related_name='campaigns'
     )
+    status = models.PositiveSmallIntegerField(_('status'), choices=STATUS_CHOICES, default=DRAFT)
 
     class Meta:
         verbose_name = _('campaign')
