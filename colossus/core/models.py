@@ -28,3 +28,19 @@ class Token(models.Model):
     class Meta:
         verbose_name = _('token')
         verbose_name_plural = _('tokens')
+
+
+class Option(models.Model):
+    key = models.CharField(_('key'), max_length=50, unique=True)
+    value = models.TextField(_('value'), blank=True)
+
+    class Meta:
+        verbose_name = _('option')
+        verbose_name_plural = _('options')
+
+    def __str__(self):
+        if len(self.value) > 30:
+            value = '%s...' % self.value[:30]
+        else:
+            value = self.value
+        return '%s=%s' % (self.key, value)

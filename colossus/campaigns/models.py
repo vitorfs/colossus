@@ -39,6 +39,8 @@ class Campaign(models.Model):
     status = models.PositiveSmallIntegerField(_('status'), choices=STATUS_CHOICES, default=DRAFT)
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
 
+    __cached_email = None
+
     class Meta:
         verbose_name = _('campaign')
         verbose_name_plural = _('campaigns')
@@ -51,12 +53,22 @@ class Campaign(models.Model):
             return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
 
+    @property
+    def email(self):
+        if not self.__cached_email and self.campaign_type == Campaign.REGULAR:
+            try:
+                self.__cached_email, created = Email.objects.get_or_create(campaign=self)
+            except Email.MultipleObjectsReturned:
+                self.__cached_email = self.emails.order_by('id').first()
+        return self.__cached_email
+
 
 class Email(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, verbose_name=_('campaign'), related_name='emails')
-    email_from = models.CharField(_('from'), max_length=150)
+    from_email = models.EmailField(_('email address'))
+    from_name = models.CharField(_('name'), max_length=100, blank=True)
     subject = models.CharField(_('subject'), max_length=150)
-    preview = models.CharField(_('preview'), max_length=300)
+    preview = models.CharField(_('preview'), max_length=150, blank=True)
     content = models.TextField(_('content'))
 
     class Meta:
@@ -66,3 +78,7 @@ class Email(models.Model):
     def __str__(self):
         return self.subject
 
+    def get_from(self):
+        if self.from_name:
+            return '%s <%s>' % (self.from_name, self.from_email)
+        return self.from_email

@@ -13,43 +13,81 @@
   </nav>
   <div class="card">
     <div class="card-body d-flex justify-content-between align-items-center">
-      <h2 class="mb-0">{{ campaign.name }}</h2>
+      <h2 class="mb-0">{{ campaign.name }} <small class="text-muted">#{{ campaign.id }}</small></h2>
       <span class="badge badge-pill badge-secondary">{{ campaign.get_status_display }}</span>
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <h5 class="mb-1">{% trans 'To' %}</h5>
-          <p class="text-muted font-italic mb-0">{% trans 'Who are you sending this campaign to?' %}</p>
-        </div>
-        <a href="#" role="button" class="btn btn-secondary">{% trans 'Add recipients' %}</a>
+        {% if campaign.mailing_list %}
+          <div class="d-flex align-items-center">
+            <i data-feather="check-circle" class="mr-3 text-success"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'To' %}</h5>
+              <p class="mb-0">
+                {% blocktrans trimmed with campaign.mailing_list.name as name and campaign.mailing_list.subscribers.count as count %}
+                  All subscribers in the list <strong>{{ name }}</strong>. <a href="">{{ count }} recipients</a>
+                {% endblocktrans %}
+              </p>
+            </div>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_recipients' campaign.pk %}" role="button" class="btn btn-outline-secondary">{% trans 'Edit recipients' %}</a>
+        {% else %}
+          <div class="d-flex align-items-center">
+            <i data-feather="circle" class="mr-3 text-muted"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'To' %}</h5>
+              <p class="text-muted font-italic mb-0">{% trans 'Who are you sending this campaign to?' %}</p>
+            </div>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_recipients' campaign.pk %}" role="button" class="btn btn-secondary">{% trans 'Add recipients' %}</a>
+        {% endif %}
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <h5 class="mb-1">{% trans 'From' %}</h5>
-          <p class="text-muted font-italic mb-0">{% trans 'Who is sending this campaign?' %}</p>
-        </div>
-        <a href="#" role="button" class="btn btn-secondary">{% trans 'Add from' %}</a>
+        {% if campaign.email.from_email %}
+          <div class="d-flex align-items-center">
+            <i data-feather="check-circle" class="mr-3 text-success"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'From' %}</h5>
+              <p class="mb-0">{{ campaign.email.get_from }}</p>
+            </div>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_from' campaign.pk %}" role="button" class="btn btn-outline-secondary">{% trans 'Edit from' %}</a>
+        {% else %}
+          <div class="d-flex align-items-center">
+            <i data-feather="circle" class="mr-3 text-muted"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'From' %}</h5>
+              <p class="text-muted font-italic mb-0">{% trans 'Who is sending this campaign?' %}</p>
+            </div>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_from' campaign.pk %}" role="button" class="btn btn-secondary">{% trans 'Add from' %}</a>
+        {% endif %}
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <h5 class="mb-1">{% trans 'Subject' %}</h5>
-          <p class="text-muted font-italic mb-0">{% trans "What's the subject line for this campaign?" %}</p>
+        <div class="d-flex align-items-center">
+          <i data-feather="circle" class="mr-3 text-muted"></i>
+          <div>
+            <h5 class="mb-1">{% trans 'Subject' %}</h5>
+            <p class="text-muted font-italic mb-0">{% trans "What's the subject line for this campaign?" %}</p>
+          </div>
         </div>
         <a href="#" role="button" class="btn btn-secondary">{% trans 'Add subject' %}</a>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <h5 class="mb-1">{% trans 'Content' %}</h5>
-          <p class="text-muted font-italic mb-0">{% trans 'Design the content for your email.' %}</p>
+        <div class="d-flex align-items-center">
+          <i data-feather="circle" class="mr-3 text-muted"></i>
+          <div>
+            <h5 class="mb-1">{% trans 'Content' %}</h5>
+            <p class="text-muted font-italic mb-0">{% trans 'Design the content for your email.' %}</p>
+          </div>
         </div>
         <a href="#" role="button" class="btn btn-secondary">{% trans 'Design email' %}</a>
       </li>
     </ul>
-    <div class="card-footer text-right">
-      <a href="" class="btn btn-link">{% trans 'Finish later' %}</a>
-      <a href="" class="btn btn-outline-primary">{% trans 'Schedule' %}</a>
+    <div class="card-footer">
       <a href="" class="btn btn-primary">{% trans 'Send campaign' %}</a>
+      <a href="" class="btn btn-outline-primary">{% trans 'Schedule' %}</a>
+      <a href="" class="btn btn-outline-secondary">{% trans 'Finish later' %}</a>
     </div>
   </div>
 {% endblock %}
