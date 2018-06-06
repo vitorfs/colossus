@@ -14,5 +14,5 @@ urlpatterns = [
     #path('unsubscribe/<uuid:mailing_list_uuid>/<uuid:subscriber_uuid>/', views.SubscribeView.as_view(), name='unsubscribe'),
     #path('profile/<uuid:mailing_list_uuid>/<uuid:subscriber_uuid>/', views.SubscribeView.as_view(), name='profile'),
     #path('track/click/', views.SubscribeView.as_view(), name='click'),
-    #path('track/open/', views.SubscribeView.as_view(), name='open'),
+    path('track/open/', views.track_open, name='open'),
 ]

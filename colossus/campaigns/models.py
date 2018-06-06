@@ -1,33 +1,21 @@
+import uuid
+
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from colossus.lists.models import MailingList
 
+from . import constants
+
 
 class Campaign(models.Model):
-    REGULAR = 1
-    AUTOMATED = 2
-    AB_TEST = 3
-    CAMPAIGN_TYPE_CHOICES = (
-        (REGULAR, _('Regular')),
-        (AUTOMATED, _('Automated')),
-        (AB_TEST, _('A/B Test')),
-    )
-
-    SENT = 1
-    SCHEDULED = 2
-    DRAFT = 3
-    TRASH = 4
-    STATUS_CHOICES = (
-        (SENT, _('Sent')),
-        (SCHEDULED, _('Scheduled')),
-        (DRAFT, _('Draft')),
-        (TRASH, _('Trashed')),
-    )
-
     name = models.CharField(_('name'), max_length=100)
-    campaign_type = models.PositiveSmallIntegerField(_('type'), choices=CAMPAIGN_TYPE_CHOICES, default=REGULAR)
+    campaign_type = models.PositiveSmallIntegerField(
+        _('type'),
+        choices=constants.CAMPAIGN_TYPE_CHOICES,
+        default=constants.REGULAR
+    )
     mailing_list = models.ForeignKey(
         MailingList,
         on_delete=models.CASCADE,
@@ -36,7 +24,7 @@ class Campaign(models.Model):
         null=True,
         blank=True
     )
-    status = models.PositiveSmallIntegerField(_('status'), choices=STATUS_CHOICES, default=DRAFT)
+    status = models.PositiveSmallIntegerField(_('status'), choices=constants.STATUS_CHOICES, default=constants.DRAFT)
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
 
     __cached_email = None
@@ -49,13 +37,13 @@ class Campaign(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        if self.status in (Campaign.DRAFT, Campaign.SCHEDULED):
+        if self.status in (constants.DRAFT, constants.SCHEDULED):
             return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
 
     @property
     def email(self):
-        if not self.__cached_email and self.campaign_type == Campaign.REGULAR:
+        if not self.__cached_email and self.campaign_type == constants.REGULAR:
             try:
                 self.__cached_email, created = Email.objects.get_or_create(campaign=self)
             except Email.MultipleObjectsReturned:
@@ -82,3 +70,17 @@ class Email(models.Model):
         if self.from_name:
             return '%s <%s>' % (self.from_name, self.from_email)
         return self.from_email
+
+
+class Link(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    email = models.ForeignKey(Email, on_delete=models.CASCADE)
+    url = models.URLField(max_length=2048)
+    click_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = _('link')
+        verbose_name_plural = _('links')
+
+    def __str__(self):
+        return self.url

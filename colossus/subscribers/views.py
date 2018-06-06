@@ -1,3 +1,5 @@
+import base64
+
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.views.generic import View, FormView
@@ -68,3 +70,21 @@ def confirm_double_optin_token(request, mailing_list_uuid, token):
     subscriber.confirm_subscription(request)
 
     return HttpResponse('Thank you!')
+
+
+@require_GET
+def track_open(request):
+    try:
+        subscriber_uuid = request.GET.get('s')
+        sub = Subscriber.objects.get(uuid=subscriber_uuid)
+        sub.activities.create(activity_type='opened_email')
+    except Exception as e:
+        pass  # fail silently
+
+    pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
+    return HttpResponse(pixel, content_type='image/png')
+
+
+def track_click(request):
+    pass
+

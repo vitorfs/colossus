@@ -24,7 +24,7 @@
         <li class="nav-item">
           <a class="nav-link{% if submenu == 'subscribers' %} active{% endif %}" href="{% url 'lists:subscribers' mailing_list.pk %}">
             {% trans 'Subscribers' %}
-            <span class="badge badge-pill badge-secondary">{{ mailing_list.subscribers.count }}</span>
+            <span class="badge badge-pill badge-secondary">{{ mailing_list.get_active_subscribers.count }}</span>
           </a>
         </li>
         <li class="nav-item">

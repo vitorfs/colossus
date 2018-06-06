@@ -9,7 +9,7 @@
       <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
-        {% if form.instance.pk %}
+        {% if object %}
           {% trans 'Edit subscriber' %}
         {% else %}
           {% trans 'New subscriber' %}
@@ -17,8 +17,9 @@
       {% endspaceless %}</li>
     </ol>
   </nav>
-  <div class="card">
+  <div class="card mb-3">
     <div class="card-body">
+      {% if object %}<p>UUID: {{ object.uuid }}</p>{% endif %}
       <form method="post" novalidate>
         {% csrf_token %}
         <div class="row">
@@ -27,7 +28,7 @@
           </div>
         </div>
         <button type="submit" class="btn btn-success" role="button">
-          {% if form.instance.pk %}
+          {% if object %}
             {% trans 'Save changes' %}
           {% else %}
             {% trans 'Create subscriber' %}
@@ -37,4 +38,15 @@
       </form>
     </div>
   </div>
+
+  {% if object %}
+    <div class="card mb-3">
+      <div class="card-header">{% trans 'Activities' %}</div>
+      <ul class="list-group list-group-flush">
+        {% for activity in object.activities.all %}
+          <li class="list-group-item">{{ activity.date }} - {{ activity.activity_type }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}

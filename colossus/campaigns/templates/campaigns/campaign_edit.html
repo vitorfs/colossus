@@ -25,7 +25,7 @@
             <div>
               <h5 class="mb-1">{% trans 'To' %}</h5>
               <p class="mb-0">
-                {% blocktrans trimmed with campaign.mailing_list.name as name and campaign.mailing_list.subscribers.count as count %}
+                {% blocktrans trimmed with campaign.mailing_list.name as name and campaign.mailing_list.get_active_subscribers.count as count %}
                   All subscribers in the list <strong>{{ name }}</strong>. <a href="">{{ count }} recipients</a>
                 {% endblocktrans %}
               </p>
@@ -102,14 +102,14 @@
           </div>
           <div>
               <p class="mb-0">
-                <small class="text-success">
-                  <i data-feather="check" style="height:15px;vertical-align:middle;"></i>
-                  {% trans 'A plain-text version.' %} <a href="">{% trans 'Edit' %}</a>
+                <small class="text-muted">
+                  <i data-feather="check" class="text-success" style="height:15px;vertical-align:middle;"></i>
+                  {% trans 'Plain-text version.' %} <a href="">{% trans 'Edit' %}</a>
                 </small>
               </p>
               <p class="mb-0">
-                <small class="text-danger">
-                  <i data-feather="x" style="height:15px;vertical-align:middle;"></i>
+                <small class="text-muted">
+                  <i data-feather="x" class="text-danger" style="height:15px;vertical-align:middle;"></i>
                   {% trans 'Unsubscribe link.' %} <a href="">{% trans 'Resolve' %}</a>
                 </small>
               </p>

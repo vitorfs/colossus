@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
 
 from colossus.subscribers.models import Subscriber
+from colossus.subscribers import constants as subscribers_constants
 
 from .mixins import MailingListMixin
 from .models import MailingList
@@ -60,7 +61,7 @@ class SubscriberCreateView(MailingListMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.mailing_list_id = self.kwargs.get('pk')
-        self.object.status = Subscriber.SUBSCRIBED
+        self.object.status = subscribers_constants.SUBSCRIBED
         self.object.save()
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
 

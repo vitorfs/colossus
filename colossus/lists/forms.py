@@ -7,6 +7,7 @@ from django.utils import timezone
 
 import pytz
 
+from colossus.subscribers import constants as subscribers_constants
 from colossus.subscribers.models import Subscriber
 
 
@@ -37,7 +38,7 @@ class ImportSubscribersForm(forms.Form):
                     optin_ip_address=row[5],
                     confirm_date=pytz.utc.localize(confirm_date),
                     confirm_ip_address=row[7],
-                    status=Subscriber.SUBSCRIBED,
+                    status=subscribers_constants.SUBSCRIBED,
                     mailing_list_id=mailing_list_id
                 )
                 subscribers.append(subscriber)

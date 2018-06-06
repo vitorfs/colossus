@@ -9,6 +9,7 @@ from colossus.core.models import Token
 from colossus.utils import get_client_ip
 
 from .models import Subscriber
+from . import constants
 
 
 class SubscribeForm(forms.ModelForm):
@@ -24,7 +25,7 @@ class SubscribeForm(forms.ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
         is_subscribed = Subscriber.objects \
-            .filter(email__iexact=email, status=Subscriber.SUBSCRIBED, mailing_list=self.mailing_list) \
+            .filter(email__iexact=email, status=constants.SUBSCRIBED, mailing_list=self.mailing_list) \
             .exists()
         if is_subscribed:
             email_validation_error = ValidationError(
@@ -39,7 +40,7 @@ class SubscribeForm(forms.ModelForm):
     def subscribe(self, request):
         email = self.cleaned_data.get('email')
         subscriber, created = Subscriber.objects.get_or_create(email=email, mailing_list=self.mailing_list)
-        subscriber.status = Subscriber.PENDING
+        subscriber.status = constants.PENDING
         subscriber.optin_ip_address = get_client_ip(request)
         subscriber.optin_date = timezone.now()
         subscriber.save()

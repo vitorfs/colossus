@@ -4,6 +4,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from colossus.subscribers import constants as subscribers_constants
+
 
 class MailingList(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -23,3 +25,6 @@ class MailingList(models.Model):
 
     def get_absolute_url(self):
         return reverse('mailing:list', kwargs={'pk': self.pk})
+
+    def get_active_subscribers(self):
+        return self.subscribers.filter(status=subscribers_constants.SUBSCRIBED)

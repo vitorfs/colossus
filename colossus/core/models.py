@@ -44,3 +44,16 @@ class Option(models.Model):
         else:
             value = self.value
         return '%s=%s' % (self.key, value)
+
+
+class Activity(models.Model):
+    activity_type = models.CharField(_('type'), max_length=30, db_index=True)
+    date = models.DateTimeField(_('date'), auto_now_add=True)
+    description = models.TextField(_('description'), blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey()
+
+    class Meta:
+        verbose_name = _('activity')
+        verbose_name_plural = _('activities')

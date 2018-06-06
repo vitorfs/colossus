@@ -6,22 +6,14 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from colossus.core.models import Token
+from colossus.core.models import Activity, Token
 from colossus.lists.models import MailingList
 from colossus.utils import get_client_ip
 
+from . import constants
+
 
 class Subscriber(models.Model):
-    PENDING = 1
-    SUBSCRIBED = 2
-    UNSUBSCRIBED = 3
-    CLEANED = 4
-    STATUS_CHOICES = (
-        (PENDING, 'Pending'),
-        (SUBSCRIBED, 'Subscribed'),
-        (UNSUBSCRIBED, 'Unsubscribed'),
-        (CLEANED, 'Cleaned'),
-    )
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.EmailField(_('email address'), max_length=255)
     name = models.CharField(_('name'), max_length=150, blank=True)
@@ -29,12 +21,13 @@ class Subscriber(models.Model):
     open_rate = models.FloatField(_('opens'), default=0.0)
     click_rate = models.FloatField(_('clicks'), default=0.0)
     update_date = models.DateTimeField(_('updated'), auto_now=True)
-    status = models.PositiveSmallIntegerField(_('status'), default=PENDING, choices=STATUS_CHOICES)
+    status = models.PositiveSmallIntegerField(_('status'), default=constants.PENDING, choices=constants.STATUS_CHOICES)
     optin_ip_address = models.GenericIPAddressField(_('opt-in IP address'), unpack_ipv4=True, blank=True, null=True)
     optin_date = models.DateTimeField(_('opt-in date'), default=timezone.now)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
     confirm_date = models.DateTimeField(_('confirm date'), null=True, blank=True)
     tokens = GenericRelation(Token)
+    activities = GenericRelation(Activity)
 
     class Meta:
         verbose_name = _('subscriber')
@@ -46,7 +39,7 @@ class Subscriber(models.Model):
 
     @transaction.atomic()
     def confirm_subscription(self, request):
-        self.status = Subscriber.SUBSCRIBED
+        self.status = constants.SUBSCRIBED
         self.confirm_ip_address = get_client_ip(request)
         self.confirm_date = timezone.now()
         self.save()
@@ -56,9 +49,6 @@ class Subscriber(models.Model):
         """Send an email to this subscriber."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-
-class Activity(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
 
 class SubscriptionFormTemplate(models.Model):
     name = models.CharField(_('name'), max_length=100)
