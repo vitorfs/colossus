@@ -37,13 +37,12 @@ class CampaignEditRecipientsView(CampaignMixin, UpdateView):
         return super().get_context_data(**kwargs)
 
 
-class CampaignEditFromView(CampaignMixin, UpdateView):
+class AbstractCampaignEmailUpdateView(CampaignMixin, UpdateView):
     model = Email
-    fields = ('from_name', 'from_email',)
     template_name = 'campaigns/campaign_form.html'
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = 'From'
+        kwargs['title'] = self.title
         kwargs['campaign'] = self.campaign
         return super().get_context_data(**kwargs)
 
@@ -53,3 +52,18 @@ class CampaignEditFromView(CampaignMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('campaigns:campaign_edit', kwargs=self.kwargs)
+
+
+class CampaignEditFromView(AbstractCampaignEmailUpdateView):
+    title = 'From'
+    fields = ('from_name', 'from_email',)
+
+
+class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
+    title = 'Subject'
+    fields = ('subject', 'preview',)
+
+
+class CampaignEditContentView(AbstractCampaignEmailUpdateView):
+    title = 'Design Email'
+    fields = ('content',)

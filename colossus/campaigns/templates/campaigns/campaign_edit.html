@@ -17,6 +17,7 @@
       <span class="badge badge-pill badge-secondary">{{ campaign.get_status_display }}</span>
     </div>
     <ul class="list-group list-group-flush">
+
       <li class="list-group-item d-flex justify-content-between align-items-center">
         {% if campaign.mailing_list %}
           <div class="d-flex align-items-center">
@@ -42,6 +43,7 @@
           <a href="{% url 'campaigns:campaign_edit_recipients' campaign.pk %}" role="button" class="btn btn-secondary">{% trans 'Add recipients' %}</a>
         {% endif %}
       </li>
+
       <li class="list-group-item d-flex justify-content-between align-items-center">
         {% if campaign.email.from_email %}
           <div class="d-flex align-items-center">
@@ -63,31 +65,73 @@
           <a href="{% url 'campaigns:campaign_edit_from' campaign.pk %}" role="button" class="btn btn-secondary">{% trans 'Add from' %}</a>
         {% endif %}
       </li>
+
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-          <i data-feather="circle" class="mr-3 text-muted"></i>
-          <div>
-            <h5 class="mb-1">{% trans 'Subject' %}</h5>
-            <p class="text-muted font-italic mb-0">{% trans "What's the subject line for this campaign?" %}</p>
+        {% if campaign.email.subject %}
+          <div class="d-flex align-items-center">
+            <i data-feather="check-circle" class="mr-3 text-success"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'Subject' %}</h5>
+              <p class="mb-0">{{ campaign.email.subject }}</p>
+              {% if campaign.email.preview %}<small class="text-muted">Preview: {{ campaign.email.preview }}</small>{% endif %}
+            </div>
           </div>
-        </div>
-        <a href="#" role="button" class="btn btn-secondary">{% trans 'Add subject' %}</a>
+          <a href="{% url 'campaigns:campaign_edit_subject' campaign.pk %}" role="button" class="btn btn-outline-secondary">{% trans 'Edit subject' %}</a>
+        {% else %}
+          <div class="d-flex align-items-center">
+            <i data-feather="circle" class="mr-3 text-muted"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'Subject' %}</h5>
+              <p class="text-muted font-italic mb-0">{% trans "What's the subject line for this campaign?" %}</p>
+            </div>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_subject' campaign.pk %}" role="button" class="btn btn-secondary">{% trans 'Add subject' %}</a>
+        {% endif %}
       </li>
+
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-          <i data-feather="circle" class="mr-3 text-muted"></i>
-          <div>
-            <h5 class="mb-1">{% trans 'Content' %}</h5>
-            <p class="text-muted font-italic mb-0">{% trans 'Design the content for your email.' %}</p>
+        {% if campaign.email.content %}
+          <div class="d-flex align-items-center">
+            <i data-feather="check-circle" class="mr-3 text-success"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'Content' %}</h5>
+              <div>
+                <a href="#">{% trans 'Preview Email' %}</a> ・ <a href="#">{% trans 'Send Test Email' %}</a>
+              </div>
+            </div>
           </div>
-        </div>
-        <a href="#" role="button" class="btn btn-secondary">{% trans 'Design email' %}</a>
+          <div>
+              <p class="mb-0">
+                <small class="text-success">
+                  <i data-feather="check" style="height:15px;vertical-align:middle;"></i>
+                  {% trans 'A plain-text version.' %} <a href="">{% trans 'Edit' %}</a>
+                </small>
+              </p>
+              <p class="mb-0">
+                <small class="text-danger">
+                  <i data-feather="x" style="height:15px;vertical-align:middle;"></i>
+                  {% trans 'Unsubscribe link.' %} <a href="">{% trans 'Resolve' %}</a>
+                </small>
+              </p>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_content' campaign.pk %}" role="button" class="btn btn-outline-secondary">{% trans 'Edit design' %}</a>
+        {% else %}
+          <div class="d-flex align-items-center">
+            <i data-feather="circle" class="mr-3 text-muted"></i>
+            <div>
+              <h5 class="mb-1">{% trans 'Content' %}</h5>
+              <p class="text-muted font-italic mb-0">{% trans 'Design the content for your email.' %}</p>
+            </div>
+          </div>
+          <a href="{% url 'campaigns:campaign_edit_content' campaign.pk %}" role="button" class="btn btn-secondary">{% trans 'Design email' %}</a>
+        {% endif %}
       </li>
+
     </ul>
     <div class="card-footer">
-      <a href="" class="btn btn-primary">{% trans 'Send campaign' %}</a>
-      <a href="" class="btn btn-outline-primary">{% trans 'Schedule' %}</a>
-      <a href="" class="btn btn-outline-secondary">{% trans 'Finish later' %}</a>
+      <a href="" class="btn btn-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Send campaign' %}</a>
+      <a href="" class="btn btn-outline-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Schedule' %}</a>
+      <a href="" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
     </div>
   </div>
 {% endblock %}
