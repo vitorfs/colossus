@@ -69,3 +69,32 @@ class SubscribeForm(forms.ModelForm):
         subscriber.send_mail(subject=subject, message=body)
 
         return subscriber
+
+
+class UnsubscribeForm(forms.Form):
+    email = forms.EmailField()
+
+    class Meta:
+        fields = ('email',)
+
+    def __init__(self, *args, **kwargs):
+        self.mailing_list = kwargs.pop('mailing_list')
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+        is_subscribed = Subscriber.objects.filter(email__iexact=email, mailing_list=self.mailing_list, status=constants.SUBSCRIBED)
+        if not is_subscribed:
+            email_validation_error = ValidationError(
+                gettext('The email address "%(email)s" is not subscribed to this list.'),
+                params={'email': email},
+                code='not_subscribed_error'
+            )
+            self.add_error('email', email_validation_error)
+        return cleaned_data
+
+    def unsubscribe(self, request):
+        email = self.cleaned_data.get('email')
+        subscriber = Subscriber.objects.get(email=email, mailing_list=self.mailing_list)
+        subscriber.unsubscribe(request)

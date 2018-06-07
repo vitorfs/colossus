@@ -4,13 +4,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.views.generic import View, FormView
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
+from colossus.campaigns.models import Campaign, Email
 from colossus.core.models import Token
 from colossus.lists.models import MailingList
 
-from .forms import SubscribeForm
+from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
 
 
@@ -72,12 +73,46 @@ def confirm_double_optin_token(request, mailing_list_uuid, token):
     return HttpResponse('Thank you!')
 
 
-@require_GET
-def track_open(request):
+def unsubscribe_manual(request, mailing_list_uuid):
+    mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
+    if request.method == 'POST':
+        form = UnsubscribeForm(mailing_list=mailing_list, data=request.POST)
+        if form.is_valid():
+            form.unsubscribe(request)
+            return redirect('subscribers:goodbye')
+    else:
+        form = UnsubscribeForm(mailing_list=mailing_list)
+    return render(request, 'subscribers/unsubscribe_form.html', {'form': form})
+
+
+def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
+    mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
+
     try:
-        subscriber_uuid = request.GET.get('s')
         sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.activities.create(activity_type='opened_email')
+    except Subscriber.DoesNotExist:
+        return redirect('subscribers:unsubscribe_manual', mailing_list_uuid=mailing_list_uuid)
+
+    try:
+        campaign = Campaign.objects.get(uuid=campaign_uuid)
+    except Campaign.DoesNotExist:
+        campaign = None
+
+    sub.unsubscribe(request, campaign)
+
+    return redirect('subscribers:goodbye')
+
+
+def goodbye(request):
+    return HttpResponse('Sorry to see you go! Goodbye!', content_type='text/plain')
+
+
+@require_GET
+def track_open(request, email_uuid, subscriber_uuid):
+    try:
+        email = Email.objects.get(uuid=email_uuid)
+        sub = Subscriber.objects.get(uuid=subscriber_uuid)
+        sub.log_activity(activity_type='open', email=email)
     except Exception as e:
         pass  # fail silently
 

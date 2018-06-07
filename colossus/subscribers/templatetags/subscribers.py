@@ -15,5 +15,5 @@ def status_badge(subscriber):
         constants.UNSUBSCRIBED: 'badge-danger',
         constants.CLEANED: 'badge-secondary',
     }
-    html = '<span class="badge %s">%s</span>' % (css_classes[subscriber.status], subscriber.get_status_display())
+    html = '<span class="badge %s badge-pill">%s</span>' % (css_classes[subscriber.status], subscriber.get_status_display())
     return mark_safe(html)

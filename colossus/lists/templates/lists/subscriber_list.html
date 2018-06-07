@@ -12,6 +12,22 @@
     <a href="{% url 'lists:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
     <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
   </div>
+  <div class="list-group list-group-flush">
+    <div class="list-group-item">
+      <div class="row">
+        <div class="col-6">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search subscribers" aria-label="Search subscribers" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+        </div>
+      </div>
+    </div>
+  </div>
   <table class="table table-sm mb-0">
     <thead>
       <tr>

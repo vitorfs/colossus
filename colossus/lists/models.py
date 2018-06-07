@@ -28,3 +28,19 @@ class MailingList(models.Model):
 
     def get_active_subscribers(self):
         return self.subscribers.filter(status=subscribers_constants.SUBSCRIBED)
+
+
+class SubscriptionFormTemplate(models.Model):
+    name = models.CharField(_('name'), max_length=100)
+    is_active = models.BooleanField(_('active status'), default=True)
+    content = models.TextField(_('content'), blank=True)
+    mailing_list = models.ForeignKey(
+        MailingList,
+        on_delete=models.CASCADE,
+        verbose_name=_('mailing list'),
+        related_name='subscription_form_templates'
+    )
+
+    class Meta:
+        verbose_name = _('subscription form template')
+        verbose_name_plural = _('subscription form templates')

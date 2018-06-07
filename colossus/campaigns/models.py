@@ -1,15 +1,19 @@
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.template import Template
 
 from colossus.lists.models import MailingList
 
 from . import constants
+from .markup import get_template_variables
 
 
 class Campaign(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(_('name'), max_length=100)
     campaign_type = models.PositiveSmallIntegerField(
         _('type'),
@@ -52,12 +56,14 @@ class Campaign(models.Model):
 
 
 class Email(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, verbose_name=_('campaign'), related_name='emails')
     from_email = models.EmailField(_('email address'))
     from_name = models.CharField(_('name'), max_length=100, blank=True)
     subject = models.CharField(_('subject'), max_length=150)
     preview = models.CharField(_('preview'), max_length=150, blank=True)
     content = models.TextField(_('content'))
+    content_text = models.TextField(_('content'))
 
     class Meta:
         verbose_name = _('email')
@@ -70,6 +76,24 @@ class Email(models.Model):
         if self.from_name:
             return '%s <%s>' % (self.from_name, self.from_email)
         return self.from_email
+
+    def checklist(self):
+        _checklist = {
+            'recipients': False,
+            'from': False,
+            'subject': False,
+            'unsub': False,
+            'plaintext': False
+        }
+        if self.content:
+            html_template = Template(self.content)
+            html_variables = get_template_variables(html_template)
+            text_template = Template(self.content)
+            text_variables = get_template_variables(text_template)
+
+            _checklist['unsub'] = ('unsub' in html_variables and 'unsub' in text_variables)
+            _checklist['plaintext'] = (self.content_text != '')
+        return _checklist
 
 
 class Link(models.Model):
