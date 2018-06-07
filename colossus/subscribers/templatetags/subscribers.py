@@ -11,7 +11,7 @@ register = template.Library()
 def status_badge(subscriber):
     css_classes = {
         constants.PENDING: 'badge-warning',
-        constants.SUBSCRIBED: 'badge-success',
+        constants.SUBSCRIBED: 'badge-primary',
         constants.UNSUBSCRIBED: 'badge-danger',
         constants.CLEANED: 'badge-secondary',
     }

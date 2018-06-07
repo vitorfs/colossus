@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+{% load campaigns i18n %}
 
 {% block title %}{% trans 'Campaigns' %}{% endblock %}
 
@@ -33,8 +33,8 @@
         </div>
       </div>
     </div>
-    <table class="table mb-0">
-      <thead>
+    <table class="table table-striped mb-0">
+      <thead class="thead-light">
         <tr>
           <th>{% trans 'Campaign' %}</th>
           <th style="width:15%;">{% trans 'Status' %}</th>
@@ -46,7 +46,7 @@
         {% for campaign in campaigns %}
           <tr>
             <td><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></td>
-            <td>{{ campaign.get_status_display }}</td>
+            <td>{{ campaign|campaign_status_badge }}</td>
             <td>0%</td>
             <td>0%</td>
           </tr>
