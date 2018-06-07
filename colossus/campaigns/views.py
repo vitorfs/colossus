@@ -1,9 +1,12 @@
+from smtplib import SMTPException
+
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .models import Campaign, Email
 from .mixins import CampaignMixin
+from .forms import CampaignTestEmailForm
 
 
 class CampaignListView(CampaignMixin, ListView):
@@ -20,6 +23,7 @@ class CampaignEditView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
     template_name = 'campaigns/campaign_edit.html'
+    extra_context = {'test_email_form': CampaignTestEmailForm()}
 
 
 class CampaignDetailView(CampaignMixin, DetailView):
@@ -67,3 +71,24 @@ class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
 class CampaignEditContentView(AbstractCampaignEmailUpdateView):
     title = 'Design Email'
     fields = ('content',)
+
+
+def campaign_test_email(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    if request.method == 'POST':
+        form = CampaignTestEmailForm(request.POST)
+        if form.is_valid():
+            try:
+                form.send(campaign)
+            except SMTPException as err:
+                # log
+                pass
+            return redirect(campaign.get_absolute_url())
+    else:
+        form = CampaignTestEmailForm()
+    return render(request, 'campaigns/test_email_form.html', {
+        'menu': 'campaigns',
+        'campaign': campaign,
+        'form': form
+    })
+

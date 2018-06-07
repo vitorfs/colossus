@@ -12,11 +12,29 @@
   </nav>
   <div class="card">
     <div class="card-body">
-      <h3 class="card-title">{% trans 'Lists' %}</h3>
-      <a href="{% url 'lists:new_list' %}" class="btn btn-primary">{% trans 'New list' %}</a>
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0"><i data-feather="users" class="mr-2" stroke-width="2"></i> {% trans 'Lists' %}</h2>
+        <a href="{% url 'lists:new_list' %}" class="btn btn-primary" role="button">{% trans 'Create list' %}</a>
+      </div>
     </div>
-    <table class="table mb-0">
-      <thead>
+    <div class="list-group list-group-flush">
+      <div class="list-group-item">
+        <div class="row">
+          <div class="col-6">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search lists" aria-label="Search lists" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table table-striped mb-0">
+      <thead class="thead-light">
         <tr>
           <th>{% trans 'Name' %}</th>
           <th style="width:15%;">{% trans 'Subscribers' %}</th>

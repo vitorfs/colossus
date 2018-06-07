@@ -97,7 +97,7 @@
             <div>
               <h5 class="mb-1">{% trans 'Content' %}</h5>
               <div>
-                <a href="#">{% trans 'Preview Email' %}</a> ・ <a href="#">{% trans 'Send Test Email' %}</a>
+                <a href="#">{% trans 'Preview Email' %}</a> ・ <a href="javascript:void(0);" data-toggle="modal" data-target="#sendTestEmailModal">{% trans 'Send Test Email' %}</a>
               </div>
             </div>
           </div>
@@ -134,5 +134,28 @@
       <a href="" class="btn btn-outline-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Schedule' %}</a>
       <a href="" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
     </div>
+  </div>
+
+  <div class="modal fade" id="sendTestEmailModal" tabindex="-1" role="dialog" aria-labelledby="sendTestEmailModalLabel" aria-hidden="true">
+    <form method="post" action="{% url 'campaigns:campaign_test_email' campaign.pk %}">
+      {% csrf_token %}
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sendTestEmailModalLabel">{% trans 'Send test email' %}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ test_email_form|crispy }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{% trans 'Never mind' %}</button>
+            <button type="submit" class="btn btn-success">{% trans 'Send email' %}</button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 {% endblock %}

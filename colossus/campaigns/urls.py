@@ -15,4 +15,5 @@ urlpatterns = [
     path('<int:pk>/edit/from/', views.CampaignEditFromView.as_view(), name='campaign_edit_from'),
     path('<int:pk>/edit/subject/', views.CampaignEditSubjectView.as_view(), name='campaign_edit_subject'),
     path('<int:pk>/edit/content/', views.CampaignEditContentView.as_view(), name='campaign_edit_content'),
+    path('<int:pk>/test-email/', views.campaign_test_email, name='campaign_test_email'),
 ]
