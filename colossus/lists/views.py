@@ -43,7 +43,6 @@ class SubscriberListView(MailingListMixin, ListView):
     context_object_name = 'subscribers'
     paginate_by = 100
     template_name = 'lists/subscriber_list.html'
-    extra_context = {'is_filtered': False, 'query': ''}
 
     def get_context_data(self, **kwargs):
         kwargs['submenu'] = 'subscribers'
@@ -54,10 +53,10 @@ class SubscriberListView(MailingListMixin, ListView):
         if 'q' in self.request.GET:
             query = self.request.GET.get('q')
             queryset = queryset.filter(email__icontains=query)
-            self.extra_context.update({
+            self.extra_context = {
                 'is_filtered': True,
                 'query': query
-            })
+            }
         return queryset
 
 

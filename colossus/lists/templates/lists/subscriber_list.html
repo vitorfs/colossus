@@ -39,6 +39,11 @@
             <div class="input-group">
               <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search subscribers" aria-label="Search subscribers" aria-describedby="basic-addon2">
               <div class="input-group-append">
+                {% if query %}
+                  <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">
+                    {% trans 'Clear' %}
+                  </a>
+                {% endif %}
                 <button class="btn btn-outline-primary" type="submit">{% trans 'Search' %}</button>
               </div>
             </div>
@@ -93,7 +98,7 @@
             <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% trans 'Last' %}</a>
           </li>
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans 'Next' %} →</a>
+            <a class="page-link" href="?{% qs page=page_obj.next_page_number q=query %}">{% trans 'Next' %} →</a>
           </li>
         {% else %}
           <li class="page-item disabled">

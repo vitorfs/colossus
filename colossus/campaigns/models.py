@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.template import Template
+from django.template import Template, Context
 from django.utils import timezone
 
 from colossus.lists.models import MailingList
@@ -97,6 +97,32 @@ class Email(models.Model):
             _checklist['unsub'] = ('unsub' in html_variables and 'unsub' in text_variables)
             _checklist['plaintext'] = (self.content_text != '')
         return _checklist
+
+    def _render(self, template, subscriber):
+        t = Template(template)
+        if subscriber is not None:
+            context = {
+                'name': subscriber.name,
+                'unsub': reverse('subscribers:unsubscribe', kwargs={
+                    'mailing_list_uuid': self.campaign.mailing_list.uuid,
+                    'subscriber_uuid': subscriber.uuid,
+                    'campaign_uuid': self.campaign.uuid
+                })
+            }
+        else:
+            # If subscriber is None, consider it as test data
+            context = {
+                'name': '<< Test Name >>',
+                'unsub': 'http://127.0.0.1:8000/'
+            }
+        c = Context(context)
+        return t.render(c)
+
+    def render_html(self, subscriber):
+        return self._render(self.content, subscriber)
+
+    def render_text(self, subscriber):
+        return self._render(self.content_text, subscriber)
 
 
 class Link(models.Model):

@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from .models import Campaign, Email
 from .mixins import CampaignMixin
-from .forms import CampaignTestEmailForm
+from .forms import DesignEmailForm, PlainTextEmailForm, CampaignTestEmailForm
 
 
 class CampaignListView(CampaignMixin, ListView):
@@ -24,7 +24,11 @@ class CampaignEditView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
     template_name = 'campaigns/campaign_edit.html'
-    extra_context = {'test_email_form': CampaignTestEmailForm()}
+
+    def get_context_data(self, **kwargs):
+        kwargs['test_email_form'] = CampaignTestEmailForm()
+        kwargs['plain_text_email_form'] = PlainTextEmailForm(instance=self.object.email)
+        return super().get_context_data(**kwargs)
 
 
 class CampaignDetailView(CampaignMixin, DetailView):
@@ -71,7 +75,12 @@ class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
 
 class CampaignEditContentView(AbstractCampaignEmailUpdateView):
     title = 'Design Email'
-    fields = ('content',)
+    form_class = DesignEmailForm
+
+
+class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
+    title = 'Edit Plain-Text Email'
+    form_class = PlainTextEmailForm
 
 
 def campaign_test_email(request, pk):
