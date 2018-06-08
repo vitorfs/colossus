@@ -24,12 +24,14 @@ class Subscriber(models.Model):
     mailing_list = models.ForeignKey(MailingList, on_delete=models.PROTECT, related_name='subscribers')
     open_rate = models.FloatField(_('opens'), default=0.0)
     click_rate = models.FloatField(_('clicks'), default=0.0)
-    update_date = models.DateTimeField(_('updated'), auto_now=True)
+    update_date = models.DateTimeField(_('updated'), default=timezone.now)
     status = models.PositiveSmallIntegerField(_('status'), default=constants.PENDING, choices=constants.STATUS_CHOICES)
     optin_ip_address = models.GenericIPAddressField(_('opt-in IP address'), unpack_ipv4=True, blank=True, null=True)
     optin_date = models.DateTimeField(_('opt-in date'), default=timezone.now)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
     confirm_date = models.DateTimeField(_('confirm date'), null=True, blank=True)
+    last_seen_ip_address = models.GenericIPAddressField(_('last seen IP address'), unpack_ipv4=True, blank=True, null=True)
+    last_seen_date = models.DateTimeField(_('last seen date'), null=True, blank=True)
     tokens = GenericRelation(Token)
 
     class Meta:
@@ -75,6 +77,7 @@ class Activity(models.Model):
     activity_type = models.CharField(_('type'), max_length=30, db_index=True)
     date = models.DateTimeField(_('date'), auto_now_add=True)
     description = models.TextField(_('description'), blank=True)
+    ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
     subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE, related_name='activities')
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, null=True, blank=True, related_name='activities')
     email = models.ForeignKey(Email, on_delete=models.CASCADE, null=True, blank=True, related_name='activities')

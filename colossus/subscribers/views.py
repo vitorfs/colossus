@@ -3,11 +3,11 @@ import base64
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.views.generic import View, FormView
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from colossus.campaigns.models import Campaign, Email
+from colossus.campaigns.models import Campaign, Email, Link
 from colossus.core.models import Token
 from colossus.lists.models import MailingList
 
@@ -111,6 +111,7 @@ def goodbye(request):
 def track_open(request, email_uuid, subscriber_uuid):
     try:
         email = Email.objects.get(uuid=email_uuid)
+        # TODO: increase open count
         sub = Subscriber.objects.get(uuid=subscriber_uuid)
         sub.log_activity(activity_type='open', email=email)
     except Exception as e:
@@ -120,6 +121,15 @@ def track_open(request, email_uuid, subscriber_uuid):
     return HttpResponse(pixel, content_type='image/png')
 
 
-def track_click(request):
-    pass
+@require_GET
+def track_click(request, link_uuid, subscriber_uuid):
+    link = get_object_or_404(Link, uuid=link_uuid)
+    # TODO: increase click count
 
+    try:
+        sub = Subscriber.objects.get(uuid=subscriber_uuid)
+        sub.log_activity(activity_type='clicked', link=link)
+    except Subscriber.DoesNotExist:
+        pass  # fail silently
+
+    return HttpResponseRedirect(link.url)
