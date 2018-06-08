@@ -91,7 +91,7 @@ class Email(models.Model):
         if self.content:
             html_template = Template(self.content)
             html_variables = get_template_variables(html_template)
-            text_template = Template(self.content)
+            text_template = Template(self.content_text)
             text_variables = get_template_variables(text_template)
 
             _checklist['unsub'] = ('unsub' in html_variables and 'unsub' in text_variables)

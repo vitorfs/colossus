@@ -28,6 +28,7 @@ class CampaignEditView(CampaignMixin, DetailView):
     def get_context_data(self, **kwargs):
         kwargs['test_email_form'] = CampaignTestEmailForm()
         kwargs['plain_text_email_form'] = PlainTextEmailForm(instance=self.object.email)
+        kwargs['checklist'] = self.object.email.checklist()
         return super().get_context_data(**kwargs)
 
 

@@ -104,14 +104,24 @@
           <div>
               <p class="mb-0">
                 <small class="text-muted">
-                  <i data-feather="check" class="text-success" style="height:15px;vertical-align:middle;"></i>
-                  {% trans 'Plain-text version.' %} <a href="javascript:void(0);" data-toggle="modal" data-target="#editPlainTextModal">{% trans 'Edit' %}</a>
+                  {% if checklist.plaintext %}
+                    <i data-feather="check" class="text-success" style="height:15px;vertical-align:middle;"></i>
+                    {% trans 'Plain-text version.' %} <a href="javascript:void(0);" data-toggle="modal" data-target="#editPlainTextModal">{% trans 'Edit' %}</a>
+                  {% else %}
+                    <i data-feather="x" class="text-danger" style="height:15px;vertical-align:middle;"></i>
+                    {% trans 'Plain-text version not found.' %} <a href="javascript:void(0);" data-toggle="modal" data-target="#editPlainTextModal">{% trans 'Resolve' %}</a>
+                  {% endif %}
                 </small>
               </p>
               <p class="mb-0">
                 <small class="text-muted">
-                  <i data-feather="x" class="text-danger" style="height:15px;vertical-align:middle;"></i>
-                  {% trans 'Unsubscribe link.' %} <a href="">{% trans 'Resolve' %}</a>
+                  {% if checklist.unsub %}
+                    <i data-feather="check" class="text-success" style="height:15px;vertical-align:middle;"></i>
+                    {% trans 'Email contains unsubscribe link.' %}
+                  {% else %}
+                    <i data-feather="x" class="text-danger" style="height:15px;vertical-align:middle;"></i>
+                    {% trans 'Unsubscribe link not found.' %} <a href="">{% trans 'Resolve' %}</a>
+                  {% endif %}
                 </small>
               </p>
           </div>
