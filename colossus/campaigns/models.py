@@ -33,6 +33,8 @@ class Campaign(models.Model):
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)
+    track_opens = models.BooleanField(_('track opens'), default=True)
+    track_clicks = models.BooleanField(_('track clicks'), default=True)
 
     __cached_email = None
 

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Templates' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Templates' %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">{% trans 'Templates' %}</h2>
+        <a href="{% url 'templates:emailtemplate_add' %}" class="btn btn-primary" role="button">{% trans 'Create template' %}</a>
+      </div>
+    </div>
+    <div class="list-group list-group-flush">
+      <div class="list-group-item">
+        <div class="row">
+          <div class="col-6">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search templates" aria-label="Search templates" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table table-striped mb-0">
+      <thead class="thead-light">
+        <tr>
+          <th>{% trans 'Name' %}</th>
+          <th>{% trans 'Last update' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for template in templates %}
+          <tr>
+            <td><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></td>
+            <td>{{ template.update_date }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

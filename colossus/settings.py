@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     'colossus.campaigns',
     'colossus.core',
+    'colossus.emailtemplates',
     'colossus.lists',
     'colossus.pages',
     'colossus.subscribers',

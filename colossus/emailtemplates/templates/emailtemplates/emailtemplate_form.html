@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'templates:emailtemplates' %}">{% trans 'Templates' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'New template' %}</li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">{% trans 'Create a new template' %}</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Create template' %}</button>
+        <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

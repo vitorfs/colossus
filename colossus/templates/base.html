@@ -34,7 +34,7 @@
             {% trans 'Mailing Lists' %}
             {% if menu == 'lists' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
           </a>
-          <a class="nav-item nav-link{% if menu == 'templates' %} active{% endif %}" href="#">
+          <a class="nav-item nav-link{% if menu == 'templates' %} active{% endif %}" href="{% url 'templates:emailtemplates' %}">
             {% trans 'Templates' %}
             {% if menu == 'templates' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
           </a>
