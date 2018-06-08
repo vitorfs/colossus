@@ -10,10 +10,10 @@
       <li class="breadcrumb-item active" aria-current="page">{% trans 'Campaigns' %}</li>
     </ol>
   </nav>
-  <div class="card">
+  <div class="card mb-3">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="mb-0"><i data-feather="mail" class="mr-2" stroke-width="2"></i> {% trans 'Campaigns' %}</h2>
+        <h2 class="mb-0">{% trans 'Campaigns' %}</h2>
         <a href="{% url 'campaigns:campaign_add' %}" class="btn btn-primary" role="button">{% trans 'Create campaign' %}</a>
       </div>
     </div>
@@ -40,15 +40,34 @@
           <th style="width:15%;">{% trans 'Status' %}</th>
           <th style="width:15%;">{% trans 'Opens' %}</th>
           <th style="width:15%;">{% trans 'Clicks' %}</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         {% for campaign in campaigns %}
           <tr>
-            <td><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></td>
-            <td>{{ campaign|campaign_status_badge }}</td>
-            <td>0%</td>
-            <td>0%</td>
+            <td class="align-middle">
+              <div class="d-flex align-items-center">
+                {% if campaign.campaign_type == 1 %}
+                <i data-feather="mail" class="text-muted mr-3"></i>
+                {% elif campaign.campaign_type == 2 %}
+                <i data-feather="repeat" class="text-muted mr-3"></i>
+                {% elif campaign.campaign_type == 3 %}
+                <i data-feather="layers" class="text-muted mr-3"></i>
+                {% endif %}
+                <div>
+                  <a class="lead d-block" href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a>
+                  <small class="d-block">{{ campaign.get_campaign_type_display }} ・ {{ campaign.mailing_list.name }}</small>
+                  <small class="d-block text-muted">Edited <strong>{{ campaign.update_date }}</strong></small>
+                </div>
+              </div>
+            </td>
+            <td class="align-middle">{{ campaign|campaign_status_badge }}</td>
+            <td class="align-middle">0%</td>
+            <td class="align-middle">0%</td>
+            <td class="align-middle text-right">
+              <a href="" class="btn btn-outline-primary">Edit</a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

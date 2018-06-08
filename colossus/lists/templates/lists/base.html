@@ -13,7 +13,11 @@
       {% endblock %}
     </ol>
   </nav>
-  <p>UUID: {{ mailing_list.uuid }}</p>
+  <!--p>UUID: {{ mailing_list.uuid }}</p-->
+  <h2 class="mb-3">
+    {{ mailing_list.name }}
+    <small class="text-muted">{{ mailing_list.get_active_subscribers.count }}</small>
+  </h2>
   <div class="card mb-3">
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs">
@@ -25,7 +29,6 @@
         <li class="nav-item">
           <a class="nav-link{% if submenu == 'subscribers' %} active{% endif %}" href="{% url 'lists:subscribers' mailing_list.pk %}">
             {% trans 'Subscribers' %}
-            <span class="badge badge-pill badge-secondary">{{ mailing_list.get_active_subscribers.count }}</span>
           </a>
         </li>
         <li class="nav-item">

@@ -5,6 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.template import Template
+from django.utils import timezone
 
 from colossus.lists.models import MailingList
 
@@ -30,6 +31,8 @@ class Campaign(models.Model):
     )
     status = models.PositiveSmallIntegerField(_('status'), choices=constants.STATUS_CHOICES, default=constants.DRAFT)
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
+    create_date = models.DateTimeField(_('create date'), auto_now_add=True)
+    update_date = models.DateTimeField(_('update date'), default=timezone.now)
 
     __cached_email = None
 

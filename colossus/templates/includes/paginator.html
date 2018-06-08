@@ -3,6 +3,40 @@
 <ul class="pagination pagination-sm mb-0">
   {% if page_obj.has_previous %}
     <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}">← {% trans 'Previous' %}</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?page=1">{% trans 'First' %}</a>
+    </li>
+  {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1">← {% trans 'Previous' %}</a>
+    </li>
+  {% endif %}
+
+  <li class="page-item disabled">
+    <a class="page-link" href="#" tabindex="-1">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </a>
+  </li>
+
+  {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% trans 'Last' %}</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans 'Next' %} →</a>
+    </li>
+  {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1">{% trans 'Next' %} →</a>
+    </li>
+  {% endif %}
+</ul>
+
+<!--ul class="pagination pagination-sm mb-0">
+  {% if page_obj.has_previous %}
+    <li class="page-item">
       <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans 'Previous' %}</a>
     </li>
   {% else %}
@@ -32,4 +66,4 @@
       <a class="page-link" href="#" tabindex="-1">{% trans 'Next' %}</a>
     </li>
   {% endif %}
-</ul>
+</ul-->
