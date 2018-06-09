@@ -76,14 +76,12 @@
       <div class="col-lg-6">
         <div class="card" id="previewEmailContainer">
           <h4 class="card-header">Preview email</h4>
-          <div class="list-group list-group-flush">
-            <div class="list-group-item">
-              <button type="button" class="btn btn-primary">Update preview</button>
-              <button type="button" class="btn btn-outline-primary">Send test email</button>
-            </div>
-          </div>
           <div class="card-body p-0">
             <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100 h-100" style="border:0;"></iframe>
+          </div>
+          <div class="card-footer">
+            <button type="button" class="btn btn-primary">Update preview</button>
+            <button type="button" class="btn btn-outline-primary">Send test email</button>
           </div>
         </div>
       </div>
