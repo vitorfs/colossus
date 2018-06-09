@@ -92,10 +92,22 @@ class Email(models.Model):
             'recipients': False,
             'from': False,
             'subject': False,
+            'content': False,
             'unsub': False,
             'plaintext': False
         }
+
+        if self.campaign.mailing_list is not None and self.campaign.mailing_list.get_active_subscribers().exists():
+            _checklist['recipients'] = True
+
+        if self.from_email:
+            _checklist['from'] = True
+
+        if self.subject:
+            _checklist['subject'] = True
+
         if self.content:
+            _checklist['content'] = True
             html_template = Template(self.content)
             html_variables = get_template_variables(html_template)
             text_template = Template(self.content_text)

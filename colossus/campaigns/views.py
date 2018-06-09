@@ -3,6 +3,8 @@ from smtplib import SMTPException
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import render_to_string
 
 from .models import Campaign, Email
 from .mixins import CampaignMixin
@@ -106,9 +108,10 @@ def campaign_test_email(request, pk):
 
 def campaign_preview_email(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
-    subject = campaign.email.subject
-    body = campaign.email.render_html(subscriber=None)
-    return render(request, 'campaigns/email_preview.html', {
-        'subject': subject,
-        'body': body
-    })
+    if request.method == 'POST':
+        campaign.email.content = request.POST.get('content')
+    html = campaign.email.render_html(subscriber=None)
+    if 'application/json' in request.META.get('HTTP_ACCEPT'):
+        return JsonResponse({'html': html})
+    else:
+        return HttpResponse(html)

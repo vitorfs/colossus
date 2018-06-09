@@ -38,6 +38,37 @@
         $("#id_content").val(editor.getValue());
         return true;
       });
+
+      $(".js-update-preview").click(function () {
+        var $btn = $(this);
+
+        $.ajax({
+          url: $btn.attr("data-remote-url"),
+          type: 'post',
+          data: {
+            'content': editor.getValue(),
+            'csrfmiddlewaretoken': $btn.attr("data-csrf")
+          },
+          dataType: 'json',
+          beforeSend: function () {
+            $btn.attr("data-text", $btn.text());
+            $btn.text($btn.attr("data-loading"));
+            $btn.prop("disable", true);
+          },
+          success: function (data) {
+            $("#previewEmailIframe").contents().find("html").html(data.html);
+          },
+          error: function () {
+
+          },
+          complete: function () {
+            $btn.text($btn.attr("data-text"));
+            $btn.prop("disable", false);
+          }
+        });
+
+      });
+
     });
   </script>
 {% endblock %}
@@ -54,13 +85,10 @@
     <div class="row">
       <div class="col-lg-6">
         <div class="card border-primary mb-3" id="designEmailContainer">
-
           <h4 class="card-header">{% trans 'Design email' %}</h4>
-
           <div class="card-body p-0">
             <div id="editor" style="height:300px">{{ campaign.email.content }}</div>
           </div>
-
           <div class="card-footer">
             <form method="post" id="designEmailForm" novalidate>
               {% csrf_token %}
@@ -77,11 +105,15 @@
         <div class="card" id="previewEmailContainer">
           <h4 class="card-header">Preview email</h4>
           <div class="card-body p-0">
-            <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100 h-100" style="border:0;"></iframe>
+            <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" id="previewEmailIframe" class="w-100 h-100" style="border:0;"></iframe>
           </div>
           <div class="card-footer">
-            <button type="button" class="btn btn-primary">Update preview</button>
-            <button type="button" class="btn btn-outline-primary">Send test email</button>
+            <button type="button"
+                    class="btn btn-primary js-update-preview"
+                    data-csrf="{{ csrf_token }}"
+                    data-remote-url="{% url 'campaigns:campaign_preview_email' campaign.pk %}"
+                    data-loading="{% trans 'Updating preview…' %}">{% trans 'Update preview' %}</button>
+            <button type="button" class="btn btn-outline-primary">{% trans 'Send test email' %}</button>
           </div>
         </div>
       </div>
