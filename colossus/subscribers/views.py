@@ -113,7 +113,7 @@ def track_open(request, email_uuid, subscriber_uuid):
         email = Email.objects.get(uuid=email_uuid)
         # TODO: increase open count
         sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.log_activity(activity_type='open', email=email)
+        sub.create_activity(request, 'open', email=email)
     except Exception as e:
         pass  # fail silently
 
@@ -128,7 +128,7 @@ def track_click(request, link_uuid, subscriber_uuid):
 
     try:
         sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.log_activity(activity_type='clicked', link=link)
+        sub.create_activity(request, 'clicked', link=link)
     except Subscriber.DoesNotExist:
         pass  # fail silently
 

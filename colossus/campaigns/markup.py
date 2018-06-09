@@ -34,7 +34,11 @@ def get_plain_text_from_html(html):
     soup = BeautifulSoup(html, 'html5lib')
 
     for a in soup.findAll('a'):
-        link_text_repr = '%s (%s)' % (a.text, a.attrs['href'])
+        href = a.attrs['href']
+        if a.text != href:
+            link_text_repr = '%s (%s)' % (a.text, href)
+        else:
+            link_text_repr = href
         a.replaceWith(link_text_repr)
 
     for li in soup.findAll('li'):

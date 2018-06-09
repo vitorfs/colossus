@@ -48,22 +48,26 @@ class Subscriber(models.Model):
         self.confirm_ip_address = get_client_ip(request)
         self.confirm_date = timezone.now()
         self.save()
-        self.log_activity(activity_type='subscribed')
+        self.create_activity(request, 'subscribed')
         self.tokens.filter(description='confirm_subscription').delete()
 
     @transaction.atomic()
     def unsubscribe(self, request, campaign=None):
         self.status = constants.UNSUBSCRIBED
         self.save()
-        self.log_activity(activity_type='unsubscribed', campaign=campaign)
+        self.create_activity(request, 'unsubscribed', campaign=campaign)
 
     def send_mail(self, subject, message, from_email=None, **kwargs):
         """Send an email to this subscriber."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def log_activity(self, **kwargs):
-        kwargs.update({'subscriber': self})
-        activity = Activity.objects.create(**kwargs)
+    def create_activity(self, request, activity_type, **activity_kwargs):
+        activity_kwargs.update({
+            'subscriber': self,
+            'activity_type': activity_type,
+            'ip_address': get_client_ip(request)
+        })
+        activity = Activity.objects.create(**activity_kwargs)
         return activity
 
     def get_activities(self, **filter_kwargs):
@@ -98,7 +102,6 @@ class Activity(models.Model):
     def render_text(self):
         text = ''
         if self.activity_type == 'subscribed':
-            text = '<strong>Subscribed</strong> to the list.'
             text = '''
             <div class="jumbotron text-center">
                 <i data-feather="user-plus" stroke-width="1" class="text-muted" height="64px" width="64px"></i>

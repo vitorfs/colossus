@@ -77,6 +77,7 @@ class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
 class CampaignEditContentView(AbstractCampaignEmailUpdateView):
     title = 'Design Email'
     form_class = DesignEmailForm
+    template_name = 'campaigns/design_email_form.html'
 
 
 class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
@@ -103,3 +104,11 @@ def campaign_test_email(request, pk):
         'form': form
     })
 
+def campaign_preview_email(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    subject = campaign.email.subject
+    body = campaign.email.render_html(subscriber=None)
+    return render(request, 'campaigns/email_preview.html', {
+        'subject': subject,
+        'body': body
+    })

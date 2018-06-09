@@ -16,5 +16,6 @@ urlpatterns = [
     path('<int:pk>/edit/subject/', views.CampaignEditSubjectView.as_view(), name='campaign_edit_subject'),
     path('<int:pk>/edit/content/', views.CampaignEditContentView.as_view(), name='campaign_edit_content'),
     path('<int:pk>/edit/plain-text/', views.CampaignEditPlainTextContentView.as_view(), name='campaign_edit_plain_text_content'),
-    path('<int:pk>/test-email/', views.campaign_test_email, name='campaign_test_email'),
+    path('<int:pk>/edit/test-email/', views.campaign_test_email, name='campaign_test_email'),
+    path('<int:pk>/edit/preview-email/', views.campaign_preview_email, name='campaign_preview_email'),
 ]

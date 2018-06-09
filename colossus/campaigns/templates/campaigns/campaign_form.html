@@ -1,8 +1,28 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags i18n %}
+{% load crispy_forms_tags i18n static %}
 
 {% block title %}{% trans 'Create new campaign' %}{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'vendor/tinymce/4.7.13/tinymce.min.js' %}"></script>
+  <script>
+    $(function () {
+      /*{% comment %}
+      vendor/tinymce/tinymce.min.js
+      Initialize the rich text editor to compose email message
+      {% endcomment %}*/
+      tinymce.init({
+        selector: '#id_content',
+        menubar: false,
+        statusbar: false,
+        plugins: 'textcolor lists code link',
+        toolbar: 'undo redo |  formatselect | bold italic backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat | code'
+      });
+
+    });
+  </script>
+{% endblock %}
 
 {% block content %}
   <nav aria-label="breadcrumb">
@@ -35,7 +55,7 @@
           {% trans 'Create new campaign' %}
         {% endif %}
       </h2>
-      <form method="post">
+      <form method="post" novalidate>
         {% csrf_token %}
         {{ form|crispy }}
         {% if campaign %}

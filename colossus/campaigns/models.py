@@ -33,8 +33,13 @@ class Campaign(models.Model):
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)
+    recipients_count = models.PositiveIntegerField(default=0)
     track_opens = models.BooleanField(_('track opens'), default=True)
     track_clicks = models.BooleanField(_('track clicks'), default=True)
+    unique_opens_count = models.PositiveIntegerField(default=0)
+    unique_clicks_count = models.PositiveIntegerField(default=0)
+    total_opens_count = models.PositiveIntegerField(default=0)
+    total_clicks_count = models.PositiveIntegerField(default=0)
 
     __cached_email = None
 
@@ -131,7 +136,8 @@ class Link(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.ForeignKey(Email, on_delete=models.CASCADE)
     url = models.URLField(max_length=2048)
-    click_count = models.PositiveIntegerField(default=0)
+    unique_clicks_count = models.PositiveIntegerField(default=0)
+    total_clicks_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = _('link')

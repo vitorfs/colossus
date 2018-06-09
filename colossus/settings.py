@@ -109,7 +109,7 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 
-X_FRAME_OPTIONS = 'DENY'
+#X_FRAME_OPTIONS = 'DENY'
 
 CSRF_COOKIE_SECURE = not DEBUG
 
@@ -166,7 +166,7 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 '''
 
 DEBUG_TOOLBAR_CONFIG = {
-    'JQUERY_URL': '',
+    #'JQUERY_URL': '',
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
