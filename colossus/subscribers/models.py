@@ -42,30 +42,34 @@ class Subscriber(models.Model):
     def __str__(self):
         return self.email
 
+    def get_email(self):
+        if self.name:
+            return '%s <%s>' % (self.name, self.email)
+        return self.email
+
     @transaction.atomic()
     def confirm_subscription(self, request):
         self.status = constants.SUBSCRIBED
         self.confirm_ip_address = get_client_ip(request)
         self.confirm_date = timezone.now()
         self.save()
-        self.create_activity(request, 'subscribed')
+        self.create_activity(request, 'subscribed', ip_address=get_client_ip(request))
         self.tokens.filter(description='confirm_subscription').delete()
 
     @transaction.atomic()
     def unsubscribe(self, request, campaign=None):
         self.status = constants.UNSUBSCRIBED
         self.save()
-        self.create_activity(request, 'unsubscribed', campaign=campaign)
+        self.create_activity(request, 'unsubscribed', campaign=campaign, ip_address=get_client_ip(request))
 
     def send_mail(self, subject, message, from_email=None, **kwargs):
         """Send an email to this subscriber."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def create_activity(self, request, activity_type, **activity_kwargs):
+    def create_activity(self, activity_type, **activity_kwargs):
         activity_kwargs.update({
             'subscriber': self,
-            'activity_type': activity_type,
-            'ip_address': get_client_ip(request)
+            'activity_type': activity_type
         })
         activity = Activity.objects.create(**activity_kwargs)
         return activity

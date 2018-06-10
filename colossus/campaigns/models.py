@@ -117,31 +117,16 @@ class Email(models.Model):
             _checklist['plaintext'] = (self.content_text != '')
         return _checklist
 
-    def _render(self, template, subscriber):
-        t = Template(template)
-        if subscriber is not None:
-            context = {
-                'name': subscriber.name,
-                'unsub': reverse('subscribers:unsubscribe', kwargs={
-                    'mailing_list_uuid': self.campaign.mailing_list.uuid,
-                    'subscriber_uuid': subscriber.uuid,
-                    'campaign_uuid': self.campaign.uuid
-                })
-            }
-        else:
-            # If subscriber is None, consider it as test data
-            context = {
-                'name': '<< Test Name >>',
-                'unsub': 'http://127.0.0.1:8000/'
-            }
-        c = Context(context)
-        return t.render(c)
+    def render(self, template_string, context_dict):
+        template = Template(template_string)
+        context = Context(context_dict)
+        return template.render(context)
 
-    def render_html(self, subscriber):
-        return self._render(self.content, subscriber)
+    def render_html(self, context_dict):
+        return self.render(self.content, context_dict)
 
-    def render_text(self, subscriber):
-        return self._render(self.content_text, subscriber)
+    def render_text(self, context_dict):
+        return self.render(self.content_text, context_dict)
 
 
 class Link(models.Model):

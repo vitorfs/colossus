@@ -2,6 +2,7 @@ from django import forms
 from django.core.mail import send_mail
 from django.utils.translation import gettext, gettext_lazy as _
 
+from .api import send_campaign_email_test
 from .markup import get_plain_text_from_html
 from .models import Email
 
@@ -33,12 +34,4 @@ class CampaignTestEmailForm(forms.Form):
 
     def send(self, campaign):
         email_address = self.cleaned_data.get('email')
-        kwargs = {
-            'subject': '[%s] %s' % (gettext('Test'), campaign.email.subject),
-            'message': campaign.email.render_text(subscriber=None),
-            'from_email': campaign.email.get_from(),
-            'recipient_list': [email_address,],
-            'fail_silently': False,
-            'html_message': campaign.email.render_html(subscriber=None)
-        }
-        send_mail(**kwargs)
+        send_campaign_email_test(campaign.email, email_address)

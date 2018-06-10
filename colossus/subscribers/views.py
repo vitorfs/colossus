@@ -10,6 +10,7 @@ from django.utils import timezone
 from colossus.campaigns.models import Campaign, Email, Link
 from colossus.core.models import Token
 from colossus.lists.models import MailingList
+from colossus.utils import get_client_ip
 
 from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
@@ -113,7 +114,7 @@ def track_open(request, email_uuid, subscriber_uuid):
         email = Email.objects.get(uuid=email_uuid)
         # TODO: increase open count
         sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.create_activity(request, 'open', email=email)
+        sub.create_activity('opened', email=email, ip_address=get_client_ip(request))
     except Exception as e:
         pass  # fail silently
 
@@ -128,7 +129,7 @@ def track_click(request, link_uuid, subscriber_uuid):
 
     try:
         sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.create_activity(request, 'clicked', link=link)
+        sub.create_activity('clicked', link=link, ip_address=get_client_ip(request))
     except Subscriber.DoesNotExist:
         pass  # fail silently
 
