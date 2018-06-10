@@ -15,7 +15,7 @@ from . import constants
 class CampaignListView(CampaignMixin, ListView):
     model = Campaign
     context_object_name = 'campaigns'
-    paginate_by = 3
+    paginate_by = 25
 
 
 class CampaignCreateView(CampaignMixin, CreateView):

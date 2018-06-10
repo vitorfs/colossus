@@ -67,6 +67,7 @@ class Campaign(models.Model):
 
     def send(self):
         send_campaign_task.delay(self.pk)
+        self.recipients_count = self.mailing_list.get_active_subscribers().count()
         self.send_date = timezone.now()
         self.status = constants.SENT
         self.save()
