@@ -49,18 +49,19 @@ class Subscriber(models.Model):
 
     @transaction.atomic()
     def confirm_subscription(self, request):
+        ip_address = get_client_ip(request)
         self.status = constants.SUBSCRIBED
-        self.confirm_ip_address = get_client_ip(request)
+        self.confirm_ip_address = ip_address
         self.confirm_date = timezone.now()
         self.save()
-        self.create_activity(request, 'subscribed', ip_address=get_client_ip(request))
+        self.create_activity('subscribed', ip_address=ip_address)
         self.tokens.filter(description='confirm_subscription').delete()
 
     @transaction.atomic()
     def unsubscribe(self, request, campaign=None):
         self.status = constants.UNSUBSCRIBED
         self.save()
-        self.create_activity(request, 'unsubscribed', campaign=campaign, ip_address=get_client_ip(request))
+        self.create_activity('unsubscribed', campaign=campaign, ip_address=get_client_ip(request))
 
     def send_mail(self, subject, message, from_email=None, **kwargs):
         """Send an email to this subscriber."""

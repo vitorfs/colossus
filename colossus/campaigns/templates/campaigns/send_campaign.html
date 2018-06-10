@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% trans 'Send campaign' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_edit' campaign.pk %}">{{ campaign.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Send campaign' %}</li>
+    </ol>
+  </nav>
+  <div class="jumbotron text-center">
+    <i data-feather="send" class="text-muted" width="64px" height="64px" stroke-width="1"></i>
+    <h1 class="display-">{% trans 'Ready?' %}</h1>
+    <p class="lead">
+      You are about to send the email <strong>{{ campaign.name }}</strong> to
+      {{ campaign.mailing_list.get_active_subscribers.count }} subscribers from the list
+      <strong>{{ campaign.mailing_list.name }}</strong>.
+    </p>
+    <p>
+      <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-success btn-lg" type="submit" role="button">{% trans 'Send campaign' %}</button>
+      </form>
+    </p>
+    <a class="btn btn-link" href="{% url 'campaigns:campaign_edit' campaign.pk %}" role="button">{% trans "Wait, I'm not ready" %}</a>
+  </div>
+{% endblock %}

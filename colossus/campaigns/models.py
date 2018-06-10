@@ -11,6 +11,7 @@ from colossus.lists.models import MailingList
 
 from . import constants
 from .markup import get_template_variables
+from .tasks import send_campaign_task
 
 
 class Campaign(models.Model):
@@ -64,6 +65,19 @@ class Campaign(models.Model):
                 self.__cached_email = self.emails.order_by('id').first()
         return self.__cached_email
 
+    def send(self):
+        send_campaign_task.delay(self.pk)
+        self.send_date = timezone.now()
+        self.status = constants.SENT
+        self.save()
+
+    def can_send(self):
+        for email in self.emails.all():
+            if not email.can_send():
+                return False
+        else:
+            return True
+
 
 class Email(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -116,6 +130,14 @@ class Email(models.Model):
             _checklist['unsub'] = ('unsub' in html_variables and 'unsub' in text_variables)
             _checklist['plaintext'] = (self.content_text != '')
         return _checklist
+
+    def can_send(self):
+        checklist = self.checklist()
+        for value in checklist.values():
+            if not value:
+                return False
+        else:
+            return True
 
     def render(self, template_string, context_dict):
         template = Template(template_string)

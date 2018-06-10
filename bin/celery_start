@@ -1,0 +1,4 @@
+#!/bin/bash
+
+celery worker -A colossus --loglevel=INFO
+

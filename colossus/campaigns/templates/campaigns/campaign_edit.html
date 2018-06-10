@@ -140,9 +140,14 @@
 
     </ul>
     <div class="card-footer">
-      <a href="" class="btn btn-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Send campaign' %}</a>
-      <a href="" class="btn btn-outline-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Schedule' %}</a>
-      <a href="" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
+      {% if campaign.can_send %}
+        <a href="{% url 'campaigns:send_campaign' campaign.pk %}" class="btn btn-primary" role="button">{% trans 'Send campaign' %}</a>
+        <a href="" class="btn btn-outline-primary" role="button">{% trans 'Schedule' %}</a>
+      {% else %}
+        <a href="#" class="btn btn-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Send campaign' %}</a>
+        <a href="#" class="btn btn-outline-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Schedule' %}</a>
+      {% endif %}
+      <a href="{% url 'campaigns:campaigns' %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
     </div>
   </div>
 

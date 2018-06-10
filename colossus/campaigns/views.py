@@ -1,14 +1,14 @@
-from smtplib import SMTPException
-
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView, View
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 
+from .api import get_test_email_context
 from .models import Campaign, Email
 from .mixins import CampaignMixin
 from .forms import DesignEmailForm, PlainTextEmailForm, CampaignTestEmailForm
+from .tasks import send_campaign_task
 
 
 class CampaignListView(CampaignMixin, ListView):
@@ -92,11 +92,7 @@ def campaign_test_email(request, pk):
     if request.method == 'POST':
         form = CampaignTestEmailForm(request.POST)
         if form.is_valid():
-            try:
-                form.send(campaign)
-            except SMTPException as err:
-                # log
-                pass
+            form.send(campaign.email)
             return redirect(campaign.get_absolute_url())
     else:
         form = CampaignTestEmailForm()
@@ -106,12 +102,31 @@ def campaign_test_email(request, pk):
         'form': form
     })
 
+
 def campaign_preview_email(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     if request.method == 'POST':
         campaign.email.content = request.POST.get('content')
-    html = campaign.email.render_html(subscriber=None)
+    test_context_dict = get_test_email_context()
+    html = campaign.email.render_html(test_context_dict)
     if 'application/json' in request.META.get('HTTP_ACCEPT'):
         return JsonResponse({'html': html})
     else:
         return HttpResponse(html)
+
+
+class SendCampaignView(CampaignMixin, View):
+    def get(self, request, pk):
+        campaign = get_object_or_404(Campaign, pk=pk)
+        return render(request, 'campaigns/send_campaign.html', {'campaign': campaign})
+
+    def post(self, request, pk):
+        campaign = get_object_or_404(Campaign, pk=pk)
+        campaign.send()
+        return redirect('campaigns:send_campaign_complete', pk=pk)
+
+
+class SendCampaignCompleteView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/send_campaign_done.html'

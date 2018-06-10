@@ -32,6 +32,6 @@ class CampaignTestEmailForm(forms.Form):
     class Meta:
         fields = ('email',)
 
-    def send(self, campaign):
-        email_address = self.cleaned_data.get('email')
-        send_campaign_email_test(campaign.email, email_address)
+    def send(self, email):
+        recipient_email = self.cleaned_data.get('email')
+        send_campaign_email_test(email, recipient_email)

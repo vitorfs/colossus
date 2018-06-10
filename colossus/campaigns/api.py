@@ -5,6 +5,14 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 
+def get_test_email_context():
+    context = {
+        'name': '<< Test Name >>',
+        'unsub': '#'
+    }
+    return context
+
+
 def send_campaign_email(email, context, to, is_test=False):
     if isinstance(to, str):
         to = [to,]
@@ -46,10 +54,7 @@ def send_campaign_email_subscriber(email, subscriber):
 
 
 def send_campaign_email_test(email, recipient_list):
-    context = {
-        'name': '<< Test Name >>',
-        'unsub': '#'
-    }
+    context = get_test_email_context()
     return send_campaign_email(email, context, recipient_list, is_test=True)
 
 
