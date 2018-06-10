@@ -9,6 +9,7 @@ from .models import Campaign, Email
 from .mixins import CampaignMixin
 from .forms import DesignEmailForm, PlainTextEmailForm, CampaignTestEmailForm
 from .tasks import send_campaign_task
+from . import constants
 
 
 class CampaignListView(CampaignMixin, ListView):
@@ -115,15 +116,20 @@ def campaign_preview_email(request, pk):
         return HttpResponse(html)
 
 
-class SendCampaignView(CampaignMixin, View):
-    def get(self, request, pk):
-        campaign = get_object_or_404(Campaign, pk=pk)
-        return render(request, 'campaigns/send_campaign.html', {'campaign': campaign})
+def send_campaign(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
 
-    def post(self, request, pk):
-        campaign = get_object_or_404(Campaign, pk=pk)
+    if campaign.status == constants.SENT or not campaign.can_send():
+        return redirect(campaign.get_absolute_url())
+
+    if request.method == 'POST':
         campaign.send()
         return redirect('campaigns:send_campaign_complete', pk=pk)
+
+    return render(request, 'campaigns/send_campaign.html', {
+        'menu': 'campaign',
+        'campaign': campaign
+    })
 
 
 class SendCampaignCompleteView(CampaignMixin, DetailView):
