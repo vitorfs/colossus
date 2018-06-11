@@ -43,7 +43,7 @@ def subscribe(request, mailing_list_uuid):
             return redirect('subscribers:confirm_subscription', mailing_list_uuid=mailing_list_uuid)
     else:
         form = SubscribeForm(mailing_list=mailing_list)
-    return render(request, 'subscribers/subscription_form.html', {
+    return render(request, 'subscribers/subscribe_form.html', {
         'mailing_list': mailing_list,
         'form': form
     })

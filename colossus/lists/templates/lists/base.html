@@ -32,8 +32,13 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if submenu == 'signup' %} active{% endif %}" href="{% url 'lists:signup_forms' mailing_list.pk %}">
+          <a class="nav-link{% if submenu == 'forms' %} active{% endif %}" href="{% url 'lists:signup_forms' mailing_list.pk %}">
             {% trans 'Subscription Forms' %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if submenu == 'settings' %} active{% endif %}" href="{% url 'lists:settings' mailing_list.pk %}">
+            {% trans 'Settings' %}
           </a>
         </li>
       </ul>

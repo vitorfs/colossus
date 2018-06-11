@@ -93,8 +93,24 @@ class ImportSubscribersView(MailingListMixin, FormView):
 
 
 class SignupFormsView(MailingListMixin, TemplateView):
-    template_name = 'lists/signup_forms.html'
+    template_name = 'lists/subscription_forms.html'
 
     def get_context_data(self, **kwargs):
-        kwargs['submenu'] = 'signup'
+        kwargs['submenu'] = 'forms'
         return super().get_context_data(**kwargs)
+
+
+class MailingListSettingsView(UpdateView):
+    model = MailingList
+    fields = ('name', 'slug', 'website_url', 'campaign_default_from_name', 'campaign_default_from_email',
+              'campaign_default_email_subject', 'enable_recaptcha', )
+    context_object_name = 'mailing_list'
+    template_name = 'lists/settings.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['menu'] = 'lists'
+        kwargs['submenu'] = 'settings'
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return reverse('lists:settings', kwargs={'pk': self.kwargs.get('pk')})
