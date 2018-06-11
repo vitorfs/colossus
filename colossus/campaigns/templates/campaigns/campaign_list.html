@@ -4,80 +4,90 @@
 
 {% block title %}{% trans 'Campaigns' %}{% endblock %}
 
-{% block content %}
+{% block main %}
+<div class="container-fluid">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item active" aria-current="page">{% trans 'Campaigns' %}</li>
     </ol>
   </nav>
-  <div class="card mb-3">
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">{% trans 'Campaigns' %}</h2>
-        <a href="{% url 'campaigns:campaign_add' %}" class="btn btn-primary" role="button">{% trans 'Create campaign' %}</a>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">{% trans 'Campaigns' %}</h2>
+    <a href="{% url 'campaigns:campaign_add' %}" class="btn btn-primary" role="button">{% trans 'Create campaign' %}</a>
+  </div>
+  <div class="row">
+    <div class="col-3">
+      <div class="list-group">
+        <a href="" class="list-group-item list-group-item-action"><i data-feather="clock" width="1rem" height="1rem" class="align-middle"></i> Recent</a>
+        <a href="" class="list-group-item list-group-item-action">Ongoing</a>
+        <a href="" class="list-group-item list-group-item-action">Draft</a>
+        <a href="" class="list-group-item list-group-item-action">Completed</a>
       </div>
     </div>
-    <div class="list-group list-group-flush">
-      <div class="list-group-item">
-        <div class="row">
-          <div class="col-6">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search campaigns" aria-label="Search campaigns" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-          </div>
-        </div>
-      </div>
-    </div>
-    <table class="table table-striped mb-0">
-      <thead class="thead-light">
-        <tr>
-          <th>{% trans 'Campaign' %}</th>
-          <th style="width:15%;">{% trans 'Status' %}</th>
-          <th style="width:15%;">{% trans 'Opens' %}</th>
-          <th style="width:15%;">{% trans 'Clicks' %}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for campaign in campaigns %}
-          <tr>
-            <td class="align-middle">
-              <div class="d-flex align-items-center">
-                {% if campaign.campaign_type == 1 %}
-                <i data-feather="mail" class="text-muted mr-3"></i>
-                {% elif campaign.campaign_type == 2 %}
-                <i data-feather="repeat" class="text-muted mr-3"></i>
-                {% elif campaign.campaign_type == 3 %}
-                <i data-feather="layers" class="text-muted mr-3"></i>
-                {% endif %}
-                <div>
-                  <a class="lead d-block" href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a>
-                  <small class="d-block">{{ campaign.get_campaign_type_display }} ・ {{ campaign.mailing_list.name }}</small>
-                  <small class="d-block text-muted">Edited <strong>{{ campaign.update_date }}</strong></small>
+    <div class="col-9">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search campaigns" aria-label="Search campaigns" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
                 </div>
               </div>
-            </td>
-            <td class="align-middle">{{ campaign|campaign_status_badge }}</td>
-            <td class="align-middle">0%</td>
-            <td class="align-middle">0%</td>
-            <td class="align-middle text-right">
-              <a href="" class="btn btn-outline-primary">Edit</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% if is_paginated %}
-    <div class="card-footer">
-      <nav aria-label="{% trans 'Campaigns listing pages' %}">
-        {% include 'includes/paginator.html' %}
-      </nav>
+            </div>
+            <div class="col-6">
+            </div>
+          </div>
+        </div>
+        <table class="table table-striped mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>{% trans 'Campaign' %}</th>
+              <th style="width:15%;">{% trans 'Status' %}</th>
+              <th style="width:15%;">{% trans 'Opens' %}</th>
+              <th style="width:15%;">{% trans 'Clicks' %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for campaign in campaigns %}
+              <tr>
+                <td class="align-middle">
+                  <div class="d-flex align-items-center">
+                    {% if campaign.campaign_type == 1 %}
+                    <i data-feather="mail" class="text-muted mr-3"></i>
+                    {% elif campaign.campaign_type == 2 %}
+                    <i data-feather="repeat" class="text-muted mr-3"></i>
+                    {% elif campaign.campaign_type == 3 %}
+                    <i data-feather="layers" class="text-muted mr-3"></i>
+                    {% endif %}
+                    <div>
+                      <a class="lead d-block" href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a>
+                      <small class="d-block">{{ campaign.get_campaign_type_display }} ・ {{ campaign.mailing_list.name }}</small>
+                      <small class="d-block text-muted">Edited <strong>{{ campaign.update_date }}</strong></small>
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle">{{ campaign|campaign_status_badge }}</td>
+                <td class="align-middle">0%</td>
+                <td class="align-middle">0%</td>
+                <td class="align-middle text-right">
+                  <a href="" class="btn btn-outline-primary">Edit</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% if is_paginated %}
+        <div class="card-footer">
+          <nav aria-label="{% trans 'Campaigns listing pages' %}">
+            {% include 'includes/paginator.html' %}
+          </nav>
+        </div>
+      {% endif %}
+      </div>
     </div>
-  {% endif %}
   </div>
+</div>
 {% endblock %}

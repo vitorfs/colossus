@@ -150,6 +150,8 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+SERVER_EMAIL = config('SERVER_EMAIL', default='root@localhost')
+
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
 
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
@@ -166,11 +168,6 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 
 
 '''
-    First-Party Apps Settings
-'''
-
-
-'''
     Third-Party Apps Settings
 '''
 
@@ -181,3 +178,8 @@ DEBUG_TOOLBAR_CONFIG = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 CELERY_BROKER_URL = 'amqp://localhost'
+
+
+'''
+    First-Party Apps Settings
+'''
