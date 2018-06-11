@@ -9,6 +9,7 @@
 
 {% block innercontent %}
   <div class="card-body">
+    <p>List ID: {{ mailing_list.uuid }}</p>
     <form method="post">
       {% csrf_token %}
       {{ form|crispy }}

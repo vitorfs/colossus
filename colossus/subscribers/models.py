@@ -13,6 +13,7 @@ from colossus.lists.models import MailingList
 from colossus.utils import get_client_ip
 
 from . import constants
+from .activities import ACTIVITIES_RENDERER
 
 
 class Subscriber(models.Model):
@@ -108,26 +109,8 @@ class Activity(models.Model):
         return self.__cached_text
 
     def render_text(self):
-        text = ''
-        if self.activity_type == 'subscribed':
-            text = '''
-            <div class="jumbotron text-center">
-                <i data-feather="user-plus" stroke-width="1" class="text-muted" height="64px" width="64px"></i>
-                <h4>Subscribed to the List %s</h4>
-                <p class="text-muted mb-0">on %s</p>
-            </div>
-            ''' % (self.subscriber.mailing_list.name, self.date.strftime('%b %d, %Y'))
-        elif self.activity_type == 'unsubscribed':
-            if self.campaign is not None:
-                url = self.campaign.get_absolute_url()
-                name = self.campaign.name
-                text = '<strong>Unsubscribed</strong> via <a href="%s">%s</a>.' % (url, name)
-            else:
-                text = '<strong>Unsubscribed</strong>.'
-        elif self.activity_type == 'open':
-            url = self.email.campaign.get_absolute_url()
-            name = self.email.campaign.name
-            text = '<strong>Opened</strong> the email <a href="%s">%s</a>.' % (url, name)
-        else:
-            text = self.activity_type
+        text = ACTIVITIES_RENDERER[self.activity_type](self)
         return mark_safe(text)
+
+    def get_formatted_date(self):
+        return self.date.strftime('%b %d, %Y %H:%M')

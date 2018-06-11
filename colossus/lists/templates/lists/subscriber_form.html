@@ -47,7 +47,7 @@
       <div class="card-header">{% trans 'Activities' %}</div>
       <ul class="list-group list-group-flush">
         {% for activity in object.get_activities %}
-          <li class="list-group-item">{{ activity.date }} - {{ activity.text }}</li>
+          <li class="list-group-item">{{ activity.text }}</li>
         {% endfor %}
       </ul>
     </div>
