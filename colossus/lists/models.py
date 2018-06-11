@@ -15,6 +15,7 @@ class MailingList(models.Model):
     open_rate = models.FloatField(_('opens'), default=0.0)
     click_rate = models.FloatField(_('clicks'), default=0.0)
     date_created = models.DateTimeField(_('created'), auto_now_add=True)
+    contact_email_address = models.EmailField(_('contact email address'), blank=True)
     website_url = models.URLField(_('website URL'), blank=True, help_text=_('Where did people opt in to this list?'))
     campaign_default_from_name = models.CharField(_('default from name'), max_length=100, blank=True)
     campaign_default_from_email = models.EmailField(_('default from email address'), blank=True)

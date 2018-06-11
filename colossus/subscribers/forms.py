@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
 from django.template import loader
 from django.utils import timezone
@@ -49,15 +50,14 @@ class SubscribeForm(forms.ModelForm):
 
         token = subscriber.tokens.create(description='confirm_subscription')
 
-        site_name = self.mailing_list.name
-        domain = '127.0.0.1:8000'
+        current_site = get_current_site(request)
         context = {
             'mailing_list': self.mailing_list,
             'token': token,
-            'site_name': site_name,
-            'domain': domain,
+            'site_name': current_site.name,
+            'domain': current_site.domain,
             'protocol': 'https' if request.is_secure() else 'http',
-            'contact_email': 'vitor@simpleisbetterthancomplex.com'
+            'contact_email': self.mailing_list.contact_email_address
 
         }
 

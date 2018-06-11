@@ -127,8 +127,8 @@ class SignupFormsView(MailingListMixin, TemplateView):
 @method_decorator(login_required, name='dispatch')
 class MailingListSettingsView(UpdateView):
     model = MailingList
-    fields = ('name', 'slug', 'website_url', 'campaign_default_from_name', 'campaign_default_from_email',
-              'campaign_default_email_subject', 'enable_recaptcha', )
+    fields = ('name', 'slug', 'website_url', 'contact_email_address', 'campaign_default_from_name',
+              'campaign_default_from_email', 'campaign_default_email_subject', 'enable_recaptcha', )
     context_object_name = 'mailing_list'
     template_name = 'lists/settings.html'
 
