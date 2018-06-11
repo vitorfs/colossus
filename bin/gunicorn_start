@@ -1,0 +1,25 @@
+#!/bin/bash
+
+NAME="colossus"
+DIR=/home/colossus/colossus
+USER=colossus
+GROUP=colossus
+WORKERS=3
+BIND=unix:/home/colossus/run/gunicorn.sock
+DJANGO_SETTINGS_MODULE=colossus.settings
+DJANGO_WSGI_MODULE=colossus.wsgi
+LOG_LEVEL=error
+
+source /home/colossus/venv/bin/activate
+
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DIR:$PYTHONPATH
+
+exec /home/colossus/venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
+  --name $NAME \
+  --workers $WORKERS \
+  --user=$USER \
+  --group=$GROUP \
+  --bind=$BIND \
+  --log-level=$LOG_LEVEL \
+  --log-file=-
