@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Settings' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Settings' %}</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-header">
+          {% trans 'Application settings' %}
+        </div>
+        <nav class="list-group list-group-flush">
+          <a href="" class="list-group-item list-group-item-action active">Site domain</a>
+        </nav>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <div class="card-body">
+          {% block settingscontent %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

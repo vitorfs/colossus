@@ -1,0 +1,12 @@
+{% extends 'core/settings.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block settingscontent %}
+  <h2 class="card-title">{% trans 'Site domain' %}</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+  </form>
+{% endblock %}

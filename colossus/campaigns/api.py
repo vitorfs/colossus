@@ -1,6 +1,7 @@
 from smtplib import SMTPException
 
 from django.core.mail import EmailMultiAlternatives, get_connection
+from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -43,13 +44,17 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
 
 
 def send_campaign_email_subscriber(email, subscriber, connection=None):
+    site = get_current_site(request=None)  # get site based on SITE_ID
+    path = reverse('subscribers:unsubscribe', kwargs={
+        'mailing_list_uuid': email.campaign.mailing_list.uuid,
+        'subscriber_uuid': subscriber.uuid,
+        'campaign_uuid': email.campaign.uuid
+    })
+    protocol = 'http'
+    unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, path)
     context = {
         'name': subscriber.name,
-        'unsub': reverse('subscribers:unsubscribe', kwargs={
-            'mailing_list_uuid': email.campaign.mailing_list.uuid,
-            'subscriber_uuid': subscriber.uuid,
-            'campaign_uuid': email.campaign.uuid
-        })
+        'unsub': unsubscribe_absolute_url
     }
     return send_campaign_email(email, context, subscriber.get_email(), connection)
 
