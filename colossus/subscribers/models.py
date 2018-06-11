@@ -3,11 +3,9 @@ import uuid
 from django.core.mail import send_mail
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models, transaction
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
 
 from colossus.campaigns.models import Campaign, Email, Link
 from colossus.core.models import Token
@@ -30,7 +28,12 @@ class Subscriber(models.Model):
     optin_date = models.DateTimeField(_('opt-in date'), default=timezone.now)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
     confirm_date = models.DateTimeField(_('confirm date'), null=True, blank=True)
-    last_seen_ip_address = models.GenericIPAddressField(_('last seen IP address'), unpack_ipv4=True, blank=True, null=True)
+    last_seen_ip_address = models.GenericIPAddressField(
+        _('last seen IP address'),
+        unpack_ipv4=True,
+        blank=True,
+        null=True
+    )
     last_seen_date = models.DateTimeField(_('last seen date'), null=True, blank=True)
     tokens = GenericRelation(Token)
 

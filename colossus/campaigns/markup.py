@@ -1,5 +1,4 @@
 from django.template.base import VariableNode
-from django.template.engine import Engine
 from django.template.loader_tags import ExtendsNode
 
 from bs4 import BeautifulSoup

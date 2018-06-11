@@ -15,5 +15,7 @@ def campaign_status_badge(campaign):
         constants.DRAFT: 'badge-secondary',
         constants.TRASH: 'badge-danger',
     }
-    html = '<span class="badge %s badge-pill">%s</span>' % (css_classes[campaign.status], campaign.get_status_display())
+    badge_class = css_classes[campaign.status]
+    badge_text = campaign.get_status_display()
+    html = '<span class="badge %s badge-pill">%s</span>' % (badge_class, badge_text)
     return mark_safe(html)

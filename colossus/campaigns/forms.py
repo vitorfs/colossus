@@ -1,6 +1,5 @@
 from django import forms
-from django.core.mail import send_mail
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .api import send_campaign_email_test
 from .markup import get_plain_text_from_html

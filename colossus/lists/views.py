@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
 
@@ -7,7 +7,7 @@ from colossus.subscribers import constants as subscribers_constants
 
 from .mixins import MailingListMixin
 from .models import MailingList
-from .forms import NewSubscriber, ImportSubscribersForm
+from .forms import ImportSubscribersForm
 
 
 class MailingListListView(ListView):

@@ -11,4 +11,5 @@ def send_campaign_task(campaign_id):
     Campaign = apps.get_model('campaigns', 'Campaign')
     campaign = Campaign.objects.get(pk=campaign_id)
     send_campaign(campaign)
-    mail_managers('Mailing campaign has been sent', 'Your campaign "%s" is on its way to your subscribers!' % campaign.email.subject)
+    mail_managers('Mailing campaign has been sent',
+                  'Your campaign "%s" is on its way to your subscribers!' % campaign.email.subject)

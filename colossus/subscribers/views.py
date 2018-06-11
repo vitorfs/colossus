@@ -1,11 +1,10 @@
 import base64
 
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_GET
-from django.views.generic import View, FormView
+from django.views.decorators.http import require_GET
+from django.views.generic import View
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
 
 from colossus.campaigns.models import Campaign, Email, Link
 from colossus.core.models import Token
@@ -59,7 +58,7 @@ def confirm_subscription(request, mailing_list_uuid):
 @require_GET
 def confirm_double_optin_token(request, mailing_list_uuid, token):
     try:
-        mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
+        MailingList.objects.get(uuid=mailing_list_uuid)
     except MailingList.DoesNotExist:
         return HttpResponseBadRequest('The requested list does not exist.')
 
@@ -90,7 +89,7 @@ def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
 
     try:
-        sub = Subscriber.objects.get(uuid=subscriber_uuid)
+        sub = Subscriber.objects.get(uuid=subscriber_uuid, mailing_list=mailing_list)
     except Subscriber.DoesNotExist:
         return redirect('subscribers:unsubscribe_manual', mailing_list_uuid=mailing_list_uuid)
 
@@ -118,7 +117,7 @@ def track_open(request, email_uuid, subscriber_uuid):
     except Exception as e:
         pass  # fail silently
 
-    pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
+    pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')  # noqa
     return HttpResponse(pixel, content_type='image/png')
 
 

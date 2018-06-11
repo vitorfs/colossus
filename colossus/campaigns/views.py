@@ -1,14 +1,12 @@
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView, View
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse
-from django.template.loader import render_to_string
 
 from .api import get_test_email_context
 from .models import Campaign, Email
 from .mixins import CampaignMixin
 from .forms import DesignEmailForm, PlainTextEmailForm, CampaignTestEmailForm
-from .tasks import send_campaign_task
 from . import constants
 
 

@@ -1,6 +1,6 @@
 from smtplib import SMTPException
 
-from django.core.mail import send_mail, EmailMultiAlternatives, get_connection
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -13,9 +13,9 @@ def get_test_email_context():
     return context
 
 
-def send_campaign_email(email, context, to, is_test=False):
+def send_campaign_email(email, context, to, connection=None, is_test=False):
     if isinstance(to, str):
-        to = [to,]
+        to = [to, ]
 
     if is_test:
         subject = '[%s] %s' % (_('Test'), email.subject)
@@ -30,6 +30,7 @@ def send_campaign_email(email, context, to, is_test=False):
         body=plain_text_message,
         from_email=email.get_from(),
         to=to,
+        connection=connection,
     )
     message.attach_alternative(rich_text_message, 'text/html')
 
@@ -41,7 +42,7 @@ def send_campaign_email(email, context, to, is_test=False):
         return False
 
 
-def send_campaign_email_subscriber(email, subscriber):
+def send_campaign_email_subscriber(email, subscriber, connection=None):
     context = {
         'name': subscriber.name,
         'unsub': reverse('subscribers:unsubscribe', kwargs={
@@ -50,7 +51,7 @@ def send_campaign_email_subscriber(email, subscriber):
             'campaign_uuid': email.campaign.uuid
         })
     }
-    return send_campaign_email(email, context, subscriber.get_email())
+    return send_campaign_email(email, context, subscriber.get_email(), connection)
 
 
 def send_campaign_email_test(email, recipient_list):
@@ -61,6 +62,6 @@ def send_campaign_email_test(email, recipient_list):
 def send_campaign(campaign):
     with get_connection() as connection:
         for subscriber in campaign.mailing_list.get_active_subscribers():
-            sent = send_campaign_email_subscriber(campaign.email, subscriber)
+            sent = send_campaign_email_subscriber(campaign.email, subscriber, connection)
             if sent:
                 subscriber.create_activity('sent', email=campaign.email)

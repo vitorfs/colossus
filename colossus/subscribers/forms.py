@@ -1,11 +1,10 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext
 from django.utils import timezone
 from django.template import loader
 
-from colossus.core.models import Token
 from colossus.utils import get_client_ip
 
 from .models import Subscriber
@@ -84,7 +83,11 @@ class UnsubscribeForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
-        is_subscribed = Subscriber.objects.filter(email__iexact=email, mailing_list=self.mailing_list, status=constants.SUBSCRIBED)
+        is_subscribed = Subscriber.objects.filter(
+            email__iexact=email,
+            mailing_list=self.mailing_list,
+            status=constants.SUBSCRIBED
+        )
         if not is_subscribed:
             email_validation_error = ValidationError(
                 gettext('The email address "%(email)s" is not subscribed to this list.'),
