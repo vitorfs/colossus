@@ -1,15 +1,21 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, FormView, TemplateView
+from django.utils.decorators import method_decorator
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
+    UpdateView,
+)
 
-from colossus.subscribers.models import Subscriber
 from colossus.subscribers import constants as subscribers_constants
+from colossus.subscribers.models import Subscriber
 
+from .forms import ImportSubscribersForm
 from .mixins import MailingListMixin
 from .models import MailingList
-from .forms import ImportSubscribersForm
 
 
+@method_decorator(login_required, name='dispatch')
 class MailingListListView(ListView):
     model = MailingList
     context_object_name = 'mailing_lists'
@@ -19,6 +25,7 @@ class MailingListListView(ListView):
         return super().get_context_data(**kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class MailingListCreateView(CreateView):
     model = MailingList
     fields = ('name',)
@@ -28,6 +35,7 @@ class MailingListCreateView(CreateView):
         return super().get_context_data(**kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class MailingListDetailView(DetailView):
     model = MailingList
     context_object_name = 'mailing_list'
@@ -38,6 +46,7 @@ class MailingListDetailView(DetailView):
         return super().get_context_data(**kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class SubscriberListView(MailingListMixin, ListView):
     model = Subscriber
     context_object_name = 'subscribers'
@@ -60,6 +69,7 @@ class SubscriberListView(MailingListMixin, ListView):
         return queryset
 
 
+@method_decorator(login_required, name='dispatch')
 class SubscriberCreateView(MailingListMixin, CreateView):
     model = Subscriber
     fields = ('email', 'name')
@@ -73,6 +83,7 @@ class SubscriberCreateView(MailingListMixin, CreateView):
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
 
 
+@method_decorator(login_required, name='dispatch')
 class SubscriberUpdateView(MailingListMixin, UpdateView):
     model = Subscriber
     fields = '__all__'
@@ -83,6 +94,18 @@ class SubscriberUpdateView(MailingListMixin, UpdateView):
         return reverse('lists:subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
+@method_decorator(login_required, name='dispatch')
+class SubscriberDeleteView(MailingListMixin, DeleteView):
+    model = Subscriber
+    pk_url_kwarg = 'subscriber_pk'
+    context_object_name = 'subscriber'
+    template_name = 'lists/subscriber_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('lists:subscribers', kwargs={'pk': self.kwargs.get('pk')})
+
+
+@method_decorator(login_required, name='dispatch')
 class ImportSubscribersView(MailingListMixin, FormView):
     form_class = ImportSubscribersForm
     template_name = 'lists/import_subscribers_form.html'
@@ -92,6 +115,7 @@ class ImportSubscribersView(MailingListMixin, FormView):
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
 
 
+@method_decorator(login_required, name='dispatch')
 class SignupFormsView(MailingListMixin, TemplateView):
     template_name = 'lists/subscription_forms.html'
 
@@ -100,6 +124,7 @@ class SignupFormsView(MailingListMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class MailingListSettingsView(UpdateView):
     model = MailingList
     fields = ('name', 'slug', 'website_url', 'campaign_default_from_name', 'campaign_default_from_email',

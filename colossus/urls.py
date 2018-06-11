@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.urls import path, include
+from django.urls import include, path
 
 from colossus.core import views as core_views
-
 
 urlpatterns = [
     path('', include('colossus.subscribers.urls', namespace='subscribers')),

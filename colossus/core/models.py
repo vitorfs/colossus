@@ -1,8 +1,8 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
+from django.utils.translation import gettext_lazy as _
 
 
 def default_token():

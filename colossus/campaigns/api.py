@@ -1,7 +1,7 @@
 from smtplib import SMTPException
 
-from django.core.mail import EmailMultiAlternatives, get_connection
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.urls import reverse
 from django.utils.translation import gettext as _
 

@@ -1,10 +1,12 @@
 import base64
 
+from django.http import (
+    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
+)
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.views.generic import View
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import render, redirect, get_object_or_404
 
 from colossus.campaigns.models import Campaign, Email, Link
 from colossus.core.models import Token

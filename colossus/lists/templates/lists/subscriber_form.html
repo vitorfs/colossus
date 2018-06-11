@@ -10,7 +10,7 @@
       <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
         {% if object %}
-          {% trans 'Edit subscriber' %}
+          {{ object.email }}
         {% else %}
           {% trans 'New subscriber' %}
         {% endif %}
@@ -35,6 +35,9 @@
           {% endif %}
         </button>
         <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% if object %}
+          <a href="{% url 'lists:delete_subscriber' mailing_list.pk object.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Delete' %}</a>
+        {% endif %}
       </form>
     </div>
   </div>

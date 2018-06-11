@@ -1,6 +1,5 @@
 from django.utils.translation import gettext_lazy as _
 
-
 REGULAR = 1
 AUTOMATED = 2
 AB_TEST = 3

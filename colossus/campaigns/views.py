@@ -1,26 +1,31 @@
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.http import JsonResponse, HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from .api import get_test_email_context
-from .models import Campaign, Email
-from .mixins import CampaignMixin
-from .forms import DesignEmailForm, PlainTextEmailForm, CampaignTestEmailForm
 from . import constants
+from .api import get_test_email_context
+from .forms import CampaignTestEmailForm, DesignEmailForm, PlainTextEmailForm
+from .mixins import CampaignMixin
+from .models import Campaign, Email
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignListView(CampaignMixin, ListView):
     model = Campaign
     context_object_name = 'campaigns'
     paginate_by = 25
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignCreateView(CampaignMixin, CreateView):
     model = Campaign
     fields = ('campaign_type', 'name',)
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignEditView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
@@ -33,11 +38,13 @@ class CampaignEditView(CampaignMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignDetailView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignEditRecipientsView(CampaignMixin, UpdateView):
     model = Campaign
     fields = ('mailing_list',)
@@ -65,27 +72,32 @@ class AbstractCampaignEmailUpdateView(CampaignMixin, UpdateView):
         return reverse('campaigns:campaign_edit', kwargs=self.kwargs)
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignEditFromView(AbstractCampaignEmailUpdateView):
     title = 'From'
     fields = ('from_name', 'from_email',)
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
     title = 'Subject'
     fields = ('subject', 'preview',)
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignEditContentView(AbstractCampaignEmailUpdateView):
     title = 'Design Email'
     form_class = DesignEmailForm
     template_name = 'campaigns/design_email_form.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
     title = 'Edit Plain-Text Email'
     form_class = PlainTextEmailForm
 
 
+@login_required
 def campaign_test_email(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     if request.method == 'POST':
@@ -102,6 +114,7 @@ def campaign_test_email(request, pk):
     })
 
 
+@login_required
 def campaign_preview_email(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     if request.method == 'POST':
@@ -114,6 +127,7 @@ def campaign_preview_email(request, pk):
         return HttpResponse(html)
 
 
+@login_required
 def send_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
 
@@ -130,6 +144,7 @@ def send_campaign(request, pk):
     })
 
 
+@method_decorator(login_required, name='dispatch')
 class SendCampaignCompleteView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'

@@ -1,11 +1,11 @@
 import uuid
 
-from django.core.mail import send_mail
 from django.contrib.contenttypes.fields import GenericRelation
+from django.core.mail import send_mail
 from django.db import models, transaction
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from colossus.campaigns.models import Campaign, Email, Link
 from colossus.core.models import Token

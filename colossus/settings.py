@@ -3,8 +3,8 @@ import string
 
 from django.contrib.messages import constants as messages_constants
 
-from decouple import config, Csv
 import dj_database_url
+from decouple import Csv, config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -166,6 +166,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 
+LOGIN_REDIRECT_URL = 'campaigns:campaigns'
 
 '''
     Third-Party Apps Settings
