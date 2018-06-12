@@ -10,17 +10,14 @@ import pytz
 from colossus.subscribers import constants as subscribers_constants
 from colossus.subscribers.models import Subscriber
 
-
-class NewSubscriber(forms.ModelForm):
-    class Meta:
-        model = Subscriber
-        fields = ('email', 'name')
+from .models import MailingList
 
 
 class ImportSubscribersForm(forms.Form):
     upload_file = forms.FileField(help_text=_('Supported file type: .csv'))
 
     def import_subscribers(self, request, mailing_list_id):
+        mailing_list = MailingList.objects.get(pk=mailing_list_id)
         upload_file = self.cleaned_data.get('upload_file')
         csvfile = TextIOWrapper(upload_file, encoding=request.encoding)
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
@@ -45,3 +42,4 @@ class ImportSubscribersForm(forms.Form):
             else:
                 continue
         Subscriber.objects.bulk_create(subscribers)
+        mailing_list.update_subscribers_count()
