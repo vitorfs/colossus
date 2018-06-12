@@ -1,10 +1,10 @@
-from collections import OrderedDict
 import datetime
+from collections import OrderedDict
 
 from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
-from django.utils.translation import gettext as _
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from colossus.subscribers.models import Activity
 

@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -6,15 +7,14 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView,
 )
-from django.http import JsonResponse, HttpResponseBadRequest
 
 from colossus.subscribers import constants as subscribers_constants
 from colossus.subscribers.models import Subscriber
 
+from .charts import SubscriptionsSummaryChart
 from .forms import ImportSubscribersForm
 from .mixins import MailingListMixin
 from .models import MailingList
-from .charts import SubscriptionsSummaryChart
 
 
 @method_decorator(login_required, name='dispatch')
