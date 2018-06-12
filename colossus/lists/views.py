@@ -6,6 +6,7 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView,
 )
+from django.http import JsonResponse, HttpResponseBadRequest
 
 from colossus.subscribers import constants as subscribers_constants
 from colossus.subscribers.models import Subscriber
@@ -13,12 +14,14 @@ from colossus.subscribers.models import Subscriber
 from .forms import ImportSubscribersForm
 from .mixins import MailingListMixin
 from .models import MailingList
+from .charts import SubscriptionsSummaryChart
 
 
 @method_decorator(login_required, name='dispatch')
 class MailingListListView(ListView):
     model = MailingList
     context_object_name = 'mailing_lists'
+    ordering = ('name',)
 
     def get_context_data(self, **kwargs):
         kwargs['menu'] = 'lists'
@@ -139,3 +142,13 @@ class MailingListSettingsView(UpdateView):
 
     def get_success_url(self):
         return reverse('lists:settings', kwargs={'pk': self.kwargs.get('pk')})
+
+
+@login_required
+def charts_subscriptions_summary(request, pk):
+    try:
+        mailing_list = MailingList.objects.get(pk=pk)
+        chart = SubscriptionsSummaryChart(mailing_list)
+        return JsonResponse({'chart': chart.get_settings()})
+    except MailingList.DoesNotExist:
+        return JsonResponse(status_code=400)  # bad request status code

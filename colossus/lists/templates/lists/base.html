@@ -7,7 +7,7 @@
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
       {% block innerbreadcrumb %}
         <li class="breadcrumb-item active" aria-current="page">{{ mailing_list.name }}</li>
       {% endblock %}

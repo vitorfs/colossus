@@ -2,35 +2,19 @@
 
 {% load i18n %}
 
-{% block title %}{% trans 'Lists' %}{% endblock %}
+{% block title %}{% trans 'Mailing Lists' %}{% endblock %}
 
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item active" aria-current="page">{% trans 'Lists' %}</li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Mailing Lists' %}</li>
     </ol>
   </nav>
   <div class="card">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">{% trans 'Lists' %}</h2>
+        <h2 class="mb-0">{% trans 'Mailing Lists' %}</h2>
         <a href="{% url 'lists:new_list' %}" class="btn btn-primary" role="button">{% trans 'Create list' %}</a>
-      </div>
-    </div>
-    <div class="list-group list-group-flush">
-      <div class="list-group-item">
-        <div class="row">
-          <div class="col-6">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search lists" aria-label="Search lists" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-          </div>
-        </div>
       </div>
     </div>
     <table class="table table-striped mb-0">

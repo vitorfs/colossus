@@ -9,46 +9,25 @@
 
 {% block innercontent %}
   <div class="card-body">
-    <a href="{% url 'lists:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
-    <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
-  </div>
-  <div class="list-group list-group-flush">
-    <div class="list-group-item">
-      <div class="row">
-        <div class="col-2">
-          <div class="btn-group">
-            <button type="button" class="btn btn-outline-primary align-middle" style="line-height:1">
-              <i data-feather="check-square" width="18px" height="18px" stroke-width="2"></i>
-            </button>
-            <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Delete</a>
-              <a class="dropdown-item" href="#">Unsubscribe</a>
-              <a class="dropdown-item" href="#">Resubscribe</a>
-              <a class="dropdown-item" href="#">Export to CSV</a>
+    <div class="row">
+      <div class="col-6">
+        <a href="{% url 'lists:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
+      </div>
+      <div class="col-6">
+        <form method="get">
+          <div class="input-group">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search subscribers" aria-label="Search subscribers" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              {% if query %}
+                <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">
+                  {% trans 'Clear' %}
+                </a>
+              {% endif %}
+              <button class="btn btn-outline-primary" type="submit">{% trans 'Search' %}</button>
             </div>
           </div>
-        </div>
-        <div class="col-4">
-
-        </div>
-        <div class="col-6">
-          <form method="get">
-            <div class="input-group">
-              <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search subscribers" aria-label="Search subscribers" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                {% if query %}
-                  <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">
-                    {% trans 'Clear' %}
-                  </a>
-                {% endif %}
-                <button class="btn btn-outline-primary" type="submit">{% trans 'Search' %}</button>
-              </div>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -73,57 +52,54 @@
     </tbody>
   </table>
   <div class="card-footer d-flex justify-content-between align-items-center">
-    {% if is_paginated %}
-    <nav aria-label="{% trans 'Subscribers listing pages' %}">
-      <ul class="pagination pagination-sm mb-0">
-        {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">← {% trans 'Previous' %}</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="?page=1">{% trans 'First' %}</a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1">← {% trans 'Previous' %}</a>
-          </li>
+    <div>
+      {% if is_paginated %}
+        <nav aria-label="{% trans 'Subscribers listing pages' %}">
+          <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?{% qs page=page_obj.previous_page_number q=query %}">← {% trans 'Previous' %}</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?{% qs page=1 q=query %}">{% trans 'First' %}</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">← {% trans 'Previous' %}</a>
+              </li>
+            {% endif %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">
+                {% blocktrans trimmed with page_obj.number as current_page and page_obj.paginator.num_pages as total_pages %}
+                  Page {{ current_page }} of {{ total_pages }}
+                {% endblocktrans %}
+              </a>
+            </li>
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?{% qs page=page_obj.paginator.num_pages q=query %}">{% trans 'Last' %}</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?{% qs page=page_obj.next_page_number q=query %}">{% trans 'Next' %} →</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">{% trans 'Next' %} →</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    </div>
+    <div>
+      <small class="text-muted">
+        {% blocktrans trimmed with page_obj.start_index as page_start and page_obj.end_index as page_end and page_obj.paginator.count|intcomma as total %}
+          <strong>{{ page_start }} — {{ page_end }}</strong> of <strong>{{ total }}</strong>
+        {% endblocktrans %}
+        {% if is_filtered %}
+          <a href="{% url 'lists:subscribers' mailing_list.pk %}">({{ mailing_list.subscribers.count }} total)</a>
         {% endif %}
-        <li class="page-item disabled">
-          <a class="page-link" href="#" tabindex="-1">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-          </a>
-        </li>
-        {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% trans 'Last' %}</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="?{% qs page=page_obj.next_page_number q=query %}">{% trans 'Next' %} →</a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1">{% trans 'Next' %} →</a>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-    {% endif %}
-    <small class="text-muted">
-      {% blocktrans trimmed with page_obj.start_index as page_start and page_obj.end_index as page_end and page_obj.paginator.count|intcomma as total %}
-        <strong>{{ page_start }} — {{ page_end }}</strong> of <strong>{{ total }}</strong>
-      {% endblocktrans %}
-    </small>
-    <div class="btn-group dropup">
-      <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        View 100
-      </button>
-      <div class="dropdown-menu dropdown-menu-right">
-        <button class="dropdown-item" type="button">10</button>
-        <button class="dropdown-item" type="button">25</button>
-        <button class="dropdown-item" type="button">50</button>
-        <button class="dropdown-item active" type="button">100</button>
-        <button class="dropdown-item" type="button">250</button>
-      </div>
+      </small>
     </div>
   </div>
 {% endblock %}

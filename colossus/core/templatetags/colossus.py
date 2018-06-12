@@ -20,6 +20,7 @@ def qs(context, **kwargs):
     https://gist.github.com/benbacardi/d6cd0fb8c85e1547c3c60f95f5b2d5e1
     '''
     query = context['request'].GET.copy()
-    for k, v in kwargs.items():
-        query[k] = v
+    for key, value in kwargs.items():
+        if value:
+            query[key] = value
     return query.urlencode()
