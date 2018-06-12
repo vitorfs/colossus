@@ -26,10 +26,6 @@
             {% trans 'Campaigns' %}
             {% if menu == 'campaigns' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
           </a>
-          <a class="nav-item nav-link{% if menu == 'pages' %} active{% endif %}" href="#">
-            {% trans 'Landing Pages' %}
-            {% if menu == 'pages' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-          </a>
           <a class="nav-item nav-link{% if menu == 'lists' %} active{% endif %}" href="{% url 'mailing:lists' %}">
             {% trans 'Mailing Lists' %}
             {% if menu == 'lists' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
