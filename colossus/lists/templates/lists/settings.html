@@ -9,7 +9,10 @@
 
 {% block innercontent %}
   <div class="card-body">
-    <p>List ID: {{ mailing_list.uuid }}</p>
+    <p>
+      List ID: {{ mailing_list.uuid }}
+      <a href="{% url 'subscribers:subscribe' mailing_list.uuid %}">{% trans 'Subscription form' %}</a>
+    </p>
     <form method="post">
       {% csrf_token %}
       {{ form|crispy }}

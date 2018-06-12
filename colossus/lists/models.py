@@ -36,6 +36,10 @@ class MailingList(models.Model):
     def get_active_subscribers(self):
         return self.subscribers.filter(status=subscribers_constants.SUBSCRIBED)
 
+    def update_subscribers_count(self):
+        self.subscribers_count = self.get_active_subscribers().count()
+        self.save()
+
 
 class SubscriptionFormTemplate(models.Model):
     name = models.CharField(_('name'), max_length=100)

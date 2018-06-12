@@ -38,13 +38,25 @@ class Subscriber(models.Model):
     last_seen_date = models.DateTimeField(_('last seen date'), null=True, blank=True)
     tokens = GenericRelation(Token)
 
+    __status = None
+
     class Meta:
         verbose_name = _('subscriber')
         verbose_name_plural = _('subscribers')
         unique_together = (('email', 'mailing_list',),)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__status = self.status
+
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.__status != self.status:
+            self.mailing_list.update_subscribers_count()
+            self.__status = self.status
 
     def get_email(self):
         if self.name:
