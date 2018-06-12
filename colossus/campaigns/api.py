@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 
 def get_test_email_context():
     context = {
+        'uuid': '[SUBSCRIBER_UUID]',
         'name': '<< Test Name >>',
         'unsub': '#'
     }
@@ -53,6 +54,7 @@ def send_campaign_email_subscriber(email, subscriber, connection=None):
     protocol = 'http'
     unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, path)
     context = {
+        'uuid': subscriber.uuid,
         'name': subscriber.name,
         'unsub': unsubscribe_absolute_url
     }
@@ -66,6 +68,7 @@ def send_campaign_email_test(email, recipient_list):
 
 def send_campaign(campaign):
     with get_connection() as connection:
+        campaign.email.enable_tracking()
         for subscriber in campaign.mailing_list.get_active_subscribers():
             sent = send_campaign_email_subscriber(campaign.email, subscriber, connection)
             if sent:

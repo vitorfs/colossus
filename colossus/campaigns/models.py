@@ -5,6 +5,9 @@ from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.sites.shortcuts import get_current_site
+
+from bs4 import BeautifulSoup
 
 from colossus.lists.models import MailingList
 
@@ -150,6 +153,24 @@ class Email(models.Model):
     def render_text(self, context_dict):
         return self.render(self.content_text, context_dict)
 
+    def enable_tracking(self):
+        soup = BeautifulSoup(self.content, 'html5lib')
+        for index, a in enumerate(soup.findAll('a')):
+            href = a.attrs['href']
+            url = href.strip()
+            if url.lower().startswith('http://') or url.lower().startswith('https://'):
+                link, created = Link.objects.get_or_create(email=self, url=url, index=index)
+                current_site = get_current_site(request=None)
+                protocol = 'http'
+                domain = current_site.domain
+                # We cannot use django.urls.reverse here because part of the kwargs
+                # will be processed during the sending campaign (including the `subscriber_uuid`)
+                # With the `{{ uuid }}` we are introducing an extra django template variable
+                # which will be later used to replace with the subscriber's uuid.
+                track_url = '%s://%s/track/click/%s/{{ uuid }}/' % (protocol, domain, link.uuid)
+                a.attrs['href'] = track_url
+        self.content = str(soup)
+
 
 class Link(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -157,6 +178,7 @@ class Link(models.Model):
     url = models.URLField(max_length=2048)
     unique_clicks_count = models.PositiveIntegerField(default=0)
     total_clicks_count = models.PositiveIntegerField(default=0)
+    index = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
         verbose_name = _('link')

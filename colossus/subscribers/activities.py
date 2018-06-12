@@ -59,10 +59,10 @@ ACTIVITIES_RENDERER = {
         a.campaign.get_absolute_url(),
         a.campaign.name
     ),
-    'clicked': lambda a: opened_template % (
+    'clicked': lambda a: clicked_template % (
         a.get_formatted_date(),
         a.link.url,
-        a.campaign.get_absolute_url(),
-        a.campaign.name
+        a.link.email.campaign.get_absolute_url(),
+        a.link.email.campaign.name
     ),
 }
