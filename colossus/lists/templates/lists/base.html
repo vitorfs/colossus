@@ -13,7 +13,6 @@
       {% endblock %}
     </ol>
   </nav>
-  <!--p>UUID: {{ mailing_list.uuid }}</p-->
   <h2 class="mb-3">
     {{ mailing_list.name }}
     <small class="text-muted">{{ mailing_list.get_active_subscribers.count }}</small>
@@ -32,7 +31,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if submenu == 'forms' %} active{% endif %}" href="{% url 'lists:signup_forms' mailing_list.pk %}">
+          <a class="nav-link{% if submenu == 'forms' %} active{% endif %}" href="{% url 'lists:subscription_forms' mailing_list.pk %}">
             {% trans 'Subscription Forms' %}
           </a>
         </li>

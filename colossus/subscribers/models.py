@@ -126,3 +126,27 @@ class Activity(models.Model):
 
     def get_formatted_date(self):
         return self.date.strftime('%b %d, %Y %H:%M')
+
+
+class FormTemplate(models.Model):
+    key = models.PositiveSmallIntegerField(_('key'), choices=constants.KEY_CHOICES)
+    template_type = models.PositiveSmallIntegerField(_('type'), choices=constants.TEMPLATE_TYPE_CHOICES)
+    mailing_list = models.ForeignKey(
+        MailingList,
+        on_delete=models.CASCADE,
+        verbose_name=_('mailing list'),
+        related_name='forms_templates'
+    )
+    workflow = models.PositiveSmallIntegerField(_('workflow'), choices=constants.WORKFLOW_CHOICES)
+    order = models.PositiveSmallIntegerField(_('order'), default=0)
+    redirect_url = models.URLField(_('redirect URL'), blank=True)
+    is_enabled = models.BooleanField(_('is enabled'), default=True)
+    content_html = models.TextField(blank=True)
+    content_text = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = _('form template')
+        verbose_name_plural = _('forms templates')
+
+    def __str__(self):
+        return self.get_key_display()

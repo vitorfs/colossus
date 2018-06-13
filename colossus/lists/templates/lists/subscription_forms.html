@@ -10,24 +10,24 @@
 {% block innercontent %}
   <ul class="list-group list-group-flush">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div class="d-flex justify-content-between align-items-center">
-        <i data-feather="file-text" class="text-muted mr-3"></i>
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <i data-feather="file-text" class="text-muted mr-3" stroke-width="1" width="32px" height="32px"></i>
         <div>
-          <h5 class="mb-1">
-            <a href="#">{% trans 'Subscription forms & emails' %}</a>
-          </h5>
+          <h4 class="mb-1">
+            <a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Subscription forms & emails' %}</a>
+          </h4>
           <p class="text-muted mb-0">{% trans 'Customize subscription forms and response emails.' %}</p>
         </div>
       </div>
-      <a href="#" role="button" class="btn btn-primary">{% trans 'Select' %}</a>
+      <a href="{% url 'lists:forms_editor' mailing_list.pk %}" role="button" class="btn btn-primary">{% trans 'Select' %}</a>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div class="d-flex justify-content-between align-items-center">
-        <i data-feather="code" class="text-muted mr-3"></i>
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <i data-feather="code" class="text-muted mr-3" stroke-width="1" width="32px" height="32px"></i>
         <div>
-          <h5 class="mb-1">
+          <h4 class="mb-1">
             <a href="#">{% trans 'Embedded forms' %}</a>
-          </h5>
+          </h4>
           <p class="text-muted mb-0">{% trans 'Create subscription forms that can be embedded on any site.' %}</p>
         </div>
       </div>

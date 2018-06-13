@@ -17,7 +17,10 @@ urlpatterns = [
             path('<int:subscriber_pk>/edit/', views.SubscriberUpdateView.as_view(), name='edit_subscriber'),
             path('<int:subscriber_pk>/delete/', views.SubscriberDeleteView.as_view(), name='delete_subscriber')
         ])),
-        path('forms/', views.SignupFormsView.as_view(), name='signup_forms'),
+        path('forms/', include([
+            path('', views.SubscriptionFormsView.as_view(), name='subscription_forms'),
+            path('editor/', views.FormsEditorView.as_view(), name='forms_editor'),
+        ])),
         path('settings/', views.MailingListSettingsView.as_view(), name='settings'),
         path('charts/subscriptions-summary/', views.charts_subscriptions_summary, name='charts_subscriptions_summary')
     ])),

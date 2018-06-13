@@ -119,7 +119,7 @@ class ImportSubscribersView(MailingListMixin, FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SignupFormsView(MailingListMixin, TemplateView):
+class SubscriptionFormsView(MailingListMixin, TemplateView):
     template_name = 'lists/subscription_forms.html'
 
     def get_context_data(self, **kwargs):
@@ -152,3 +152,12 @@ def charts_subscriptions_summary(request, pk):
         return JsonResponse({'chart': chart.get_settings()})
     except MailingList.DoesNotExist:
         return JsonResponse(status_code=400)  # bad request status code
+
+
+@method_decorator(login_required, name='dispatch')
+class FormsEditorView(MailingListMixin, TemplateView):
+    template_name = 'lists/base_editor.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['submenu'] = 'forms'
+        return super().get_context_data(**kwargs)
