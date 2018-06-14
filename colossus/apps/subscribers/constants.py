@@ -74,7 +74,7 @@ class Workflows:
     CHOICES = tuple(LABELS.items())
 
 
-class Keys:
+class TemplateKeys:
     """
     Key identifiers of the FormTemplate's instances.
     Constants are dashed-strings because they are also used

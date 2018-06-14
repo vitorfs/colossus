@@ -12,8 +12,8 @@ from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
 from colossus.utils import get_client_ip
 
-from .activities import renderers
-from .constants import ActivityTypes, Keys, Status, TemplateTypes, Workflows
+from .activities import render_activity
+from .constants import ActivityTypes, TemplateKeys, Status
 
 
 class Subscriber(models.Model):
@@ -108,46 +108,45 @@ class Activity(models.Model):
     email = models.ForeignKey(Email, on_delete=models.CASCADE, null=True, blank=True, related_name='activities')
     link = models.ForeignKey(Link, on_delete=models.CASCADE, null=True, blank=True, related_name='activities')
 
-    __cached_text = ''
+    __cached_html = ''
 
     class Meta:
         verbose_name = _('activity')
         verbose_name_plural = _('activities')
 
     @property
-    def text(self):
-        if not self.__cached_text:
-            self.__cached_text = self.render_text()
-        return self.__cached_text
+    def as_html(self):
+        if not self.__cached_html:
+            self.__cached_html = self.render()
+        return self.__cached_html
 
-    def render_text(self):
-        renderer = renderers[self.activity_type]
-        text = renderer(self)
-        return mark_safe(text)
+    def render(self):
+        html = render_activity(self)
+        return mark_safe(html)
 
     def get_formatted_date(self):
         return self.date.strftime('%b %d, %Y %H:%M')
 
 
-class FormTemplate(models.Model):
-    key = models.CharField(_('key'), choices=Keys.CHOICES, max_length=30, db_index=True)
-    #template_type = models.PositiveSmallIntegerField(_('type'), choices=TemplateTypes.CHOICES)
+class SubscriptionFormTemplate(models.Model):
+    key = models.CharField(_('key'), choices=TemplateKeys.CHOICES, max_length=30, db_index=True)
     mailing_list = models.ForeignKey(
         MailingList,
         on_delete=models.CASCADE,
         verbose_name=_('mailing list'),
         related_name='forms_templates'
     )
-    #workflow = models.PositiveSmallIntegerField(_('workflow'), choices=Workflows.CHOICES)
-    order = models.PositiveSmallIntegerField(_('order'), default=0)
     redirect_url = models.URLField(_('redirect URL'), blank=True)
-    is_enabled = models.BooleanField(_('is enabled'), default=True)
-    content_html = models.TextField(blank=True)
-    content_text = models.TextField(blank=True)
+    send_email = models.BooleanField(_('send final confirmation email?'), default=True)
+    from_email = models.EmailField(_('email address'))
+    from_name = models.CharField(_('name'), max_length=100, blank=True)
+    subject = models.CharField(_('subject'), max_length=150, blank=True)
+    content_html = models.TextField(_('content HTML'), blank=True)
+    content_text = models.TextField(_('content plain text'), blank=True)
 
     class Meta:
         verbose_name = _('form template')
-        verbose_name_plural = _('forms templates')
+        verbose_name_plural = _('form templates')
 
     def __str__(self):
         return self.get_key_display()

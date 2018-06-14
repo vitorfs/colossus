@@ -8,8 +8,8 @@ from django.views.generic import (
     UpdateView,
 )
 
-from colossus.apps.subscribers.constants import Status, Keys
-from colossus.apps.subscribers.models import Subscriber, FormTemplate
+from colossus.apps.subscribers.constants import Status, TemplateKeys
+from colossus.apps.subscribers.models import Subscriber, SubscriptionFormTemplate
 
 from .charts import SubscriptionsSummaryChart
 from .forms import ImportSubscribersForm
@@ -160,8 +160,8 @@ class FormsEditorView(MailingListMixin, TemplateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class FormTemplateUpdateView(MailingListMixin, UpdateView):
-    model = FormTemplate
+class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
+    model = SubscriptionFormTemplate
     fields = '__all__'
     template_name = 'lists/edit_form_template.html'
     context_object_name = 'form_template'
@@ -169,7 +169,7 @@ class FormTemplateUpdateView(MailingListMixin, UpdateView):
     def get_object(self):
         mailing_list_id = self.kwargs.get('pk')
         key = self.kwargs.get('form_key')
-        if key not in Keys.LABELS.keys():
+        if key not in TemplateKeys.LABELS.keys():
             raise Http404
         form_template, created = FormTemplate.objects.get_or_create(key=key, mailing_list_id=mailing_list_id)
         return form_template
