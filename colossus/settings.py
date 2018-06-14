@@ -32,11 +32,11 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'crispy_forms',
 
-    'colossus.campaigns',
-    'colossus.core',
-    'colossus.emailtemplates',
-    'colossus.lists',
-    'colossus.subscribers',
+    'colossus.apps.campaigns',
+    'colossus.apps.core',
+    'colossus.apps.emailtemplates',
+    'colossus.apps.lists',
+    'colossus.apps.subscribers',
 ]
 
 MIDDLEWARE = [
