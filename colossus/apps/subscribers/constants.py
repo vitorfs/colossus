@@ -1,8 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 
+
 '''
 Subscriber Constants
 '''
+
 
 class Status:
     PENDING = 1
@@ -23,6 +25,7 @@ class Status:
 '''
 Activity Constants
 '''
+
 
 class ActivityTypes:
     SUBSCRIBED = 1
@@ -45,6 +48,7 @@ class ActivityTypes:
 '''
 Form Template Constants
 '''
+
 
 class TemplateTypes:
     EMAIL = 1

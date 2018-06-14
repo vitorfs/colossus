@@ -1,11 +1,11 @@
 import uuid
 
+from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.contrib.sites.shortcuts import get_current_site
 
 from bs4 import BeautifulSoup
 

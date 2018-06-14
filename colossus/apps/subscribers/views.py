@@ -13,7 +13,7 @@ from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
 from colossus.utils import get_client_ip
 
-from .constants import Status, ActivityTypes
+from .constants import ActivityTypes, Status
 from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
 

@@ -25,7 +25,6 @@ subscriber.
 
 from .constants import ActivityTypes
 
-
 subscribed_template = '''
 <div class="jumbotron text-center mb-0">
     <i data-feather="user-plus" stroke-width="1" class="text-muted" height="64px" width="64px"></i>

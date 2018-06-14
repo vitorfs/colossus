@@ -12,8 +12,8 @@ from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
 from colossus.utils import get_client_ip
 
-from .constants import Status, ActivityTypes, TemplateTypes, Workflows, Keys
 from .activities import renderers
+from .constants import ActivityTypes, Keys, Status, TemplateTypes, Workflows
 
 
 class Subscriber(models.Model):
