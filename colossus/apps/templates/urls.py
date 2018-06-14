@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = 'emailtemplates'
+app_name = 'templates'
 
 
 urlpatterns = [
