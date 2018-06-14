@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -8,8 +8,8 @@ from django.views.generic import (
     UpdateView,
 )
 
-from colossus.apps.subscribers.constants import Status
-from colossus.apps.subscribers.models import Subscriber
+from colossus.apps.subscribers.constants import Status, Keys
+from colossus.apps.subscribers.models import Subscriber, FormTemplate
 
 from .charts import SubscriptionsSummaryChart
 from .forms import ImportSubscribersForm
@@ -156,8 +156,20 @@ def charts_subscriptions_summary(request, pk):
 
 @method_decorator(login_required, name='dispatch')
 class FormsEditorView(MailingListMixin, TemplateView):
-    template_name = 'lists/base_editor.html'
+    template_name = 'lists/forms_editor.html'
 
-    def get_context_data(self, **kwargs):
-        kwargs['submenu'] = 'forms'
-        return super().get_context_data(**kwargs)
+
+@method_decorator(login_required, name='dispatch')
+class FormTemplateUpdateView(MailingListMixin, UpdateView):
+    model = FormTemplate
+    fields = '__all__'
+    template_name = 'lists/edit_form_template.html'
+    context_object_name = 'form_template'
+
+    def get_object(self):
+        mailing_list_id = self.kwargs.get('pk')
+        key = self.kwargs.get('form_key')
+        if key not in Keys.LABELS.keys():
+            raise Http404
+        form_template, created = FormTemplate.objects.get_or_create(key=key, mailing_list_id=mailing_list_id)
+        return form_template

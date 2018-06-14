@@ -131,14 +131,14 @@ class Activity(models.Model):
 
 class FormTemplate(models.Model):
     key = models.CharField(_('key'), choices=Keys.CHOICES, max_length=30, db_index=True)
-    template_type = models.PositiveSmallIntegerField(_('type'), choices=TemplateTypes.CHOICES)
+    #template_type = models.PositiveSmallIntegerField(_('type'), choices=TemplateTypes.CHOICES)
     mailing_list = models.ForeignKey(
         MailingList,
         on_delete=models.CASCADE,
         verbose_name=_('mailing list'),
         related_name='forms_templates'
     )
-    workflow = models.PositiveSmallIntegerField(_('workflow'), choices=Workflows.CHOICES)
+    #workflow = models.PositiveSmallIntegerField(_('workflow'), choices=Workflows.CHOICES)
     order = models.PositiveSmallIntegerField(_('order'), default=0)
     redirect_url = models.URLField(_('redirect URL'), blank=True)
     is_enabled = models.BooleanField(_('is enabled'), default=True)
