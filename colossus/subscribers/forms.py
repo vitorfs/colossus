@@ -8,7 +8,7 @@ from django.utils.translation import gettext
 
 from colossus.utils import get_client_ip
 
-from . import constants
+from .constants import Status
 from .models import Subscriber
 
 
@@ -25,7 +25,7 @@ class SubscribeForm(forms.ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
         is_subscribed = Subscriber.objects \
-            .filter(email__iexact=email, status=constants.SUBSCRIBED, mailing_list=self.mailing_list) \
+            .filter(email__iexact=email, status=Status.SUBSCRIBED, mailing_list=self.mailing_list) \
             .exists()
         if is_subscribed:
             email_validation_error = ValidationError(
@@ -40,7 +40,7 @@ class SubscribeForm(forms.ModelForm):
     def subscribe(self, request):
         email = self.cleaned_data.get('email')
         subscriber, created = Subscriber.objects.get_or_create(email=email, mailing_list=self.mailing_list)
-        subscriber.status = constants.PENDING
+        subscriber.status = Status.PENDING
         subscriber.optin_ip_address = get_client_ip(request)
         subscriber.optin_date = timezone.now()
         subscriber.save()
@@ -86,7 +86,7 @@ class UnsubscribeForm(forms.Form):
         is_subscribed = Subscriber.objects.filter(
             email__iexact=email,
             mailing_list=self.mailing_list,
-            status=constants.SUBSCRIBED
+            status=Status.SUBSCRIBED
         )
         if not is_subscribed:
             email_validation_error = ValidationError(

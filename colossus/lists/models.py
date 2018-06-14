@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from colossus.subscribers import constants as subscribers_constants
+from colossus.subscribers.constants import Status
 
 
 class MailingList(models.Model):
@@ -34,7 +34,7 @@ class MailingList(models.Model):
         return reverse('mailing:list', kwargs={'pk': self.pk})
 
     def get_active_subscribers(self):
-        return self.subscribers.filter(status=subscribers_constants.SUBSCRIBED)
+        return self.subscribers.filter(status=Status.SUBSCRIBED)
 
     def update_subscribers_count(self):
         self.subscribers_count = self.get_active_subscribers().count()

@@ -6,6 +6,7 @@ from django.db.models.functions import TruncDate
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from colossus.subscribers.constants import ActivityTypes
 from colossus.subscribers.models import Activity
 
 
@@ -51,8 +52,8 @@ class SubscriptionsSummaryChart(Chart):
         #     {'trunc_date': datetime.date(2018, 6, 11), 'subscribed': 3, 'unsubscribed': 2},
         #     {'trunc_date': datetime.date(2018, 6, 12), 'subscribed': 1, 'unsubscribed': 0}
         # ]>
-        subscribed_expression = Count('id', filter=Q(activity_type='subscribed'))
-        unsubscribed_expression = Count('id', filter=Q(activity_type='unsubscribed'))
+        subscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.SUBSCRIBED))
+        unsubscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.UNSUBSCRIBED))
         activities = Activity.objects \
             .filter(subscriber__mailing_list=self.mailing_list, date__gte=thirty_days_ago) \
             .values(trunc_date=TruncDate('date')) \

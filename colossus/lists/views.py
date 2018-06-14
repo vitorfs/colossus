@@ -8,7 +8,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from colossus.subscribers import constants as subscribers_constants
+from colossus.subscribers.constants import Status
 from colossus.subscribers.models import Subscriber
 
 from .charts import SubscriptionsSummaryChart
@@ -81,7 +81,7 @@ class SubscriberCreateView(MailingListMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.mailing_list_id = self.kwargs.get('pk')
-        self.object.status = subscribers_constants.SUBSCRIBED
+        self.object.status = Status.SUBSCRIBED
         self.object.save()
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
 

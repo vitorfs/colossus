@@ -12,8 +12,8 @@ from colossus.core.models import Token
 from colossus.lists.models import MailingList
 from colossus.utils import get_client_ip
 
-from . import constants
-from .activities import ACTIVITIES_RENDERER
+from .constants import Status, ActivityTypes, TemplateTypes, Workflows, Keys
+from .activities import renderers
 
 
 class Subscriber(models.Model):
@@ -24,7 +24,7 @@ class Subscriber(models.Model):
     open_rate = models.FloatField(_('opens'), default=0.0)
     click_rate = models.FloatField(_('clicks'), default=0.0)
     update_date = models.DateTimeField(_('updated'), default=timezone.now)
-    status = models.PositiveSmallIntegerField(_('status'), default=constants.PENDING, choices=constants.STATUS_CHOICES)
+    status = models.PositiveSmallIntegerField(_('status'), default=Status.PENDING, choices=Status.CHOICES)
     optin_ip_address = models.GenericIPAddressField(_('opt-in IP address'), unpack_ipv4=True, blank=True, null=True)
     optin_date = models.DateTimeField(_('opt-in date'), default=timezone.now)
     confirm_ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
@@ -66,18 +66,18 @@ class Subscriber(models.Model):
     @transaction.atomic()
     def confirm_subscription(self, request):
         ip_address = get_client_ip(request)
-        self.status = constants.SUBSCRIBED
+        self.status = Status.SUBSCRIBED
         self.confirm_ip_address = ip_address
         self.confirm_date = timezone.now()
         self.save()
-        self.create_activity('subscribed', ip_address=ip_address)
+        self.create_activity(ActivityTypes.SUBSCRIBED, ip_address=ip_address)
         self.tokens.filter(description='confirm_subscription').delete()
 
     @transaction.atomic()
     def unsubscribe(self, request, campaign=None):
-        self.status = constants.UNSUBSCRIBED
+        self.status = Status.UNSUBSCRIBED
         self.save()
-        self.create_activity('unsubscribed', campaign=campaign, ip_address=get_client_ip(request))
+        self.create_activity(ActivityTypes.UNSUBSCRIBED, campaign=campaign, ip_address=get_client_ip(request))
 
     def send_mail(self, subject, message, from_email=None, **kwargs):
         """Send an email to this subscriber."""
@@ -99,7 +99,7 @@ class Subscriber(models.Model):
 
 
 class Activity(models.Model):
-    activity_type = models.CharField(_('type'), max_length=30, db_index=True)
+    activity_type = models.PositiveSmallIntegerField(_('type'), choices=ActivityTypes.CHOICES)
     date = models.DateTimeField(_('date'), auto_now_add=True)
     description = models.TextField(_('description'), blank=True)
     ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
@@ -121,7 +121,8 @@ class Activity(models.Model):
         return self.__cached_text
 
     def render_text(self):
-        text = ACTIVITIES_RENDERER[self.activity_type](self)
+        renderer = renderers[self.activity_type]
+        text = renderer(self)
         return mark_safe(text)
 
     def get_formatted_date(self):
@@ -129,15 +130,15 @@ class Activity(models.Model):
 
 
 class FormTemplate(models.Model):
-    key = models.PositiveSmallIntegerField(_('key'), choices=constants.KEY_CHOICES)
-    template_type = models.PositiveSmallIntegerField(_('type'), choices=constants.TEMPLATE_TYPE_CHOICES)
+    key = models.CharField(_('key'), choices=Keys.CHOICES, max_length=30, db_index=True)
+    template_type = models.PositiveSmallIntegerField(_('type'), choices=TemplateTypes.CHOICES)
     mailing_list = models.ForeignKey(
         MailingList,
         on_delete=models.CASCADE,
         verbose_name=_('mailing list'),
         related_name='forms_templates'
     )
-    workflow = models.PositiveSmallIntegerField(_('workflow'), choices=constants.WORKFLOW_CHOICES)
+    workflow = models.PositiveSmallIntegerField(_('workflow'), choices=Workflows.CHOICES)
     order = models.PositiveSmallIntegerField(_('order'), default=0)
     redirect_url = models.URLField(_('redirect URL'), blank=True)
     is_enabled = models.BooleanField(_('is enabled'), default=True)

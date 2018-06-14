@@ -13,7 +13,7 @@ from colossus.core.models import Token
 from colossus.lists.models import MailingList
 from colossus.utils import get_client_ip
 
-from . import constants
+from .constants import Status
 from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
 
@@ -101,7 +101,7 @@ def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
     except Campaign.DoesNotExist:
         campaign = None
 
-    if sub.status == constants.SUBSCRIBED:
+    if sub.status == Status.SUBSCRIBED:
         sub.unsubscribe(request, campaign)
         return redirect('subscribers:goodbye')
     else:
