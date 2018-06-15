@@ -1,61 +1,90 @@
 {% extends 'lists/base_editor.html' %}
 
-{% load colossus i18n %}
+{% load crispy_forms_tags static i18n %}
 
-{% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Forms Editor' %}</a></li>
-  <li class="breadcrumb-item active" aria-current="page">{{ form_template.get_key_display }}</li>
+{% block javascript %}
+  <script src="{% static 'vendor/ace/1.3.3/ace.js' %}"></script>
+  <script>
+    $(function () {
+      /*
+      var editorHeight = $(window).height() - $("#designEmailContainer").offset()['top'] - (53 + 63 + 18);
+      $("#editor").css("height", editorHeight + "px");
+      $("#previewEmailContainer .card-body").css("height", editorHeight + "px");
+      */
+
+      $("#div_id_content_html").hide();
+      $(".editor-container").show()
+
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/clouds");
+      editor.getSession().setMode("ace/mode/html");
+      editor.getSession().setUseWrapMode(true);
+
+      $("#designEmailForm").submit(function () {
+        $("#id_content").val(editor.getValue());
+        return true;
+      });
+
+      $(".js-update-preview").click(function () {
+        var $btn = $(this);
+
+        $.ajax({
+          url: $btn.attr("data-remote-url"),
+          type: 'post',
+          data: {
+            'content': editor.getValue(),
+            'csrfmiddlewaretoken': $btn.attr("data-csrf")
+          },
+          dataType: 'json',
+          beforeSend: function () {
+            $btn.attr("data-text", $btn.text());
+            $btn.text($btn.attr("data-loading"));
+            $btn.prop("disable", true);
+          },
+          success: function (data) {
+            $("#previewEmailIframe").contents().find("html").html(data.html);
+          },
+          error: function () {
+
+          },
+          complete: function () {
+            $btn.text($btn.attr("data-text"));
+            $btn.prop("disable", false);
+          }
+        });
+
+      });
+
+    });
+  </script>
 {% endblock %}
 
 {% block content %}
-
-  <div class="dropdown mb-4">
-    <button class="btn btn-outline-secondary btn-lg dropdown-toggle" type="button" id="dropdownMenuFormResponsesEmails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      {{ form_template.get_key_display }}
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuFormResponsesEmails">
-      <h6 class="dropdown-header">{% trans 'Subscribe' %}</h6>
-      <a class="dropdown-item{% if form_template.key == template_keys.SUBSCRIBE_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.SUBSCRIBE_PAGE %}">
-        {% dict template_keys.LABELS template_keys.SUBSCRIBE_PAGE %}
-      </a>
-      <a class="dropdown-item{% if form_template.key == template_keys.SUBSCRIBE_THANK_YOU_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.SUBSCRIBE_THANK_YOU_PAGE %}">
-        {% dict template_keys.LABELS template_keys.SUBSCRIBE_THANK_YOU_PAGE %}
-      </a>
-      <a class="dropdown-item{% if form_template.key == template_keys.CONFIRM_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.CONFIRM_EMAIL %}">
-        {% dict template_keys.LABELS template_keys.CONFIRM_EMAIL %}
-      </a>
-      <a class="dropdown-item{% if form_template.key == template_keys.CONFIRM_THANK_YOU_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.CONFIRM_THANK_YOU_PAGE %}">
-        {% dict template_keys.LABELS template_keys.CONFIRM_THANK_YOU_PAGE %}
-      </a>
-      <a class="dropdown-item{% if form_template.key == template_keys.WELCOME_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.WELCOME_EMAIL %}">
-        {% dict template_keys.LABELS template_keys.WELCOME_EMAIL %}
-      </a>
-      <div class="dropdown-divider"></div>
-      <h6 class="dropdown-header">{% trans 'Unsubscribe' %}</h6>
-      <a class="dropdown-item{% if form_template.key == template_keys.UNSUBSCRIBE_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.UNSUBSCRIBE_PAGE %}">
-        {% dict template_keys.LABELS template_keys.UNSUBSCRIBE_PAGE %}
-      </a>
-      <a class="dropdown-item{% if form_template.key == template_keys.UNSUBSCRIBE_SUCCESS_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.UNSUBSCRIBE_SUCCESS_PAGE %}">
-        {% dict template_keys.LABELS template_keys.UNSUBSCRIBE_SUCCESS_PAGE %}
-      </a>
-      <a class="dropdown-item{% if form_template.key == template_keys.GOODBYE_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.GOODBYE_EMAIL %}">
-        {% dict template_keys.LABELS template_keys.GOODBYE_EMAIL %}
-      </a>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-6">
-      <div class="card border-primary">
-        <h4 class="card-header">Editor</h4>
-        <div class="card-body"></div>
+  <form method="post" class="mb-3" novalidate>
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-lg-6">
+        {{ form|crispy }}
       </div>
     </div>
-    <div class="col-6">
-      <div class="card">
-        <h4 class="card-header">Preview</h4>
-        <div class="card-body"></div>
+    <div class="row editor-container">
+      <div class="col-lg-6">
+        <div class="card border-primary mb-3" id="designEmailContainer">
+          <h4 class="card-header">{% trans 'Design page' %}</h4>
+          <div class="card-body p-0">
+            <div id="editor" style="height:500px">{{ form_template.content_html }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card" id="previewEmailContainer">
+          <h4 class="card-header">{% trans 'Preview page' %}</h4>
+          <div class="card-body p-0">
+            <!--iframe src="#" id="previewEmailIframe" class="w-100 h-100" style="border:0;"></iframe-->
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+  </form>
 {% endblock %}

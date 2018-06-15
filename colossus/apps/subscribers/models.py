@@ -136,11 +136,11 @@ class SubscriptionFormTemplate(models.Model):
         verbose_name=_('mailing list'),
         related_name='forms_templates'
     )
-    redirect_url = models.URLField(_('redirect URL'), blank=True)
+    redirect_url = models.URLField(_('redirect URL'), blank=True, help_text=_('Instead of showing this page, redirect to URL.'))
     send_email = models.BooleanField(_('send final confirmation email?'), default=True)
-    from_email = models.EmailField(_('email address'))
-    from_name = models.CharField(_('name'), max_length=100, blank=True)
-    subject = models.CharField(_('subject'), max_length=150, blank=True)
+    from_email = models.EmailField(_('from email address'))
+    from_name = models.CharField(_('from name'), max_length=100, blank=True)
+    subject = models.CharField(_('email subject'), max_length=150, blank=True)
     content_html = models.TextField(_('content HTML'), blank=True)
     content_text = models.TextField(_('content plain text'), blank=True)
 

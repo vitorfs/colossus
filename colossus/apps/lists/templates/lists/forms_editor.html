@@ -1,8 +1,17 @@
-{% extends 'lists/base_editor.html' %}
+{% extends 'lists/base.html' %}
 
 {% load i18n %}
 
-{% block content %}
+{% block main %}
+  <div class="container-fluid">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:subscription_forms' mailing_list.pk %}">{% trans 'Subscription Forms' %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Forms Editor' %}</li>
+      </ol>
+    </nav>
     <h1 class="mb-4">{% trans 'Subscription Workflow' %}</h1>
     <div class="row">
       <div class="col-md-6 col-lg-4">
@@ -72,4 +81,5 @@
         </div>
       </div>
     </div>
+  </div>
 {% endblock %}
