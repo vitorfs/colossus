@@ -1,0 +1,25 @@
+{% extends 'lists/base_editor.html' %}
+
+{% load i18n %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Forms Editor' %}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{{ form_template.get_key_display }}</li>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-6">
+      <div class="card border-primary">
+        <h4 class="card-header">Editor</h4>
+        <div class="card-body"></div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <h4 class="card-header">Preview</h4>
+        <div class="card-body"></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

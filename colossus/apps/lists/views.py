@@ -7,9 +7,11 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView,
 )
+from django.forms import modelform_factory
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import Subscriber, SubscriptionFormTemplate
+from colossus.apps.subscribers.subscription_settings import SUBSCRIPTION_FORM_TEMPLATE_SETTINGS as SFTS
 
 from .charts import SubscriptionsSummaryChart
 from .forms import ImportSubscribersForm
@@ -162,9 +164,22 @@ class FormsEditorView(MailingListMixin, TemplateView):
 @method_decorator(login_required, name='dispatch')
 class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
     model = SubscriptionFormTemplate
-    fields = '__all__'
     template_name = 'lists/edit_form_template.html'
     context_object_name = 'form_template'
+
+    def get_context_data(self, **kwargs):
+        kwargs['template_keys'] = TemplateKeys
+        return super().get_context_data(**kwargs)
+
+    def get_template_names(self):
+        key = self.kwargs.get('form_key')
+        return SFTS[key]['template_name']
+
+    def get_form_class(self):
+        key = self.kwargs.get('form_key')
+        fields = SFTS[key]['fields']
+        form_class = modelform_factory(self.model, fields=fields)
+        return form_class
 
     def get_object(self):
         mailing_list_id = self.kwargs.get('pk')

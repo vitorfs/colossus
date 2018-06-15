@@ -24,3 +24,8 @@ def qs(context, **kwargs):
         if value:
             query[key] = value
     return query.urlencode()
+
+
+@register.simple_tag
+def dict(dictionary, key):
+    return dictionary[key]
