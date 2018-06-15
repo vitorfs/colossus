@@ -20,7 +20,7 @@ urlpatterns = [
         path('forms/', include([
             path('', views.SubscriptionFormsView.as_view(), name='subscription_forms'),
             path('editor/', views.FormsEditorView.as_view(), name='forms_editor'),
-            path('editor/<str:form_key>/', views.FormTemplateUpdateView.as_view(), name='edit_form_template'),
+            path('editor/<str:form_key>/', views.SubscriptionFormTemplateUpdateView.as_view(), name='edit_form_template'),
         ])),
         path('settings/', views.MailingListSettingsView.as_view(), name='settings'),
         path('charts/subscriptions-summary/', views.charts_subscriptions_summary, name='charts_subscriptions_summary')

@@ -171,5 +171,8 @@ class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
         key = self.kwargs.get('form_key')
         if key not in TemplateKeys.LABELS.keys():
             raise Http404
-        form_template, created = FormTemplate.objects.get_or_create(key=key, mailing_list_id=mailing_list_id)
+        form_template, created = SubscriptionFormTemplate.objects.get_or_create(
+            key=key,
+            mailing_list_id=mailing_list_id
+        )
         return form_template
