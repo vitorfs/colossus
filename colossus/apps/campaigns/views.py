@@ -16,6 +16,7 @@ from .models import Campaign, Email
 class CampaignListView(CampaignMixin, ListView):
     model = Campaign
     context_object_name = 'campaigns'
+    ordering = ('-create_date',)
     paginate_by = 25
 
 

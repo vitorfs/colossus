@@ -10,6 +10,7 @@ class EmailTemplateListView(ListView):
     model = EmailTemplate
     context_object_name = 'templates'
     paginate_by = 10
+    ordering = ('update_date')
 
     def get_context_data(self, **kwargs):
         kwargs['menu'] = 'templates'
