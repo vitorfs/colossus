@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Import Subscribers' %}</li>
+    </ol>
+  </nav>
+  <ul class="list-group mb-3">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <i data-feather="upload" class="text-muted mr-3" stroke-width="1" width="32px" height="32px"></i>
+        <div>
+          <h4 class="mb-1">
+            <a href="{% url 'lists:csv_import_subscribers' mailing_list.pk %}">{% trans 'Import CSV Files' %}</a>
+          </h4>
+          <p class="text-muted mb-0">{% trans 'Import subscribers from comma-separated files (.csv).' %}</p>
+        </div>
+      </div>
+      <a href="{% url 'lists:csv_import_subscribers' mailing_list.pk %}" role="button" class="btn btn-primary">{% trans 'Select' %}</a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <i data-feather="clipboard" class="text-muted mr-3" stroke-width="1" width="32px" height="32px"></i>
+        <div>
+          <h4 class="mb-1">
+            <a href="{% url 'lists:paste_import_subscribers' mailing_list.pk %}">{% trans 'Paste Emails' %}</a>
+          </h4>
+          <p class="text-muted mb-0">{% trans 'Copy and paste email addresses to subscribe or unsubscribe from list.' %}</p>
+        </div>
+      </div>
+      <a href="{% url 'lists:paste_import_subscribers' mailing_list.pk %}" role="button" class="btn btn-primary">{% trans 'Select' %}</a>
+    </li>
+  </ul>
+{% endblock %}

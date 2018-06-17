@@ -8,13 +8,14 @@ from django.views.generic import (
     UpdateView,
 )
 from django.forms import modelform_factory
+from django.utils.translation import gettext_lazy as _
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import Subscriber, SubscriptionFormTemplate
 from colossus.apps.subscribers.subscription_settings import SUBSCRIPTION_FORM_TEMPLATE_SETTINGS as SFTS
 
 from .charts import SubscriptionsSummaryChart
-from .forms import ImportSubscribersForm
+from .forms import CSVImportSubscribersForm, PasteImportSubscribersForm
 from .mixins import MailingListMixin
 from .models import MailingList
 
@@ -111,13 +112,35 @@ class SubscriberDeleteView(MailingListMixin, DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ImportSubscribersView(MailingListMixin, FormView):
-    form_class = ImportSubscribersForm
+class ImportSubscribersView(MailingListMixin, TemplateView):
+    template_name = 'lists/import_subscribers.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['submenu'] = 'subscribers'
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class AbstractImportSuscribersView(MailingListMixin, FormView):
     template_name = 'lists/import_subscribers_form.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = self.title
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.import_subscribers(self.request, self.kwargs.get('pk'))
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
+
+
+class CSVImportSubscribersView(AbstractImportSuscribersView):
+    form_class = CSVImportSubscribersForm
+    title = _('Import CSV File')
+
+
+class PasteEmailsImportSubscribersView(AbstractImportSuscribersView):
+    form_class = PasteImportSubscribersForm
+    title = _('Paste Emails')
 
 
 @method_decorator(login_required, name='dispatch')

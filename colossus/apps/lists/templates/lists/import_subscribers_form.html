@@ -2,24 +2,26 @@
 
 {% load crispy_forms_tags i18n %}
 
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{% trans 'Import subscribers' %}</li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:import_subscribers' mailing_list.pk %}">{% trans 'Import Subscribers' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
     </ol>
   </nav>
-  <div class="card">
+  <div class="card mb-3">
     <div class="card-body">
+      <h2 class="card-title">{{ title }}</h2>
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
-        <p>CSV file columns format:</p>
-        <pre><code>email, name, optin_ip_address, confirm_ip_address</code></pre>
-        <button type="submit" class="btn btn-success" role="button">{% trans 'Import from file' %}</button>
-        <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Import' %}</button>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
       </form>
     </div>
   </div>
