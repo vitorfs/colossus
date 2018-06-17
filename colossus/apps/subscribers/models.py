@@ -16,6 +16,30 @@ from .activities import render_activity
 from .constants import ActivityTypes, TemplateKeys, Status
 
 
+class SubscriberManager(models.Manager):
+    @classmethod
+    def normalize_email(cls, email):
+        """
+        Normalize the email address by lowercasing the domain part of it.
+        """
+        email = email or ''
+        try:
+            email_name, domain_part = email.strip().rsplit('@', 1)
+        except ValueError:
+            pass
+        else:
+            email = email_name + '@' + domain_part.lower()
+        return email
+
+    def create_subscriber(self, email, **kwargs):
+        if not email:
+            raise ValueError('The given email must be set')
+        email = self.normalize_email(email)
+        subscriber = self.model(email=email, **extra_fields)
+        subscriber.save(using=self._db)
+        return subscriber
+
+
 class Subscriber(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.EmailField(_('email address'), max_length=255)
@@ -38,6 +62,8 @@ class Subscriber(models.Model):
     last_seen_date = models.DateTimeField(_('last seen date'), null=True, blank=True)
     tokens = GenericRelation(Token)
 
+    objects = SubscriberManager()
+
     __status = None
 
     class Meta:
@@ -51,6 +77,10 @@ class Subscriber(models.Model):
 
     def __str__(self):
         return self.email
+
+    def clean(self):
+        super().clean()
+        self.email = self.__class__.objects.normalize_email(self.email)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
