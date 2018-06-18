@@ -3,6 +3,7 @@ import uuid
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.mail import send_mail
 from django.db import models, transaction
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +14,8 @@ from colossus.apps.lists.models import MailingList
 from colossus.utils import get_client_ip
 
 from .activities import render_activity
-from .constants import ActivityTypes, TemplateKeys, Status
+from .constants import ActivityTypes, Status, TemplateKeys
+from .subscription_settings import SUBSCRIPTION_FORM_TEMPLATE_SETTINGS
 
 
 class SubscriberManager(models.Manager):
@@ -31,7 +33,7 @@ class SubscriberManager(models.Manager):
             email = email_name + '@' + domain_part.lower()
         return email
 
-    def create_subscriber(self, email, **kwargs):
+    def create_subscriber(self, email, **extra_fields):
         if not email:
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
@@ -154,7 +156,7 @@ class Activity(models.Model):
         try:
             html = render_activity(self)
             return mark_safe(html)
-        except:
+        except Exception:
             return self.get_activity_type_display()
 
     def get_formatted_date(self):
@@ -169,7 +171,11 @@ class SubscriptionFormTemplate(models.Model):
         verbose_name=_('mailing list'),
         related_name='forms_templates'
     )
-    redirect_url = models.URLField(_('redirect URL'), blank=True, help_text=_('Instead of showing this page, redirect to URL.'))
+    redirect_url = models.URLField(
+        _('redirect URL'),
+        blank=True,
+        help_text=_('Instead of showing this page, redirect to URL.')
+    )
     send_email = models.BooleanField(_('send final confirmation email?'), default=True)
     from_email = models.EmailField(_('from email address'))
     from_name = models.CharField(_('from name'), max_length=100, blank=True)
@@ -183,3 +189,12 @@ class SubscriptionFormTemplate(models.Model):
 
     def __str__(self):
         return self.get_key_display()
+
+    @property
+    def settings(self):
+        return SUBSCRIPTION_FORM_TEMPLATE_SETTINGS[self.key]
+
+    def get_default_content(self):
+        content_template_name = self.settings['content_template_name']
+        html = render_to_string(content_template_name, {'mailing_list': self.mailing_list})
+        return html

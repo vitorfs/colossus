@@ -1,19 +1,19 @@
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, Http404
-from django.shortcuts import redirect, get_object_or_404
+from django.forms import modelform_factory
+from django.http import Http404, JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView,
 )
-from django.forms import modelform_factory
-from django.utils.translation import gettext_lazy as _
-from django.template.loader import render_to_string
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
-from colossus.apps.subscribers.models import Subscriber, SubscriptionFormTemplate
-from colossus.apps.subscribers.subscription_settings import SUBSCRIPTION_FORM_TEMPLATE_SETTINGS as SFTS
+from colossus.apps.subscribers.models import (
+    Subscriber, SubscriptionFormTemplate,
+)
 
 from .charts import SubscriptionsSummaryChart
 from .forms import CSVImportSubscribersForm, PasteImportSubscribersForm
@@ -196,22 +196,17 @@ class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
         return super().get_context_data(**kwargs)
 
     def get_template_names(self):
-        key = self.kwargs.get('form_key')
-        return SFTS[key]['template_name']
+        return self.object.settings['admin_template_name']
 
     def get_form_class(self):
-        key = self.kwargs.get('form_key')
-        fields = SFTS[key]['fields']
+        fields = self.object.settings['fields']
         form_class = modelform_factory(self.model, fields=fields)
         return form_class
 
     def get_initial(self):
-        initial = dict()
-        if not self.object.content_html:
-            key = self.kwargs.get('form_key')
-            content_template_name = SFTS[key]['content_template_name']
-            mailing_list = get_object_or_404(MailingList, pk=self.kwargs.get('pk'))
-            initial['content_html'] = render_to_string(content_template_name, {'mailing_list': mailing_list})
+        initial = {
+            'content_html': self.object.get_default_content()
+        }
         return initial
 
     def get_object(self):

@@ -2,10 +2,10 @@ import csv
 from io import TextIOWrapper
 
 from django import forms
+from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import validate_email
 
 import pytz
 

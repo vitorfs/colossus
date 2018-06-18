@@ -23,8 +23,8 @@ CLICKED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Clicked</stro
 def render_unsubscribe_activity(activity):
     if activity.campaign is not None:
         return UNSUBSCRIBED_CAMPAIGN_TEMPLATE % (activity.get_formatted_date(),
-                                        activity.campaign.get_absolute_url(),
-                                        activity.campaign.name)
+                                                 activity.campaign.get_absolute_url(),
+                                                 activity.campaign.name)
     else:
         return UNSUBSCRIBED_TEMPLATE % activity.get_formatted_date()
 
