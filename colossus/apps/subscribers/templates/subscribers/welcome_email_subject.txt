@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Subscription Confirmed{% endblocktrans %}
+{% endautoescape %}

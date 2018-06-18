@@ -25,6 +25,7 @@ urlpatterns = [
             path('', views.SubscriptionFormsView.as_view(), name='subscription_forms'),
             path('editor/', views.FormsEditorView.as_view(), name='forms_editor'),
             path('editor/<str:form_key>/', views.SubscriptionFormTemplateUpdateView.as_view(), name='edit_form_template'),  # noqa
+            path('editor/<str:form_key>/preview/', views.PreviewFormTemplateView.as_view(), name='preview_form_template'),  # noqa
         ])),
         path('settings/', views.MailingListSettingsView.as_view(), name='settings'),
         path('charts/subscriptions-summary/', views.charts_subscriptions_summary, name='charts_subscriptions_summary')

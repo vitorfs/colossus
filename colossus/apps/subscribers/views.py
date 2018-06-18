@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.views.generic import View
+from django.template import Context, Template
+from django.template.loader import render_to_string
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
@@ -21,6 +23,10 @@ from .models import Subscriber
 class IndexView(View):
     def get(self, request):
         return HttpResponse('Hi there! :)')
+
+
+def render_form_template(request, form_template):
+    html = render_to_string()
 
 
 @csrf_exempt

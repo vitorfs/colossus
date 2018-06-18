@@ -1,9 +1,7 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}Hi there! Please confirm your subscription at {{ site_name }}:{% endblocktrans %}
+{% blocktrans %}Please confirm your subscription to {{ list_name }}:{% endblocktrans %}
 
-{% block confirm_link %}
-{{ protocol }}://{{ domain }}{% url 'subscribers:confirm_double_optin_token' mailing_list_uuid=mailing_list.uuid token=token.text %}
-{% endblock %}
+{{ confirm_link }}
 
 {% trans "If you received this email by mistake, simply delete it. You won't be subscribed if you don't click the confirmation link above." %}
 

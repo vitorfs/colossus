@@ -5,6 +5,7 @@ from django.db import transaction
 from django.template import loader
 from django.utils import timezone
 from django.utils.translation import gettext
+from django.urls import reverse
 
 from colossus.utils import get_client_ip
 
@@ -49,14 +50,18 @@ class SubscribeForm(forms.ModelForm):
             subscriber.tokens.filter(description='confirm_subscription').delete()
 
         token = subscriber.tokens.create(description='confirm_subscription')
-
         current_site = get_current_site(request)
+        protocol = 'https' if request.is_secure() else 'http'
+        domain = current_site.domain
+        path = reverse('subscribers:confirm_double_optin_token', kwargs={
+            'mailing_list_uuid': mailing_list.uuid,
+            'token': token.text
+        })
+        confirm_link = '%s://%s%s' % (protocol, domain, path)
+
         context = {
-            'mailing_list': self.mailing_list,
-            'token': token,
-            'site_name': current_site.name,
-            'domain': current_site.domain,
-            'protocol': 'https' if request.is_secure() else 'http',
+            'confirm_link': confirm_link,
+            'list_name': self.mailing_list.name,
             'contact_email': self.mailing_list.contact_email_address
 
         }

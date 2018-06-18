@@ -80,7 +80,7 @@
         <div class="card" id="previewEmailContainer">
           <h4 class="card-header">{% trans 'Preview page' %}</h4>
           <div class="card-body p-0">
-            <!--iframe src="#" id="previewEmailIframe" class="w-100 h-100" style="border:0;"></iframe-->
+            <iframe src="{% url 'lists:preview_form_template' mailing_list.pk form_template.key %}" id="previewIframe" class="w-100" style="height:500px;border:0;"></iframe>
           </div>
         </div>
       </div>

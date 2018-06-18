@@ -3,15 +3,14 @@
 {% load crispy_forms_tags i18n %}
 
 {% block content %}
-  <form method="post">
+  <form method="post" class="mb-3">
     {% csrf_token %}
-    <div class="row mb-3">
+    <div class="row">
       <div class="col-lg-6">
         {{ form|crispy }}
       </div>
     </div>
     <div class="placeholder"></div>
     <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
-    <a href="" class="btn btn-link">Reset defaults</a>
   </form>
 {% endblock %}

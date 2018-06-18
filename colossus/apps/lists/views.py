@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import modelform_factory
 from django.http import Http404, JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
-    UpdateView,
+    UpdateView, View
 )
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
@@ -185,8 +185,21 @@ class FormsEditorView(MailingListMixin, TemplateView):
     template_name = 'lists/forms_editor.html'
 
 
+class FormTemplateMixin:
+    def get_object(self):
+        mailing_list_id = self.kwargs.get('pk')
+        key = self.kwargs.get('form_key')
+        if key not in TemplateKeys.LABELS.keys():
+            raise Http404
+        form_template, created = SubscriptionFormTemplate.objects.get_or_create(
+            key=key,
+            mailing_list_id=mailing_list_id
+        )
+        return form_template
+
+
 @method_decorator(login_required, name='dispatch')
-class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
+class SubscriptionFormTemplateUpdateView(FormTemplateMixin, MailingListMixin, UpdateView):
     model = SubscriptionFormTemplate
     template_name = 'lists/edit_form_template.html'
     context_object_name = 'form_template'
@@ -209,13 +222,22 @@ class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
         }
         return initial
 
-    def get_object(self):
-        mailing_list_id = self.kwargs.get('pk')
-        key = self.kwargs.get('form_key')
-        if key not in TemplateKeys.LABELS.keys():
-            raise Http404
-        form_template, created = SubscriptionFormTemplate.objects.get_or_create(
-            key=key,
-            mailing_list_id=mailing_list_id
-        )
-        return form_template
+
+@method_decorator(login_required, name='dispatch')
+class PreviewFormTemplateView(FormTemplateMixin, MailingListMixin, View):
+    def get(self, request, pk, form_key):
+        form_template = self.get_object()
+        template_name = form_template.settings['content_template_name']
+        context = {
+            'mailing_list': self.mailing_list,
+            'contact_email': self.mailing_list.contact_email_address,
+            'unsub': '#',
+            'confirm_link': '#'
+        }
+        if form_key == TemplateKeys.SUBSCRIBE_PAGE:
+            from colossus.apps.subscribers.forms import SubscribeForm
+            context['form'] = SubscribeForm(mailing_list=self.mailing_list)
+        elif form_key == TemplateKeys.UNSUBSCRIBE_PAGE:
+            from colossus.apps.subscribers.forms import UnsubscribeForm
+            context['form'] = UnsubscribeForm(mailing_list=self.mailing_list)
+        return render(request, template_name, context)
