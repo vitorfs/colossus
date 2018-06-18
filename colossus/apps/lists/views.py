@@ -241,3 +241,18 @@ class PreviewFormTemplateView(FormTemplateMixin, MailingListMixin, View):
             from colossus.apps.subscribers.forms import UnsubscribeForm
             context['form'] = UnsubscribeForm(mailing_list=self.mailing_list)
         return render(request, template_name, context)
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomizeDesignView(UpdateView):
+    model = MailingList
+    fields = ('forms_custom_css', 'forms_custom_header')
+    context_object_name = 'mailing_list'
+    template_name = 'lists/customize_design.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['menu'] = 'lists'
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return reverse('lists:forms_editor', kwargs={'pk': self.kwargs.get('pk')})

@@ -24,6 +24,7 @@ urlpatterns = [
         path('forms/', include([
             path('', views.SubscriptionFormsView.as_view(), name='subscription_forms'),
             path('editor/', views.FormsEditorView.as_view(), name='forms_editor'),
+            path('editor/design/', views.CustomizeDesignView.as_view(), name='customize_design'),
             path('editor/<str:form_key>/', views.SubscriptionFormTemplateUpdateView.as_view(), name='edit_form_template'),  # noqa
             path('editor/<str:form_key>/preview/', views.PreviewFormTemplateView.as_view(), name='preview_form_template'),  # noqa
         ])),

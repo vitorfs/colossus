@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% trans 'Customize design' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscription_forms' mailing_list.pk %}">{% trans 'Subscription Forms' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Forms Editor' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Customize design' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Customize design' %}</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

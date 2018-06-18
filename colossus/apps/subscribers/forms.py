@@ -54,7 +54,7 @@ class SubscribeForm(forms.ModelForm):
         protocol = 'https' if request.is_secure() else 'http'
         domain = current_site.domain
         path = reverse('subscribers:confirm_double_optin_token', kwargs={
-            'mailing_list_uuid': mailing_list.uuid,
+            'mailing_list_uuid': self.mailing_list.uuid,
             'token': token.text
         })
         confirm_link = '%s://%s%s' % (protocol, domain, path)
