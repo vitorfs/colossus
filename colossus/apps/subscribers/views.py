@@ -23,14 +23,6 @@ class IndexView(View):
         return HttpResponse('Hi there! :)')
 
 
-class SubscribeView(View):
-    def get(self, request):
-        mailing_list_uuid = request.GET.get('l')
-        mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
-        form = SubscribeForm()
-        return JsonResponse({'form': form.as_p(), 'mailing_list': mailing_list.pk})
-
-
 @csrf_exempt
 def subscribe(request, mailing_list_uuid):
     if 'application/json' in request.META.get('HTTP_ACCEPT'):

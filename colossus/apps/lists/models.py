@@ -22,6 +22,9 @@ class MailingList(models.Model):
     campaign_default_email_subject = models.CharField(_('default subject'), max_length=150, blank=True)
     enable_recaptcha = models.BooleanField(_('enable reCAPTCHA'), default=False)
 
+    forms_custom_css = models.TextField(_('custom CSS'), blank=True)
+    forms_custom_header = models.TextField(_('custom header'), blank=True)
+
     class Meta:
         verbose_name = _('list')
         verbose_name_plural = _('lists')
