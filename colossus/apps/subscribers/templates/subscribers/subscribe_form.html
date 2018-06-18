@@ -1,42 +1,11 @@
 {% extends 'subscribers/base.html' %}
 
-{% load crispy_forms_tags static i18n %}
-
-{% block title %}{{ mailing_list.name }}{% endblock %}
-
-{% block stylesheet %}
-  <link href="https://fonts.googleapis.com/css?family=Raleway:600" rel="stylesheet" type="text/css">
-  <style type="text/css">
-    .brand {
-      color: #1eaedb;
-    }
-    .logo {
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: 4rem;
-      margin-bottom: 2rem;
-      font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-weight: 600;
-    }
-  </style>
-{% endblock %}
+{% load crispy_forms_tags i18n %}
 
 {% block content %}
-  <div class="container">
-    <h2 class="logo">Simple <span class="brand">is</span> Better <span class="brand">Than</span> Complex</h2>
-    <div class="row justify-content-center">
-      <div class="col-sm-10 col-md-8 col-lg-6">
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Subscribe to our mailing list</h5>
-            <form method="post" novalidate>
-              <input type="hidden" name="next" value="{{ next }}">
-              {{ form|crispy }}
-              <button type="submit" class="btn btn-dark">{% trans 'Subscribe to list' %}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <h5 class="card-title">{% trans 'Subscribe to our mailing list' %}</h5>
+  <form method="post">
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-dark">{% trans 'Subscribe to list' %}</button>
+  </form>
 {% endblock %}

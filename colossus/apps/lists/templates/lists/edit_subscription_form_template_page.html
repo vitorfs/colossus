@@ -72,7 +72,7 @@
         <div class="card border-primary mb-3" id="designEmailContainer">
           <h4 class="card-header">{% trans 'Design page' %}</h4>
           <div class="card-body p-0">
-            <div id="editor" style="height:500px">{{ form_template.content_html }}</div>
+            <div id="editor" style="height:500px">{% filter force_escape %}{{ form.content_html.value }}{% endfilter %}</div>
           </div>
         </div>
       </div>

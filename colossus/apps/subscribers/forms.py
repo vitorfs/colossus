@@ -61,9 +61,9 @@ class SubscribeForm(forms.ModelForm):
 
         }
 
-        subject = loader.render_to_string('subscribers/confirm_subscription_subject.txt', context)
+        subject = loader.render_to_string('subscribers/confirm_email_subject.txt', context)
         subject = ''.join(subject.splitlines())  # Email subject *must not* contain newlines
-        body = loader.render_to_string('subscribers/confirm_subscription_email.txt', context)
+        body = loader.render_to_string('subscribers/confirm_email.txt', context)
 
         subscriber.send_mail(subject=subject, message=body)
 

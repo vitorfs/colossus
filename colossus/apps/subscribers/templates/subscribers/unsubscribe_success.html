@@ -1,0 +1,9 @@
+{% extends 'subscribers/base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+  <h3 class="card-title">{% trans 'Unsubscribe Successful' %}</h3>
+  <p>{% trans 'You will no longer receive emails from this list.' %}</p>
+  <a href="{{ mailing_list.website_url }}" class="btn btn-dark" role="button">← {% trans 'Return to our website' %}</a>
+{% endblock %}

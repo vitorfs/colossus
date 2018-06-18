@@ -7,7 +7,10 @@ SUBSCRIBED_TEMPLATE = '''
     <p class="text-muted mb-0">on %s</p>
 </div>'''
 
-UNSUBSCRIBED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Unsubscribed</strong> via <a href="%s">%s</a>.'
+UNSUBSCRIBED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Unsubscribed</strong>.'''
+
+UNSUBSCRIBED_CAMPAIGN_TEMPLATE = '''<small class="text-muted">%s</small>
+                                    <strong>Unsubscribed</strong> via <a href="%s">%s</a>.'''
 
 OPENED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Opened</strong> the email <a href="%s">%s</a>.'
 
@@ -15,6 +18,15 @@ SENT_TEMPLATE = '<small class="text-muted">%s</small> <strong>Was sent</strong> 
 
 CLICKED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Clicked</strong>
                       <a href="%s">a link</a> in the email <a href="%s">%s</a>.'''
+
+
+def render_unsubscribe_activity(activity):
+    if activity.campaign is not None:
+        return UNSUBSCRIBED_CAMPAIGN_TEMPLATE % (activity.get_formatted_date(),
+                                        activity.campaign.get_absolute_url(),
+                                        activity.campaign.name)
+    else:
+        return UNSUBSCRIBED_TEMPLATE % activity.get_formatted_date()
 
 
 def render_activity(activity):
@@ -41,11 +53,7 @@ def render_activity(activity):
             a.subscriber.mailing_list.name,
             a.get_formatted_date()
         ),
-        ActivityTypes.UNSUBSCRIBED: lambda a: UNSUBSCRIBED_TEMPLATE % (
-            a.get_formatted_date(),
-            a.campaign.get_absolute_url(),
-            a.campaign.name
-        ),
+        ActivityTypes.UNSUBSCRIBED: render_unsubscribe_activity,
         ActivityTypes.SENT: lambda a: SENT_TEMPLATE % (
             a.get_formatted_date(),
             a.email.campaign.get_absolute_url(),

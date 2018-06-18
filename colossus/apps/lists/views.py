@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import (
@@ -9,6 +9,7 @@ from django.views.generic import (
 )
 from django.forms import modelform_factory
 from django.utils.translation import gettext_lazy as _
+from django.template.loader import render_to_string
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import Subscriber, SubscriptionFormTemplate
@@ -203,6 +204,15 @@ class SubscriptionFormTemplateUpdateView(MailingListMixin, UpdateView):
         fields = SFTS[key]['fields']
         form_class = modelform_factory(self.model, fields=fields)
         return form_class
+
+    def get_initial(self):
+        initial = dict()
+        if not self.object.content_html:
+            key = self.kwargs.get('form_key')
+            content_template_name = SFTS[key]['content_template_name']
+            mailing_list = get_object_or_404(MailingList, pk=self.kwargs.get('pk'))
+            initial['content_html'] = render_to_string(content_template_name, {'mailing_list': mailing_list})
+        return initial
 
     def get_object(self):
         mailing_list_id = self.kwargs.get('pk')

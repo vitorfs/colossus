@@ -54,14 +54,14 @@ def subscribe(request, mailing_list_uuid):
 
 @require_GET
 def confirm_subscription(request, mailing_list_uuid):
-    mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
-    return render(request, 'subscribers/confirm_subscription.html', {'mailing_list': mailing_list})
+    mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
+    return render(request, 'subscribers/subscribe_thank_you.html', {'mailing_list': mailing_list})
 
 
 @require_GET
 def confirm_double_optin_token(request, mailing_list_uuid, token):
     try:
-        MailingList.objects.get(uuid=mailing_list_uuid)
+        mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
     except MailingList.DoesNotExist:
         return HttpResponseBadRequest('The requested list does not exist.')
 
@@ -73,7 +73,7 @@ def confirm_double_optin_token(request, mailing_list_uuid, token):
     subscriber = confirm_token.content_object
     subscriber.confirm_subscription(request)
 
-    return HttpResponse('Thank you!')
+    return render(request, 'subscribers/confirm_thank_you.html', {'mailing_list': mailing_list})
 
 
 def unsubscribe_manual(request, mailing_list_uuid):
@@ -82,10 +82,10 @@ def unsubscribe_manual(request, mailing_list_uuid):
         form = UnsubscribeForm(mailing_list=mailing_list, data=request.POST)
         if form.is_valid():
             form.unsubscribe(request)
-            return redirect('subscribers:goodbye')
+            return redirect('subscribers:goodbye', mailing_list_uuid=mailing_list_uuid)
     else:
         form = UnsubscribeForm(mailing_list=mailing_list)
-    return render(request, 'subscribers/unsubscribe_form.html', {'form': form})
+    return render(request, 'subscribers/unsubscribe_form.html', {'form': form, 'mailing_list': mailing_list})
 
 
 def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
@@ -103,13 +103,15 @@ def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
 
     if sub.status == Status.SUBSCRIBED:
         sub.unsubscribe(request, campaign)
-        return redirect('subscribers:goodbye')
+        return redirect('subscribers:goodbye', mailing_list_uuid=mailing_list_uuid)
     else:
         return HttpResponse('This email address was not found in our list.', content_type='text/plain')
 
 
-def goodbye(request):
-    return HttpResponse('Sorry to see you go! Goodbye!', content_type='text/plain')
+@require_GET
+def goodbye(request, mailing_list_uuid):
+    mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
+    return render(request, 'subscribers/unsubscribe_success.html', {'mailing_list': mailing_list})
 
 
 @require_GET

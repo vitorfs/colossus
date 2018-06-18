@@ -1,5 +1,12 @@
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Unsubscribe</button>
-</form>
+{% extends 'subscribers/base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <h5 class="card-title">{% trans 'Enter your email address to unsubscribe' %}</h5>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-dark">{% trans 'Unsubscribe' %}</button>
+  </form>
+{% endblock %}

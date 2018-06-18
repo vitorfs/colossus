@@ -151,8 +151,11 @@ class Activity(models.Model):
         return self.__cached_html
 
     def render(self):
-        html = render_activity(self)
-        return mark_safe(html)
+        try:
+            html = render_activity(self)
+            return mark_safe(html)
+        except:
+            return self.get_activity_type_display()
 
     def get_formatted_date(self):
         return self.date.strftime('%b %d, %Y %H:%M')
