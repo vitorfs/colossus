@@ -17,10 +17,17 @@ from .models import MailingList
 
 class CSVImportSubscribersForm(forms.Form):
     upload_file = forms.FileField(help_text=_('Supported file type: .csv'))
+    status = forms.ChoiceField(
+        label=_('Assign status to subscriber'),
+        choices=Status.CHOICES,
+        initial=Status.SUBSCRIBED,
+        widget=forms.Select(attrs={'class': 'w-50'})
+    )
 
     def import_subscribers(self, request, mailing_list_id):
         mailing_list = MailingList.objects.get(pk=mailing_list_id)
         upload_file = self.cleaned_data.get('upload_file')
+        status = self.cleaned_data.get('status')
         csvfile = TextIOWrapper(upload_file, encoding=request.encoding)
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
         csvfile.seek(0)
@@ -28,16 +35,17 @@ class CSVImportSubscribersForm(forms.Form):
         subscribers = list()
         for row in reader:
             if '@' in row[0]:
+                email = Subscriber.objects.normalize_email(row[0])
                 optin_date = timezone.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S')
                 confirm_date = timezone.datetime.strptime(row[6], '%Y-%m-%d %H:%M:%S')
                 subscriber = Subscriber(
-                    email=row[0],
+                    email=email,
                     name=row[2],
                     optin_date=pytz.utc.localize(optin_date),
                     optin_ip_address=row[5],
                     confirm_date=pytz.utc.localize(confirm_date),
                     confirm_ip_address=row[7],
-                    status=Status.SUBSCRIBED,
+                    status=status,
                     mailing_list_id=mailing_list_id
                 )
                 subscribers.append(subscriber)
@@ -61,12 +69,24 @@ class PasteImportSubscribersForm(forms.Form):
     )
 
     def clean(self):
+        """
+        First replace the commas with new lines, then split the text by lines.
+        This is done so to accept both a string of emails separated by new lines
+        or by commas.
+        Normalize the email addresses inside a loop and call the email validator
+        for each email.
+        Emails are addded to a dictionary so to remove the duplicates and at the
+        same time preserve the case informed. The dictionary key is the lower case
+        of the email, and the value is its original form.
+        After the code interates through all the emails, return only the values of
+        the dictionary.
+        """
         cleaned_data = super().clean()
         emails = self.cleaned_data.get('emails', '')
         emails = emails.replace(',', '\n').splitlines()
         cleaned_emails = dict()
         for email in emails:
-            email = email.strip()
+            email = Subscriber.objects.normalize_email(email)
             validate_email(email)
             cleaned_emails[email.lower()] = email
         cleaned_data['emails'] = cleaned_emails.values()
@@ -90,3 +110,4 @@ class PasteImportSubscribersForm(forms.Form):
                 subscriber.status = status
                 subscriber.update_date = timezone.now()
                 subscriber.save()
+            mailing_list.update_subscribers_count()

@@ -10,3 +10,9 @@ nav.navbar .navbar-brand {
 .table-sm {
   font-size: 87.5%;
 }
+
+.alert ul {
+  margin-bottom: 0;
+  list-style: none;
+  padding: 0;
+}
