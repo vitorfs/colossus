@@ -30,7 +30,7 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
 
     headers = {
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        'List-Unsubscribe': context['unsub']
+        'List-Unsubscribe': '<%s>' % context['unsub']
     }
 
     message = EmailMultiAlternatives(
