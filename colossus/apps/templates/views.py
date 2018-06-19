@@ -10,7 +10,7 @@ class EmailTemplateListView(ListView):
     model = EmailTemplate
     context_object_name = 'templates'
     paginate_by = 10
-    ordering = ('update_date')
+    ordering = ('-update_date')
 
     def get_context_data(self, **kwargs):
         kwargs['menu'] = 'templates'
@@ -20,10 +20,20 @@ class EmailTemplateListView(ListView):
 @method_decorator(login_required, name='dispatch')
 class EmailTemplateCreateView(CreateView):
     model = EmailTemplate
-    fields = ('name', 'content',)
+    context_object_name = 'email_template'
+    fields = ('name',)
 
 
 @method_decorator(login_required, name='dispatch')
 class EmailTemplateUpdateView(UpdateView):
     model = EmailTemplate
-    fields = ('name', 'content',)
+    context_object_name = 'email_template'
+    fields = ('name',)
+
+
+@method_decorator(login_required, name='dispatch')
+class EmailTemplateEditorView(UpdateView):
+    model = EmailTemplate
+    context_object_name = 'email_template'
+    fields = ('content',)
+    template_name = 'templates/emailtemplate_editor.html'

@@ -2,21 +2,45 @@
 
 {% load crispy_forms_tags i18n %}
 
+{% block title %}{% spaceless %}
+  {% if email_template %}
+    {% trans 'Edit template' %}
+  {% else %}
+    {% trans 'Create a new template' %}
+  {% endif %}
+{% endspaceless %}{% endblock %}
+
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'templates:emailtemplates' %}">{% trans 'Templates' %}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{% trans 'New template' %}</li>
+      {% if email_template %}
+        <li class="breadcrumb-item"><a href="{% url 'templates:emailtemplate_editor' email_template.pk %}">{{ email_template.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Edit template' %}</li>
+      {% else %}
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'New template' %}</li>
+      {% endif %}
     </ol>
   </nav>
   <div class="card">
     <div class="card-body">
-      <h3 class="card-title">{% trans 'Create a new template' %}</h3>
+      <h3 class="card-title">
+        {% if email_template %}
+          {% trans 'Edit template' %}
+        {% else %}
+          {% trans 'Create a new template' %}
+        {% endif %}
+      </h3>
       <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type="submit" class="btn btn-success" role="button">{% trans 'Create template' %}</button>
-        <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% if email_template %}
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
+          <a href="{% url 'templates:emailtemplate_editor' email_template.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% else %}
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Create template' %}</button>
+          <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% endif %}
       </form>
     </div>
   </div>

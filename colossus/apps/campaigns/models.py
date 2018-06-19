@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from bs4 import BeautifulSoup
 
 from colossus.apps.lists.models import MailingList
+from colossus.apps.templates.models import EmailTemplate
 
 from . import constants
 from .markup import get_template_variables
@@ -85,6 +86,14 @@ class Campaign(models.Model):
 class Email(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, verbose_name=_('campaign'), related_name='emails')
+    template = models.ForeignKey(
+        EmailTemplate,
+        on_delete=models.SET_NULL,
+        verbose_name=_('template'),
+        related_name='used_by',
+        null=True,
+        blank=True
+    )
     from_email = models.EmailField(_('email address'))
     from_name = models.CharField(_('name'), max_length=100, blank=True)
     subject = models.CharField(_('subject'), max_length=150)

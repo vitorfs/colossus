@@ -3,9 +3,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.template import loader
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
-from django.urls import reverse
 
 from colossus.utils import get_client_ip
 

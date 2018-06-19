@@ -29,7 +29,8 @@ class MailingList(models.Model):
     )
     forms_custom_header = models.TextField(
         _('custom header'),
-        help_text=_('Header displayed on all subscription form pages. Accepts HTML. If empty, the name of the mailing list will be used.'),
+        help_text=_('''Header displayed on all subscription form pages. Accepts HTML.
+                       If empty, the name of the mailing list will be used.'''),
         blank=True
     )
 

@@ -36,8 +36,9 @@
     <table class="table table-striped mb-0">
       <thead class="thead-light">
         <tr>
-          <th>{% trans 'Name' %}</th>
-          <th>{% trans 'Last update' %}</th>
+          <th class="w-50">{% trans 'Name' %}</th>
+          <th class="w-25">{% trans 'Last update' %}</th>
+          <th class="w-25">{% trans 'Last used' %}</th>
         </tr>
       </thead>
       <tbody>
@@ -45,6 +46,9 @@
           <tr>
             <td><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></td>
             <td>{{ template.update_date }}</td>
+            <td>
+              {{ template.last_used_date|default_if_none:'Never' }}
+            </td>
           </tr>
         {% endfor %}
       </tbody>

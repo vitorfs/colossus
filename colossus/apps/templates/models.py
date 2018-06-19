@@ -9,6 +9,7 @@ class EmailTemplate(models.Model):
     content = models.TextField(blank=True)
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)
+    last_used_date = models.DateTimeField(_('last used'), null=True, blank=True)
 
     class Meta:
         verbose_name = _('email template')
@@ -18,4 +19,4 @@ class EmailTemplate(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('templates:emailtemplate_edit', kwargs={'pk': self.pk})
+        return reverse('templates:emailtemplate_editor', kwargs={'pk': self.pk})

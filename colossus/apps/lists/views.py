@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
-    UpdateView, View
+    UpdateView, View,
 )
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys

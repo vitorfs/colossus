@@ -1,14 +1,14 @@
 import base64
 
 from django.http import (
-    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse,
+    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 )
 from django.shortcuts import get_object_or_404, redirect, render
+# from django.template import Context, Template
+# from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.views.generic import View
-from django.template import Context, Template
-from django.template.loader import render_to_string
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
@@ -25,8 +25,8 @@ class IndexView(View):
         return HttpResponse('Hi there! :)')
 
 
-def render_form_template(request, form_template):
-    html = render_to_string()
+# def render_form_template(request, form_template):
+#     html = render_to_string()
 
 
 @csrf_exempt
