@@ -21,13 +21,17 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
     if isinstance(to, str):
         to = [to, ]
 
+    subject = email.subject
     if is_test:
-        subject = '[%s] %s' % (_('Test'), email.subject)
-    else:
-        subject = email.subject
+        subject = '[%s] %s' % (_('Test'), subject)
 
     plain_text_message = email.render_text(context)
     rich_text_message = email.render_html(context)
+
+    headers = {
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        'List-Unsubscribe': context['unsub']
+    }
 
     message = EmailMultiAlternatives(
         subject=subject,
@@ -35,6 +39,7 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
         from_email=email.get_from(),
         to=to,
         connection=connection,
+        headers=headers
     )
     message.attach_alternative(rich_text_message, 'text/html')
 
@@ -46,8 +51,7 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
         return False
 
 
-def send_campaign_email_subscriber(email, subscriber, connection=None):
-    site = get_current_site(request=None)  # get site based on SITE_ID
+def send_campaign_email_subscriber(email, subscriber, site, connection=None):
     path = reverse('subscribers:unsubscribe', kwargs={
         'mailing_list_uuid': email.campaign.mailing_list.uuid,
         'subscriber_uuid': subscriber.uuid,
@@ -69,9 +73,10 @@ def send_campaign_email_test(email, recipient_list):
 
 
 def send_campaign(campaign):
+    site = get_current_site(request=None)  # get site based on SITE_ID
+    campaign.email.enable_tracking()
     with get_connection() as connection:
-        campaign.email.enable_tracking()
         for subscriber in campaign.mailing_list.get_active_subscribers():
-            sent = send_campaign_email_subscriber(campaign.email, subscriber, connection)
+            sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
             if sent:
                 subscriber.create_activity(ActivityTypes.SENT, email=campaign.email)
