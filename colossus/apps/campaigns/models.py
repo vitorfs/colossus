@@ -89,11 +89,12 @@ class Email(models.Model):
     template = models.ForeignKey(
         EmailTemplate,
         on_delete=models.SET_NULL,
-        verbose_name=_('template'),
-        related_name='used_by',
+        verbose_name=_('email template'),
+        related_name='emails',
         null=True,
         blank=True
     )
+    template_content = models.TextField(_('email template content'), blank=True)
     from_email = models.EmailField(_('email address'))
     from_name = models.CharField(_('name'), max_length=100, blank=True)
     subject = models.CharField(_('subject'), max_length=150)

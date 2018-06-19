@@ -8,7 +8,7 @@
   <script src="{% static 'vendor/ace/1.3.3/ace.js' %}"></script>
   <script>
     $(function () {
-      var editorHeight = $(window).height() - $("#designEmailContainer").offset()['top'] - (63 + 18);
+      var editorHeight = $(window).height() - $("#designEmailContainer").offset()['top'] - 18;
       $("#editor").css("height", editorHeight + "px");
       $("#previewEmailContainer .card-body").css("height", editorHeight + "px");
 
@@ -64,9 +64,16 @@
         <li class="breadcrumb-item active" aria-current="page">{{ email_template.name }}</li>
       </ol>
     </nav>
-    <div class="mb-3 d-flex align-items-center">
-      <h2 class="mb-0 mr-2">{{ email_template.name }}</h2>
-      <a href="{% url 'templates:emailtemplate_edit' email_template.pk %}" class="btn btn-sm btn-link" role="button">Edit name</a>
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <h2 class="mb-0 mr-2">{{ email_template.name }}</h2>
+        <a href="{% url 'templates:emailtemplate_edit' email_template.pk %}" class="btn btn-sm btn-link" role="button">Edit name</a>
+      </div>
+      <div>
+        <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-secondary" role="button">{% trans 'Delete template' %}</a>
+        <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-secondary ml-1" role="button">{% trans 'Update preview' %}</a>
+        <button type="submit" class="btn btn-success ml-1" role="button">{% trans 'Save changes' %}</button>
+      </div>
     </div>
     <div class="row">
       <div class="col-lg-6">
@@ -74,29 +81,12 @@
           <div class="card-body p-0">
             <div id="editor" style="height:300px">{{ email_template.content }}</div>
           </div>
-          <div class="card-footer">
-            <form method="post" id="designEmailForm" novalidate>
-              {% csrf_token %}
-              <div style="display:none;">
-                {{ form|crispy }}
-              </div>
-              <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
-              <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
-            </form>
-          </div>
         </div>
       </div>
       <div class="col-lg-6">
         <div class="card" id="previewEmailContainer">
           <div class="card-body p-0">
             <!--iframe src="" id="previewEmailIframe" class="w-100 h-100" style="border:0;"></iframe-->
-          </div>
-          <div class="card-footer">
-            <button type="button"
-                    class="btn btn-primary js-update-preview"
-                    data-csrf="{{ csrf_token }}"
-                    data-remote-url="#"
-                    data-loading="{% trans 'Updating preview…' %}">{% trans 'Update preview' %}</button>
           </div>
         </div>
       </div>

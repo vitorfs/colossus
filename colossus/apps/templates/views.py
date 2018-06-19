@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, UpdateView
+from django.template.loader import get_template
 
 from .models import EmailTemplate
 
@@ -22,6 +23,13 @@ class EmailTemplateCreateView(CreateView):
     model = EmailTemplate
     context_object_name = 'email_template'
     fields = ('name',)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        default_content = get_template('templates/default_email_template_content.html')
+        self.object.content = default_content.template.source
+        self.object.save()
+        return super().form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')
