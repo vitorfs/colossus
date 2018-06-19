@@ -1,0 +1,35 @@
+{% load i18n %}{% autoescape off %}<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <!--[if gte mso 15]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans 'Please Confirm Subscription' %}</title>
+</head>
+<body>
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "EmailMessage",
+    "potentialAction": {
+      "@type": "ConfirmAction",
+      "name": "{% trans 'Confirm Subscription' %}",
+      "handler": {
+        "@type": "HttpActionHandler",
+        "url": "{{ confirm_link }}"
+      }
+    },
+    "description": "{% blocktrans %}Confirm subscription to {{ list_name }}.{% endblocktrans %}"
+  }
+  </script>
+  <div>{% blocktrans %}Please confirm your subscription to {{ list_name }}:{% endblocktrans %}</div>
+  <div><br></div>
+  <div>
+    <a href="{{ confirm_link }}">{% trans 'Yes, subscribe me to this list.' %}</a>
+  </div>
+  <div>{% trans "If you received this email by mistake, simply delete it. You won't be subscribed if you don't click the confirmation link above." %}</div>
+  <div><br></div>
+  <div>{% blocktrans %}For questions about this list, please contact: {{ contact_email }}{% endblocktrans %}</div>
+</body>
+</html>{% endautoescape %}

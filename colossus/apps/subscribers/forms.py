@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
 from django.template import loader
 from django.urls import reverse
@@ -68,9 +69,16 @@ class SubscribeForm(forms.ModelForm):
 
         subject = loader.render_to_string('subscribers/confirm_email_subject.txt', context)
         subject = ''.join(subject.splitlines())  # Email subject *must not* contain newlines
-        body = loader.render_to_string('subscribers/confirm_email.txt', context)
+        plain_text_message = loader.render_to_string('subscribers/confirm_email.txt', context)
+        rich_text_message = loader.render_to_string('subscribers/confirm_email.html', context)
 
-        subscriber.send_mail(subject=subject, message=body)
+        message = EmailMultiAlternatives(
+            subject=subject,
+            body=plain_text_message,
+            to=[subscriber.get_email()]
+        )
+        message.attach_alternative(rich_text_message, 'text/html')
+        message.send()
 
         return subscriber
 

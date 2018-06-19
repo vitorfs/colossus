@@ -56,7 +56,6 @@ def confirm_subscription(request, mailing_list_uuid):
     return render(request, 'subscribers/subscribe_thank_you.html', {'mailing_list': mailing_list})
 
 
-@require_GET
 def confirm_double_optin_token(request, mailing_list_uuid, token):
     try:
         mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
