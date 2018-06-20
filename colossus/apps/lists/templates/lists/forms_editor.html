@@ -1,9 +1,9 @@
-{% extends 'lists/base.html' %}
+{% extends 'base.html' %}
 
 {% load i18n %}
 
-{% block main %}
-  <div class="container-fluid">
+{% block content %}
+
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
@@ -12,84 +12,186 @@
         <li class="breadcrumb-item active" aria-current="page">{% trans 'Forms Editor' %}</li>
       </ol>
     </nav>
-    <h1 class="mb-4">{% trans 'Subscription Workflow' %}</h1>
-    <div class="row">
-      <div class="col-md-6 col-lg-4">
-        <div class="jumbotron d-flex align-items-center justify-content-center" style="padding:3rem; min-height:328px;">
-          <div class="text-center">
-            <i data-feather="file-text" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-            <h4 class="mt-2 mb-3">{% trans '1. Subscribe form' %}</h4>
-            <p class="text-muted">{% trans 'Entry point for the subscription workflow. Displays the subscription form.' %}</p>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="m-0">
+        {% trans 'Forms Editor' %}
+      </h2>
+      <nav>
+        <a href="" class="btn btn-link" role="button">{% trans 'Reset defaults' %}</a>
+        <a href="{% url 'lists:customize_design' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Customize base design' %}</a>
+      </nav>
+    </div>
+
+    <h6 class="mb-3">
+      {% trans 'Legends:' %}
+      <span class="badge badge-secondary d-inline-flex align-items-center">
+        <i data-feather="file-text" class="text-light mr-1" width="16px" height="16px" stroke-width="2"></i> {% trans 'Form' %}
+      </span>
+      <span class="badge badge-secondary d-inline-flex align-items-center">
+        <i data-feather="globe" class="text-light mr-1" width="16px" height="16px" stroke-width="2"></i> {% trans 'Web Page' %}
+      </span>
+      <span class="badge badge-secondary d-inline-flex align-items-center">
+        <i data-feather="mail" class="text-light mr-1" width="16px" height="16px" stroke-width="2"></i> {% trans 'Response Email' %}
+      </span>
+    </h6>
+
+    <div class="card mb-3">
+      <h4 class="card-header">{% trans 'Subscription Workflow' %}</h4>
+      <div class="list-group list-group-flush">
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="file-text" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'subscribe' %}">
+                  {% trans 'Subscribe form' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0">{% trans 'Entry point for the subscription workflow. Displays the subscription form.' %}</p>
+            </div>
+          </div>
+          <div class="ml-3">
             <a href="{% url 'lists:edit_form_template' mailing_list.pk 'subscribe' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
           </div>
         </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="jumbotron d-flex align-items-center justify-content-center" style="padding:3rem; min-height:328px;">
-          <div class="text-center">
-            <i data-feather="file-text" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-            <h4 class="mt-2 mb-3">{% trans '2. Subscribe thank you page' %}</h4>
-            <p class="text-muted">{% trans 'Page shown right after a successful form submission. Message instructing the user to click on the link emailed to them.' %}</p>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="globe" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'subscribe-thank-you' %}">
+                  {% trans 'Subscribe thank you page' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0">{% trans 'Page shown right after a successful form submission. Message instructing the user to click on the link emailed to them.' %}</p>
+            </div>
+          </div>
+          <div class="ml-3">
             <a href="{% url 'lists:edit_form_template' mailing_list.pk 'subscribe-thank-you' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
           </div>
         </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="jumbotron d-flex align-items-center justify-content-center" style="padding:3rem; min-height:328px;">
-          <div class="text-center">
-            <i data-feather="mail" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-            <h4 class="mt-2 mb-3">{% trans '3. Opt-in confirm email' %}</h4>
-            <p class="text-muted">{% trans 'Email message sent to the subscriber with a link to confirm the subscription process.' %}</p>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="mail" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'confirm-email' %}">
+                  {% trans 'Opt-in confirm email' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0">{% trans 'Email message sent to the subscriber with a link to confirm the subscription process.' %}</p>
+            </div>
+          </div>
+          <div class="ml-3">
             <a href="{% url 'lists:edit_form_template' mailing_list.pk 'confirm-email' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
           </div>
         </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="jumbotron d-flex align-items-center justify-content-center" style="padding:3rem; min-height:328px;">
-          <div class="text-center">
-            <i data-feather="file-text" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-            <h4 class="mt-2 mb-3">{% trans '4. Opt-in confirm thank you page' %}</h4>
-            <p class="text-muted">{% trans 'Web page shown after clicking and confirming the subscription. An optional redirect URL can also be provided.' %}</p>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="globe" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'confirm-thank-you' %}">
+                  {% trans 'Opt-in confirm thank you page' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0">{% trans 'Web page shown after clicking and confirming the subscription. An optional redirect URL can also be provided.' %}</p>
+            </div>
+          </div>
+          <div class="ml-3">
             <a href="{% url 'lists:edit_form_template' mailing_list.pk 'confirm-thank-you' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
           </div>
         </div>
-      </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="jumbotron d-flex align-items-center justify-content-center" style="padding:3rem; min-height:328px;">
-          <div class="text-center">
-            <i data-feather="mail" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-            <h4 class="mt-2 mb-3">{% trans '5. Final welcome email' %}</h4>
-            <p class="text-muted">{% trans 'Optional confirmation email with a welcome message.' %}</p>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="mail" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'welcome-email' %}">
+                  {% trans 'Final welcome email' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0">{% trans 'Optional confirmation email with a welcome message.' %}</p>
+            </div>
+          </div>
+          <div class="ml-3">
             <a href="{% url 'lists:edit_form_template' mailing_list.pk 'welcome-email' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
           </div>
         </div>
       </div>
     </div>
-    <hr>
-    <h1 class="mb-4">{% trans 'Unsubscription Workflow' %}</h1>
-    <div class="row">
-      <div class="col">
-        <div class="jumbotron text-center" style="padding:3rem; min-height:328px;">
-          <i data-feather="file-text" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-          <h4 class="mt-2 mb-3">{% trans '1. Unsubscribe form' %}</h4>
-          <a href="{% url 'lists:edit_form_template' mailing_list.pk 'unsubscribe' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+
+    <div class="card mb-3">
+      <h4 class="card-header">{% trans 'Unsubscription Workflow' %}</h4>
+      <div class="list-group list-group-flush">
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="file-text" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'unsubscribe' %}">
+                  {% trans 'Unsubscribe form' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0"></p>
+            </div>
+          </div>
+          <div class="ml-3">
+            <a href="{% url 'lists:edit_form_template' mailing_list.pk 'unsubscribe' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+          </div>
         </div>
-      </div>
-      <div class="col">
-        <div class="jumbotron text-center" style="padding:3rem; min-height:328px;">
-          <i data-feather="file-text" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-          <h4 class="mt-2 mb-3">{% trans '2. Unsubscribe success page' %}</h4>
-          <a href="{% url 'lists:edit_form_template' mailing_list.pk 'unsubscribe-success' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="globe" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'unsubscribe-success' %}">
+                  {% trans 'Unsubscribe success page' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0"></p>
+            </div>
+          </div>
+          <div class="ml-3">
+            <a href="{% url 'lists:edit_form_template' mailing_list.pk 'unsubscribe-success' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+          </div>
         </div>
-      </div>
-      <div class="col">
-        <div class="jumbotron text-center" style="padding:3rem; min-height:328px;">
-          <i data-feather="mail" class="text-muted" width="48px" height="48px" stroke-width="1"></i>
-          <h4 class="mt-2 mb-3">{% trans '3. Goodbye email' %}</h4>
-          <p class="text-muted"></p>
-          <a href="{% url 'lists:edit_form_template' mailing_list.pk 'goodbye-email' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="mr-3">
+              <i data-feather="mail" class="text-muted" width="32px" height="32px" stroke-width="1"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk 'goodbye-email' %}">
+                  {% trans 'Goodbye email' %}
+                </a>
+              </h5>
+              <p class="text-muted mb-0"></p>
+            </div>
+          </div>
+          <div class="ml-3">
+            <a href="{% url 'lists:edit_form_template' mailing_list.pk 'goodbye-email' %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+
+
+
 {% endblock %}

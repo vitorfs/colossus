@@ -8,21 +8,6 @@
   <title>{% trans 'Please Confirm Subscription' %}</title>
 </head>
 <body>
-  <script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "EmailMessage",
-    "potentialAction": {
-      "@type": "ConfirmAction",
-      "name": "{% trans 'Confirm Subscription' %}",
-      "handler": {
-        "@type": "HttpActionHandler",
-        "url": "{{ confirm_link }}"
-      }
-    },
-    "description": "{% blocktrans %}Confirm subscription to {{ list_name }}.{% endblocktrans %}"
-  }
-  </script>
   <div>{% blocktrans %}Please confirm your subscription to {{ list_name }}:{% endblocktrans %}</div>
   <div><br></div>
   <div>
@@ -32,5 +17,14 @@
   <div>{% trans "If you received this email by mistake, simply delete it. You won't be subscribed if you don't click the confirmation link above." %}</div>
   <div><br></div>
   <div>{% blocktrans %}For questions about this list, please contact: {{ contact_email }}{% endblocktrans %}</div>
+  <div itemscope itemtype="http://schema.org/EmailMessage">
+    <div itemprop="potentialAction" itemscope itemtype="http://schema.org/ConfirmAction">
+      <meta itemprop="name" content="{% trans 'Confirm Subscription' %}"/>
+      <div itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
+        <link itemprop="url" href="{{ confirm_link }}"/>
+      </div>
+    </div>
+    <meta itemprop="description" content="{% blocktrans %}Confirm subscription to {{ list_name }}.{% endblocktrans %}"/>
+  </div>
 </body>
 </html>{% endautoescape %}
