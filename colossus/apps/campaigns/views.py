@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from colossus.apps.templates.models import EmailTemplate
+
 from . import constants
 from .api import get_test_email_context
 from .forms import CampaignTestEmailForm, DesignEmailForm, PlainTextEmailForm
@@ -96,6 +98,22 @@ class CampaignEditContentView(AbstractCampaignEmailUpdateView):
 class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
     title = 'Edit Plain-Text Email'
     form_class = PlainTextEmailForm
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignEditTemplateView(AbstractCampaignEmailUpdateView):
+    title = 'Template'
+    fields = ('template',)
+
+    def form_valid(self, form):
+        email = form.save(commit=False)
+        if email.template is None:
+            email.template_content = EmailTemplate.objects.default_content()
+        else:
+            email.template_content = email.template.content
+        email.set_blocks()
+        email.save()
+        return redirect('campaigns:campaign_edit_content', pk=self.kwargs.get('pk'))
 
 
 @login_required

@@ -1,4 +1,5 @@
 import uuid
+import json
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
@@ -13,7 +14,7 @@ from colossus.apps.lists.models import MailingList
 from colossus.apps.templates.models import EmailTemplate
 
 from . import constants
-from .markup import get_template_variables
+from .markup import get_template_variables, get_template_blocks
 from .tasks import send_campaign_task
 
 
@@ -101,6 +102,9 @@ class Email(models.Model):
     preview = models.CharField(_('preview'), max_length=150, blank=True)
     content = models.TextField(_('content'))
     content_text = models.TextField(_('content'))
+    content_blocks = models.TextField(_('blocks'))
+
+    __blocks = None
 
     class Meta:
         verbose_name = _('email')
@@ -113,6 +117,43 @@ class Email(models.Model):
         if self.from_name:
             return '%s <%s>' % (self.from_name, self.from_email)
         return self.from_email
+
+    def get_base_template(self):
+        """
+        Retuns a Django template using `template_content` field.
+        Fallback to default basic template defined by EmailTemplate.
+        """
+        if self.template_content:
+            template = Template(self.template_content)
+        else:
+            template_string = EmailTemplate.objects.default_content()
+            template = Template(template_string)
+        return template
+
+    def set_blocks(self):
+        old_blocks = self.get_blocks()
+        new_blocks = dict()
+        template = self.get_base_template()
+        template_blocks_names = get_template_blocks(template)
+        for name in template_blocks_names:
+            inherited_content = ''
+            if name in old_blocks.keys():
+                inherited_content = old_blocks[name]
+            new_blocks[name] = inherited_content
+        self.content_blocks = json.dumps(new_blocks)
+        self.__blocks = new_blocks
+
+    def load_blocks(self):
+        try:
+            blocks = json.loads(self.content_blocks)
+        except (TypeError, json.JSONDecodeError):
+            blocks = {'content': ''}
+        return blocks
+
+    def get_blocks(self):
+        if self.__blocks is None:
+            self.__blocks = self.load_blocks()
+        return self.__blocks
 
     def checklist(self):
         _checklist = {

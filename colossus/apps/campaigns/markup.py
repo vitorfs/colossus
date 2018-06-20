@@ -1,5 +1,5 @@
 from django.template.base import VariableNode
-from django.template.loader_tags import ExtendsNode
+from django.template.loader_tags import BlockNode, ExtendsNode
 
 from bs4 import BeautifulSoup
 
@@ -27,6 +27,12 @@ def get_template_variables(template):
     """
     clean_variables = filter(lambda _v: not _v.startswith('block'), _get_template_variables(template))
     return set(clean_variables)
+
+
+def get_template_blocks(template):
+    nodes = template.nodelist.get_nodes_by_type(BlockNode)
+    blocks = map(lambda b: b.name, nodes)
+    return set(blocks)
 
 
 def get_plain_text_from_html(html):
