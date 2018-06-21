@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.template.base import VariableNode
 from django.template.loader_tags import BlockNode, ExtendsNode
 
@@ -31,8 +33,10 @@ def get_template_variables(template):
 
 def get_template_blocks(template):
     nodes = template.nodelist.get_nodes_by_type(BlockNode)
-    blocks = map(lambda b: b.name, nodes)
-    return set(blocks)
+    blocks = OrderedDict()
+    for node in nodes:
+        blocks[node.name] = node
+    return blocks.keys()
 
 
 def get_plain_text_from_html(html):
