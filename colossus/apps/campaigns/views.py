@@ -91,7 +91,7 @@ class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
 class CampaignEditContentView(AbstractCampaignEmailUpdateView):
     title = 'Design Email'
     form_class = DesignEmailForm
-    template_name = 'campaigns/design_email_form.html'
+    template_name = 'campaigns/email_form.html'
 
 
 @method_decorator(login_required, name='dispatch')
