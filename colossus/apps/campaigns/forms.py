@@ -34,3 +34,22 @@ class CampaignTestEmailForm(forms.Form):
     def send(self, email):
         recipient_email = self.cleaned_data.get('email')
         send_campaign_email_test(email, recipient_email)
+
+
+class EmailEditorForm(forms.Form):
+    def __init__(self, email=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.email = email
+        blocks = email.get_blocks()
+        for block_key, block_content in blocks.items():
+            self.fields[block_key] = forms.CharField(
+                label=_('Block %s' % block_key),
+                required=False,
+                initial=block_content,
+                widget=forms.Textarea()
+            )
+
+    def save_blocks(self):
+        self.email.set_blocks(self.cleaned_data)
+        self.email.save()
+        return self.email

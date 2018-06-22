@@ -116,25 +116,5 @@
         </div>
       </div>
     </div>
-
-    <div class="accordion mb-3" id="contentBlocks">
-      {% for block_key, content in campaign.email.get_blocks.items %}
-        <div class="card">
-          <div class="card-header" id="heading_{{ block_key }}">
-            <h5 class="mb-0">
-              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_{{ block_key }}"{% if forloop.first %} aria-expanded="true"{% endif %} aria-controls="collapse_{{ block_key }}">
-                {{ block_key|title }}
-              </button>
-            </h5>
-          </div>
-          <div id="collapse_{{ block_key }}" class="collapse{% if forloop.first %} show{% endif %}" aria-labelledby="heading_{{ block_key }}" data-parent="#contentBlocks">
-            <div class="card-body">
-              {{ content }}
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-
   </div>
 {% endblock %}

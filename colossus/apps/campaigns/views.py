@@ -3,13 +3,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
+from django.views.generic.detail import SingleObjectMixin
 
 from colossus.apps.templates.models import EmailTemplate
 
 from . import constants
 from .api import get_test_email_context
-from .forms import CampaignTestEmailForm, DesignEmailForm, PlainTextEmailForm
+from .forms import CampaignTestEmailForm, DesignEmailForm, PlainTextEmailForm, EmailEditorForm
 from .mixins import CampaignMixin
 from .models import Campaign, Email
 
@@ -88,13 +89,6 @@ class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class CampaignEditContentView(AbstractCampaignEmailUpdateView):
-    title = 'Design Email'
-    form_class = DesignEmailForm
-    template_name = 'campaigns/email_form.html'
-
-
-@method_decorator(login_required, name='dispatch')
 class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
     title = 'Edit Plain-Text Email'
     form_class = PlainTextEmailForm
@@ -114,6 +108,22 @@ class CampaignEditTemplateView(AbstractCampaignEmailUpdateView):
         email.set_blocks()
         email.save()
         return redirect('campaigns:campaign_edit_content', pk=self.kwargs.get('pk'))
+
+
+@login_required
+def campaign_edit_content(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    if request.method == 'POST':
+        form = EmailEditorForm(campaign.email, data=request.POST)
+        if form.is_valid():
+            form.save_blocks()
+            return redirect('campaigns:campaign_edit_content', pk=pk)
+    else:
+        form = EmailEditorForm(campaign.email)
+    return render(request, 'campaigns/email_form.html', {
+        'campaign': campaign,
+        'form': form
+    })
 
 
 @login_required

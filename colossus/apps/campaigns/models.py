@@ -100,11 +100,14 @@ class Email(models.Model):
     from_name = models.CharField(_('name'), max_length=100, blank=True)
     subject = models.CharField(_('subject'), max_length=150)
     preview = models.CharField(_('preview'), max_length=150, blank=True)
-    content = models.TextField(_('content'))
-    content_text = models.TextField(_('content'))
-    content_blocks = models.TextField(_('blocks'))
+    content = models.TextField(_('content'), blank=True)
+    content_html = models.TextField(_('content HTML'), blank=True)
+    content_text = models.TextField(_('content plain text'), blank=True)
 
     __blocks = None
+    __base_template = None
+
+    BASE_TEMPLATE = 'base_template'
 
     class Meta:
         verbose_name = _('email')
@@ -112,6 +115,12 @@ class Email(models.Model):
 
     def __str__(self):
         return self.subject
+
+    @property
+    def base_template(self):
+        if self.__base_template is None:
+            self.__base_template = Template(self.template_content)
+        return self.__base_template
 
     def get_from(self):
         if self.from_name:
@@ -130,22 +139,25 @@ class Email(models.Model):
             template = Template(template_string)
         return template
 
-    def set_blocks(self):
-        old_blocks = self.get_blocks()
-        new_blocks = dict()
-        template = self.get_base_template()
-        template_blocks_names = get_template_blocks(template)
-        for name in template_blocks_names:
-            inherited_content = ''
-            if name in old_blocks.keys():
-                inherited_content = old_blocks[name]
-            new_blocks[name] = inherited_content
-        self.content_blocks = json.dumps(new_blocks)
-        self.__blocks = new_blocks
+    def set_blocks(self, blocks=None):
+        if blocks is None:
+            old_blocks = self.get_blocks()
+            blocks = dict()
+            template = self.get_base_template()
+            template_blocks = get_template_blocks(template)
+            for block_name, block_content in template_blocks.items():
+                inherited_content = block_content
+                if block_name in old_blocks.keys():
+                    old_block_content = old_blocks.get(block_name, '').strip()
+                    if old_block_content:
+                        inherited_content = old_blocks[block_name]
+                blocks[block_name] = inherited_content
+        self.content = json.dumps(blocks)
+        self.__blocks = blocks
 
     def load_blocks(self):
         try:
-            blocks = json.loads(self.content_blocks)
+            blocks = json.loads(self.content)
         except (TypeError, json.JSONDecodeError):
             blocks = {'content': ''}
         return blocks
@@ -193,19 +205,35 @@ class Email(models.Model):
         else:
             return True
 
+    def build_template_string(self):
+        virtual_template = ['{%% extends %s %%}' % self.BASE_TEMPLATE,]
+        blocks = self.get_blocks()
+        for block_key, block_content in blocks.items():
+            if block_content:
+                virtual_template.append('{%% block %s %%}\n%s\n{%% endblock %%}' % (block_key, block_content))
+        return '\n\n'.join(virtual_template)
+
+    def build_flat_template_string(self):
+        """
+        Expand the blocks contents to be used in a
+        """
+        pass
+
     def render(self, template_string, context_dict):
         template = Template(template_string)
         context = Context(context_dict)
         return template.render(context)
 
     def render_html(self, context_dict):
-        return self.render(self.content, context_dict)
+        template_string = self.build_template_string()
+        context_dict.update({self.BASE_TEMPLATE: self.base_template})
+        return self.render(template_string, context_dict)
 
     def render_text(self, context_dict):
         return self.render(self.content_text, context_dict)
 
     def enable_tracking(self):
-        soup = BeautifulSoup(self.content, 'html5lib')
+        soup = BeautifulSoup(self.content_html, 'html5lib')
         for index, a in enumerate(soup.findAll('a')):
             href = a.attrs['href']
             url = href.strip()
@@ -220,7 +248,7 @@ class Email(models.Model):
                 # which will be later used to replace with the subscriber's uuid.
                 track_url = '%s://%s/track/click/%s/{{ uuid }}/' % (protocol, domain, link.uuid)
                 a.attrs['href'] = track_url
-        self.content = str(soup)
+        self.content_html = str(soup)
 
 
 class Link(models.Model):

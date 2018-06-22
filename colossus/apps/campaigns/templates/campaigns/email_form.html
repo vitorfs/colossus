@@ -37,6 +37,7 @@
         statusbar: false,
         plugins: 'textcolor lists code link',
         toolbar: 'undo redo |  formatselect | bold italic backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat | code',
+        forced_root_block: 'div',
         skin: 'colossus',
         height: editorHeight,
         init_instance_callback: function () {
@@ -88,47 +89,51 @@
         <li class="breadcrumb-item active" aria-current="page">{% trans 'Design Email' %}</li>
       </ol>
     </nav>
-    <div class="mb-3 d-flex align-items-center justify-content-between">
-      <h3 class="m-0">{% trans 'Design Email' %}</h3>
-      <nav>
-        <button type="button" class="btn btn-outline-primary">{% trans 'Send test email' %}</button>
-        <button type="button"
-                class="btn btn-primary js-update-preview"
-                data-csrf="{{ csrf_token }}"
-                data-remote-url="{% url 'campaigns:campaign_preview_email' campaign.pk %}"
-                data-loading="{% trans 'Updating preview…' %}">{% trans 'Update preview' %}</button>
-        <button type="button" class="btn btn-success">{% trans 'Save changes' %}</button>
-      </nav>
-    </div>
-    <div class="row" id="editor">
-      <div class="col-lg-6">
-        <div class="accordion mb-3" id="contentBlocks">
-          {% for block_key, content in campaign.email.get_blocks.items %}
-            <div class="card">
-              <div class="card-header" id="heading_{{ block_key }}">
-                <h5 class="mb-0">
-                  <button class="btn btn-link p-0" type="button" data-toggle="collapse" data-target="#collapse_{{ block_key }}"{% if forloop.first %} aria-expanded="true"{% endif %} aria-controls="collapse_{{ block_key }}">
-                    {{ block_key|title }}
-                  </button>
-                </h5>
-              </div>
-              <div id="collapse_{{ block_key }}" class="collapse{% if forloop.first %} show{% endif %}" aria-labelledby="heading_{{ block_key }}" data-parent="#contentBlocks">
-                <div class="card-body p-0">
-                  <textarea id="id_block_{{ block_key }}" name="block_{{ block_key }}">{{ content }}</textarea>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-3 d-flex align-items-center justify-content-between">
+        <h3 class="m-0">{% trans 'Design Email' %}</h3>
+        <nav>
+          <button type="button" class="btn btn-link">{% trans 'Send test email' %}</button>
+          <a href="{% url 'campaigns:campaign_edit_template' campaign.pk %}" class="btn btn-link">{% trans 'Change template' %}</a>
+          <button type="button"
+                  class="btn btn-outline-primary js-update-preview"
+                  data-csrf="{{ csrf_token }}"
+                  data-remote-url="{% url 'campaigns:campaign_preview_email' campaign.pk %}"
+                  data-loading="{% trans 'Updating preview…' %}">{% trans 'Update preview' %}</button>
+          <button type="submit" class="btn btn-outline-success">{% trans 'Save changes' %}</button>
+          <button type="submit" class="btn btn-success">{% trans 'Save and close' %}</button>
+        </nav>
+      </div>
+      <div class="row" id="editor">
+        <div class="col-lg-6">
+          <div class="accordion mb-3" id="contentBlocks">
+            {% for field in form %}
+              <div class="card">
+                <div class="card-header" id="heading_{{ forloop.counter }}">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link p-0" type="button" data-toggle="collapse" data-target="#collapse_{{ forloop.counter }}"{% if forloop.first %} aria-expanded="true"{% endif %} aria-controls="collapse_{{ forloop.counter }}">
+                      {{ field.label|title }}
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapse_{{ forloop.counter }}" class="collapse{% if forloop.first %} show{% endif %}" aria-labelledby="heading_{{ forloop.counter }}" data-parent="#contentBlocks">
+                  <div class="card-body p-0">
+                    {{ field }}
+                  </div>
                 </div>
               </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="card" id="previewEmailContainer">
-          <div class="card-body p-0">
-            <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" id="previewEmailIframe" class="w-100 h-100" style="border:0;"></iframe>
+        <div class="col-lg-6">
+          <div class="card" id="previewEmailContainer">
+            <div class="card-body p-0">
+              <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" id="previewEmailIframe" class="w-100 h-100" style="border:0;"></iframe>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
+    </form>
   </div>
 {% endblock %}
