@@ -49,7 +49,8 @@ class EmailEditorForm(forms.Form):
                 widget=forms.Textarea()
             )
 
-    def save_blocks(self):
+    def save(self, commit=True):
         self.email.set_blocks(self.cleaned_data)
-        self.email.save()
+        if commit:
+            self.email.save()
         return self.email

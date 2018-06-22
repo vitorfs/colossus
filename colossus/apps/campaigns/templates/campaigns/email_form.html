@@ -27,6 +27,8 @@
         editorHeight = 300;
       }
 
+      var $editorForm = $("#editorForm");
+
       /*{% comment %}
       vendor/tinymce/tinymce.min.js
       Initialize the rich text editor to compose email message
@@ -40,40 +42,29 @@
         forced_root_block: 'div',
         skin: 'colossus',
         height: editorHeight,
-        init_instance_callback: function () {
+        init_instance_callback: function (editor) {
           previewHeight = $("#contentBlocks").height() - 2;
           $("#previewEmailContainer .card-body").css("height", previewHeight + "px");
+
+          editor.on('Change', function (e) {
+
+            tinymce.triggerSave();
+
+            $.ajax({
+              url: $editorForm.attr("data-preview-url"),
+              type: $editorForm.attr("method"),
+              data: $editorForm.serialize(),
+              dataType: 'json',
+              beforeSend: function () {},
+              success: function (data) {
+                $("#previewEmailIframe").contents().find("html").html(data.html);
+              },
+              error: function () {},
+              complete: function () {}
+            });
+          });
+
         }
-      });
-
-      $(".js-update-preview").click(function () {
-        var $btn = $(this);
-
-        $.ajax({
-          url: $btn.attr("data-remote-url"),
-          type: 'post',
-          data: {
-            'content': editor.getValue(),
-            'csrfmiddlewaretoken': $btn.attr("data-csrf")
-          },
-          dataType: 'json',
-          beforeSend: function () {
-            $btn.attr("data-text", $btn.text());
-            $btn.text($btn.attr("data-loading"));
-            $btn.prop("disable", true);
-          },
-          success: function (data) {
-            $("#previewEmailIframe").contents().find("html").html(data.html);
-          },
-          error: function () {
-
-          },
-          complete: function () {
-            $btn.text($btn.attr("data-text"));
-            $btn.prop("disable", false);
-          }
-        });
-
       });
 
     });
@@ -89,18 +80,13 @@
         <li class="breadcrumb-item active" aria-current="page">{% trans 'Design Email' %}</li>
       </ol>
     </nav>
-    <form method="post" novalidate>
+    <form id="editorForm" method="post" novalidate data-preview-url="{% url 'campaigns:campaign_preview_email' campaign.pk %}">
       {% csrf_token %}
       <div class="mb-3 d-flex align-items-center justify-content-between">
         <h3 class="m-0">{% trans 'Design Email' %}</h3>
         <nav>
           <button type="button" class="btn btn-link">{% trans 'Send test email' %}</button>
           <a href="{% url 'campaigns:campaign_edit_template' campaign.pk %}" class="btn btn-link">{% trans 'Change template' %}</a>
-          <button type="button"
-                  class="btn btn-outline-primary js-update-preview"
-                  data-csrf="{{ csrf_token }}"
-                  data-remote-url="{% url 'campaigns:campaign_preview_email' campaign.pk %}"
-                  data-loading="{% trans 'Updating preview…' %}">{% trans 'Update preview' %}</button>
           <button type="submit" class="btn btn-outline-success">{% trans 'Save changes' %}</button>
           <button type="submit" class="btn btn-success">{% trans 'Save and close' %}</button>
         </nav>

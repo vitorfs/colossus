@@ -116,7 +116,7 @@ def campaign_edit_content(request, pk):
     if request.method == 'POST':
         form = EmailEditorForm(campaign.email, data=request.POST)
         if form.is_valid():
-            form.save_blocks()
+            form.save()
             return redirect('campaigns:campaign_edit_content', pk=pk)
     else:
         form = EmailEditorForm(campaign.email)
@@ -146,10 +146,13 @@ def campaign_test_email(request, pk):
 @login_required
 def campaign_preview_email(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
+    email = campaign.email
     if request.method == 'POST':
-        campaign.email.content = request.POST.get('content')
+        form = EmailEditorForm(email, data=request.POST)
+        if form.is_valid():
+            email = form.save(commit=False)
     test_context_dict = get_test_email_context()
-    html = campaign.email.render_html(test_context_dict)
+    html = email.render_html(test_context_dict)
     if 'application/json' in request.META.get('HTTP_ACCEPT'):
         return JsonResponse({'html': html})
     else:
