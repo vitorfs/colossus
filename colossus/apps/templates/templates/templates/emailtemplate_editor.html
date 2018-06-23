@@ -77,10 +77,9 @@
           <a href="{% url 'templates:emailtemplate_edit' email_template.pk %}" class="btn btn-sm btn-link" role="button">Edit name</a>
         </div>
         <div>
-          <button type="button" class="btn btn-link" role="button">{% trans 'Help with formatting' %}</button>
-          <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-danger" role="button">{% trans 'Delete template' %}</a>
-          <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
-          <button type="submit" class="btn btn-success" role="button">{% trans 'Save and close' %}</button>
+          <a href="{% url 'templates:emailtemplate_delete' email_template.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Delete template' %}</a>
+          <button type="submit" name="action" value="save_changes" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
+          <button type="submit" name="action" value="save_and_close" class="btn btn-success" role="button">{% trans 'Save and close' %}</button>
         </div>
       </div>
 

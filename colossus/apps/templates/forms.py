@@ -3,6 +3,7 @@ from django.template import Template, TemplateSyntaxError
 from django.template.loader_tags import IncludeNode, ExtendsNode
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext
+from django.utils import timezone
 
 from .models import EmailTemplate
 
@@ -40,6 +41,7 @@ class EmailTemplateForm(forms.ModelForm):
 
     def save(self, commit=True):
         email_template = super().save(commit=False)
+        email_template.update_date = timezone.now()
         if commit:
             email_template.save()
         return email_template

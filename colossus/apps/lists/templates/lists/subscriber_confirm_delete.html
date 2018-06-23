@@ -14,7 +14,7 @@
   </nav>
   <div class="card mb-3">
     <div class="card-body">
-      <h2 class="card-title">Are you sure?</h2>
+      <h2 class="card-title">{% trans 'Are you sure?' %}</h2>
       <p>You are about to delete the subscriber <strong>{{ subscriber.email }}</strong> from the list.</p>
       <form method="post" novalidate>
         {% csrf_token %}

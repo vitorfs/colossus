@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.views.generic.base import ContextMixin
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
 
 from .models import EmailTemplate
 from .forms import EmailTemplateForm
@@ -38,11 +39,23 @@ class EmailTemplateUpdateView(EmailTemplateMixin, UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class EmailTemplateDeleteView(EmailTemplateMixin, DeleteView):
+    model = EmailTemplate
+    context_object_name = 'email_template'
+    success_url = reverse_lazy('templates:emailtemplates')
+
+
+@method_decorator(login_required, name='dispatch')
 class EmailTemplateEditorView(EmailTemplateMixin, UpdateView):
     model = EmailTemplate
     form_class = EmailTemplateForm
     context_object_name = 'email_template'
     template_name = 'templates/emailtemplate_editor.html'
+
+    def get_success_url(self):
+        if self.request.POST.get('action', 'save_changes') == 'save_changes':
+            return self.object.get_absolute_url()
+        return reverse('templates:emailtemplates')
 
 
 @login_required
