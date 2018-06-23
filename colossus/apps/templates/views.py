@@ -5,6 +5,7 @@ from django.views.generic.base import ContextMixin
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.db.models import Q
 
 from .models import EmailTemplate
 from .forms import EmailTemplateForm
@@ -20,8 +21,22 @@ class EmailTemplateMixin(ContextMixin):
 class EmailTemplateListView(EmailTemplateMixin, ListView):
     model = EmailTemplate
     context_object_name = 'templates'
-    paginate_by = 10
-    ordering = ('-update_date')
+    paginate_by = 2
+
+    def get_context_data(self, **kwargs):
+        kwargs['total_count'] = self.model.objects.count()
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        queryset = self.model.objects.all()
+        if 'q' in self.request.GET:
+            query = self.request.GET.get('q')
+            queryset = queryset.filter(Q(name__icontains=query) | Q(content__icontains=query))
+            self.extra_context = {
+                'is_filtered': True,
+                'query': query
+            }
+        return queryset.order_by('-update_date')
 
 
 @method_decorator(login_required, name='dispatch')

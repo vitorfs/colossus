@@ -1,0 +1,59 @@
+{% load colossus i18n humanize %}
+
+<div class="card-footer d-flex justify-content-between align-items-center">
+  <div>
+    {% if is_paginated %}
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?{% qs page=page_obj.previous_page_number q=query %}">‹</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?{% qs page=1 q=query %}">«</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">‹</a>
+            </li>
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">«</a>
+            </li>
+          {% endif %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">
+              {% blocktrans trimmed with page_obj.number as current_page and page_obj.paginator.num_pages as total_pages %}
+                Page {{ current_page }} of {{ total_pages }}
+              {% endblocktrans %}
+            </a>
+          </li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?{% qs page=page_obj.paginator.num_pages q=query %}">»</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?{% qs page=page_obj.next_page_number q=query %}">›</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">»</a>
+            </li>
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">›</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+  <div>
+    <small class="text-muted">
+      {% blocktrans trimmed with page_obj.start_index as page_start and page_obj.end_index as page_end and page_obj.paginator.count|intcomma as total %}
+        <strong>{{ page_start }} — {{ page_end }}</strong> of <strong>{{ total }}</strong>
+      {% endblocktrans %}
+      {% if is_filtered %}
+        <a href="?">({{ total_count }} total)</a>
+      {% endif %}
+    </small>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+{% load colossus i18n %}
 
 {% block title %}{% trans 'Templates' %}{% endblock %}
 
@@ -21,12 +21,21 @@
       <div class="list-group-item">
         <div class="row">
           <div class="col-6">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search templates" aria-label="Search templates" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
+
+            <form method="get">
+              <div class="input-group">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search templates' %}" aria-label="{% trans 'Search templates' %}" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  {% if query %}
+                    <a href="?" class="btn btn-outline-primary" role="button">
+                      {% trans 'Clear' %}
+                    </a>
+                  {% endif %}
+                  <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
+                </div>
               </div>
-            </div>
+            </form>
+
           </div>
           <div class="col-6">
           </div>
@@ -53,5 +62,6 @@
         {% endfor %}
       </tbody>
     </table>
+    {% include 'includes/card_footer_paginator.html' %}
   </div>
 {% endblock %}

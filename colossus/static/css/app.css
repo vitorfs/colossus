@@ -16,3 +16,9 @@ nav.navbar .navbar-brand {
   list-style: none;
   padding: 0;
 }
+
+
+.pagination .page-item {
+  min-width: 38px;
+  text-align: center;
+}

@@ -97,7 +97,7 @@
           <strong>{{ page_start }} — {{ page_end }}</strong> of <strong>{{ total }}</strong>
         {% endblocktrans %}
         {% if is_filtered %}
-          <a href="{% url 'lists:subscribers' mailing_list.pk %}">({{ mailing_list.subscribers.count }} total)</a>
+          <a href="?">({{ mailing_list.subscribers.count }} total)</a>
         {% endif %}
       </small>
     </div>
