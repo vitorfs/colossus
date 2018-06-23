@@ -3,6 +3,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import get_template
+from django.utils.html import mark_safe
+
+from .utils import wrap_blocks
 
 
 class EmailTemplateManager(models.Manager):
@@ -36,3 +39,7 @@ class EmailTemplate(models.Model):
 
     def get_absolute_url(self):
         return reverse('templates:emailtemplate_editor', kwargs={'pk': self.pk})
+
+    def html_preview(self):
+        html = wrap_blocks(self.content)
+        return mark_safe(html)

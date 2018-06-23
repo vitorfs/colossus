@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from .api import send_campaign_email_test
-from .markup import get_plain_text_from_html
+from .utils import get_plain_text_from_html
 from .models import Email
 
 

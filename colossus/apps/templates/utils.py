@@ -4,12 +4,14 @@ import re
 from django.template.base import VariableNode
 from django.template.loader_tags import BlockNode, ExtendsNode
 
-from bs4 import BeautifulSoup
-
 
 BLOCK_RE = re.compile(r'{%\s*block\s*(\w+)\s*%}')
 NAMED_BLOCK_RE = r'{%%\s*block\s*%s\s*%%}'  # Accepts string formatting
 ENDBLOCK_RE = re.compile(r'{%\s*endblock\s*(?:\w+\s*)?%}')
+
+START_BLOCK_DIV = '''<div style="padding:10px;border:1px solid #bbb;background-color:#f9f9f9;margin-bottom:10px;">
+<h4 style="text-align:center;color:#bbb;margin:0 0 5px;">%s</h4>'''
+END_BLOCK_DIV = '</div>'
 
 
 def get_block_source(template_source, block_name):
@@ -46,6 +48,14 @@ def get_block_source(template_source, block_name):
     return template_source[start:end]
 
 
+def wrap_blocks(template_source):
+    block_names = re.findall(BLOCK_RE, template_source)
+    for block_name in block_names:
+        template_source = re.sub(NAMED_BLOCK_RE % block_name, START_BLOCK_DIV % block_name, template_source)
+    template_source = re.sub(ENDBLOCK_RE, END_BLOCK_DIV, template_source)
+    return template_source
+
+
 def _get_template_variables(template):
     """
     Extracts all the variable node tokens of the given template.
@@ -77,37 +87,3 @@ def get_template_blocks(template):
     for node in nodes:
         blocks[node.name] = get_block_source(template.source, node.name)
     return blocks
-
-
-def get_plain_text_from_html(html):
-    soup = BeautifulSoup(html, 'html5lib')
-
-    for a in soup.findAll('a'):
-        href = a.attrs['href']
-        if a.text != href:
-            link_text_repr = '%s (%s)' % (a.text, href)
-        else:
-            link_text_repr = href
-        a.replaceWith(link_text_repr)
-
-    for li in soup.findAll('li'):
-        list_text_repr = '* %s' % (li.text)
-        li.replaceWith(list_text_repr)
-
-    for strong in soup.findAll('strong'):
-        strong_text_repr = '*%s*' % (strong.text)
-        strong.replaceWith(strong_text_repr)
-
-    for b in soup.findAll('b'):
-        bold_text_repr = '*%s*' % (b.text)
-        b.replaceWith(bold_text_repr)
-
-    for em in soup.findAll('em'):
-        emphasis_text_repr = '_%s_' % (em.text)
-        em.replaceWith(emphasis_text_repr)
-
-    for i in soup.findAll('i'):
-        italic_text_repr = '_%s_' % (i.text)
-        i.replaceWith(italic_text_repr)
-
-    return soup.text

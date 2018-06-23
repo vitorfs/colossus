@@ -12,9 +12,9 @@ from bs4 import BeautifulSoup
 
 from colossus.apps.lists.models import MailingList
 from colossus.apps.templates.models import EmailTemplate
+from colossus.apps.templates.utils import get_template_variables, get_template_blocks
 
 from . import constants
-from .markup import get_template_variables, get_template_blocks
 from .tasks import send_campaign_task
 
 
