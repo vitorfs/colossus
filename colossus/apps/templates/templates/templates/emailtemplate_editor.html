@@ -77,14 +77,24 @@
           <a href="{% url 'templates:emailtemplate_edit' email_template.pk %}" class="btn btn-sm btn-link" role="button">Edit name</a>
         </div>
         <div>
+          <button type="button" class="btn btn-link" role="button">{% trans 'Help with formatting' %}</button>
           <a href="{% url 'templates:emailtemplates' %}" class="btn btn-outline-danger" role="button">{% trans 'Delete template' %}</a>
-          <button type="submit" class="btn btn-success ml-1" role="button">{% trans 'Save changes' %}</button>
-          <button type="submit" class="btn btn-success ml-1" role="button">{% trans 'Save and close' %}</button>
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Save and close' %}</button>
         </div>
       </div>
+
+      {% if form.content.errors %}
+        <div class="alert alert-danger">
+          {% for error in form.content.errors %}
+          <div>{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <div class="row" id="editor">
         <div class="col-lg-6">
-          <div class="card border-primary mb-3">
+          <div class="card {% if form.errors %}border-danger{% else %}border-primary{% endif %} mb-3">
             <div class="card-body p-0">
               <div id="aceEditor" style="height:300px">{{ form.instance.content }}</div>
             </div>
