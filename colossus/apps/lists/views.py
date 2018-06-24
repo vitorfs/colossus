@@ -9,6 +9,7 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView, View,
 )
+from django.db.models import Q
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import (
@@ -62,18 +63,19 @@ class SubscriberListView(MailingListMixin, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs['submenu'] = 'subscribers'
+        kwargs['total_count'] = self.model.objects.count()
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
-        queryset = Subscriber.objects.filter(mailing_list_id=self.kwargs.get('pk')).order_by('optin_date')
-        if 'q' in self.request.GET:
+        queryset = self.model.objects.filter(mailing_list_id=self.kwargs.get('pk'))
+        if self.request.GET.get('q', ''):
             query = self.request.GET.get('q')
-            queryset = queryset.filter(email__icontains=query)
+            queryset = queryset.filter(Q(email__icontains=query) | Q(name__icontains=query))
             self.extra_context = {
                 'is_filtered': True,
                 'query': query
             }
-        return queryset
+        return queryset.order_by('optin_date')
 
 
 @method_decorator(login_required, name='dispatch')

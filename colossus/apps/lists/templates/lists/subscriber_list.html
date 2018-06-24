@@ -11,27 +11,27 @@
   <div class="card-body">
     <div class="row">
       <div class="col-6">
-        <a href="{% url 'lists:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
-        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
-      </div>
-      <div class="col-6">
         <form method="get">
           <div class="input-group">
             <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search subscribers" aria-label="Search subscribers" aria-describedby="basic-addon2">
             <div class="input-group-append">
               {% if query %}
-                <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">
+                <a href="?" class="btn btn-outline-primary" role="button">
                   {% trans 'Clear' %}
                 </a>
               {% endif %}
-              <button class="btn btn-outline-primary" type="submit">{% trans 'Search' %}</button>
+              <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
             </div>
           </div>
         </form>
       </div>
+      <div class="col-6 text-right">
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
+        <a href="{% url 'lists:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
+      </div>
     </div>
   </div>
-  <table class="table table-striped mb-0">
+  <table class="table table-sm table-striped mb-0">
     <thead class="thead-light">
       <tr>
         <th>{% trans 'Email address' %}</th>
@@ -51,55 +51,5 @@
       {% endfor %}
     </tbody>
   </table>
-  <div class="card-footer d-flex justify-content-between align-items-center">
-    <div>
-      {% if is_paginated %}
-        <nav aria-label="{% trans 'Subscribers listing pages' %}">
-          <ul class="pagination pagination-sm mb-0">
-            {% if page_obj.has_previous %}
-              <li class="page-item">
-                <a class="page-link" href="?{% qs page=page_obj.previous_page_number q=query %}">← {% trans 'Previous' %}</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="?{% qs page=1 q=query %}">{% trans 'First' %}</a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">← {% trans 'Previous' %}</a>
-              </li>
-            {% endif %}
-            <li class="page-item disabled">
-              <a class="page-link" href="#" tabindex="-1">
-                {% blocktrans trimmed with page_obj.number as current_page and page_obj.paginator.num_pages as total_pages %}
-                  Page {{ current_page }} of {{ total_pages }}
-                {% endblocktrans %}
-              </a>
-            </li>
-            {% if page_obj.has_next %}
-              <li class="page-item">
-                <a class="page-link" href="?{% qs page=page_obj.paginator.num_pages q=query %}">{% trans 'Last' %}</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="?{% qs page=page_obj.next_page_number q=query %}">{% trans 'Next' %} →</a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">{% trans 'Next' %} →</a>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
-      {% endif %}
-    </div>
-    <div>
-      <small class="text-muted">
-        {% blocktrans trimmed with page_obj.start_index as page_start and page_obj.end_index as page_end and page_obj.paginator.count|intcomma as total %}
-          <strong>{{ page_start }} — {{ page_end }}</strong> of <strong>{{ total }}</strong>
-        {% endblocktrans %}
-        {% if is_filtered %}
-          <a href="?">({{ mailing_list.subscribers.count }} total)</a>
-        {% endif %}
-      </small>
-    </div>
-  </div>
+  {% include 'includes/card_footer_paginator.html' %}
 {% endblock %}

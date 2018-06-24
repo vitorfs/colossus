@@ -31,13 +31,13 @@ class EmailTemplateListView(EmailTemplateMixin, ListView):
 
     def get_queryset(self):
         queryset = self.model.objects.all()
-        if 'q' in self.request.GET:
+        if self.request.GET.get('q', ''):
             query = self.request.GET.get('q')
             queryset = queryset.filter(Q(name__icontains=query) | Q(content__icontains=query))
-            self.extra_context = {
+            self.extra_context.update({
                 'is_filtered': True,
                 'query': query
-            }
+            })
         return queryset.order_by('-update_date')
 
 
