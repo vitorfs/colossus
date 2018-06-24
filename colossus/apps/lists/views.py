@@ -36,7 +36,7 @@ class MailingListListView(ListView):
 @method_decorator(login_required, name='dispatch')
 class MailingListCreateView(CreateView):
     model = MailingList
-    fields = ('name',)
+    fields = ('name', 'slug', 'campaign_default_from_name', 'campaign_default_from_email', 'website_url')
 
     def get_context_data(self, **kwargs):
         kwargs['menu'] = 'lists'

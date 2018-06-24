@@ -80,6 +80,13 @@ class CampaignEditFromView(AbstractCampaignEmailUpdateView):
     title = 'From'
     fields = ('from_name', 'from_email',)
 
+    def get_initial(self):
+        initial = dict()
+        if self.campaign.mailing_list is not None:
+            initial['from_name'] = self.campaign.mailing_list.campaign_default_from_name
+            initial['from_email'] = self.campaign.mailing_list.campaign_default_from_email
+        return initial
+
 
 @method_decorator(login_required, name='dispatch')
 class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):

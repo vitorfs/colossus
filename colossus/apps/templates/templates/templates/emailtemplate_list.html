@@ -54,17 +54,17 @@
         {% for template in templates %}
           <tr>
             <td><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></td>
-            <td><small>{{ template.update_date }}</small></td>
-            <td>{% spaceless %}<small>
+            <td>{{ template.update_date }}</td>
+            <td>{% spaceless %}
               {% if template.last_used_campaign %}
-                On <a href="{{ template.last_used_campaign.get_absolute_url }}">{{ template.last_used_campaign.name }}</a> at
+                By <a href="{{ template.last_used_campaign.get_absolute_url }}">{{ template.last_used_campaign.name }}</a> on
               {% endif %}
               {% if template.last_used_date %}
                 {{ template.last_used_date }}
               {% else %}
                 {% trans 'Never' %}
               {% endif %}
-            </small>{% endspaceless %}</td>
+            {% endspaceless %}</td>
           </tr>
         {% endfor %}
       </tbody>
