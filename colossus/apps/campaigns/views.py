@@ -116,7 +116,10 @@ def campaign_edit_content(request, pk):
         form = EmailEditorForm(campaign.email, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('campaigns:campaign_edit_content', pk=pk)
+            if request.POST.get('action', 'save_changes') == 'save_changes':
+                return redirect('campaigns:campaign_edit_content', pk=pk)
+            return redirect('campaigns:campaign_edit', pk=pk)
+
     else:
         form = EmailEditorForm(campaign.email)
     return render(request, 'campaigns/email_form.html', {

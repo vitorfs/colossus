@@ -79,7 +79,7 @@ class Campaign(models.Model):
         for email in self.emails.select_related('template').all():
             if email.template is not None:
                 email.template.last_used_date = timezone.now()
-                email.template.campaign = self
+                email.template.last_used_campaign_id = self.pk
                 email.template.save()
         self.save()
         send_campaign_task.delay(self.pk)

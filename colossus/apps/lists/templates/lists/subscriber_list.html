@@ -1,6 +1,6 @@
 {% extends 'lists/base.html' %}
 
-{% load colossus i18n subscribers humanize %}
+{% load i18n subscribers %}
 
 {% block innerbreadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>

@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -30,7 +30,7 @@ class EmailTemplateListView(EmailTemplateMixin, ListView):
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
-        queryset = self.model.objects.all()
+        queryset = self.model.objects.select_related('last_used_campaign')
         if self.request.GET.get('q', ''):
             query = self.request.GET.get('q')
             queryset = queryset.filter(Q(name__icontains=query) | Q(content__icontains=query))
@@ -38,7 +38,8 @@ class EmailTemplateListView(EmailTemplateMixin, ListView):
                 'is_filtered': True,
                 'query': query
             })
-        return queryset.order_by('-update_date')
+        queryset = queryset.order_by(F('last_used_date').desc(nulls_last=True), '-update_date')
+        return queryset
 
 
 @method_decorator(login_required, name='dispatch')

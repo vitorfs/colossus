@@ -87,8 +87,8 @@
         <nav>
           <button type="button" class="btn btn-link">{% trans 'Send test email' %}</button>
           <a href="{% url 'campaigns:campaign_edit_template' campaign.pk %}" class="btn btn-link">{% trans 'Change template' %}</a>
-          <button type="submit" class="btn btn-outline-success">{% trans 'Save changes' %}</button>
-          <button type="submit" class="btn btn-success">{% trans 'Save and close' %}</button>
+          <button type="submit" name="action" value="save_changes" class="btn btn-outline-success" role="button">{% trans 'Save changes' %}</button>
+          <button type="submit" name="action" value="save_and_close" class="btn btn-success" role="button">{% trans 'Save and close' %}</button>
         </nav>
       </div>
       <div class="row" id="editor">
