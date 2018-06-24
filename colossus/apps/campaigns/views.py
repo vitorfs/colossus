@@ -3,14 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, FormView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from colossus.apps.templates.models import EmailTemplate
 
 from . import constants
 from .api import get_test_email_context
-from .forms import CampaignTestEmailForm, DesignEmailForm, PlainTextEmailForm, EmailEditorForm
+from .forms import CampaignTestEmailForm, EmailEditorForm, PlainTextEmailForm
 from .mixins import CampaignMixin
 from .models import Campaign, Email
 

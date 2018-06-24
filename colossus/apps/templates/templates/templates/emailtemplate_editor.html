@@ -5,6 +5,7 @@
 {% block title %}{{ email_template.name }}{% endblock %}
 
 {% block javascript %}
+  <script src="{% static 'vendor/jquery.are-you-sure.js' %}"></script>
   <script src="{% static 'vendor/ace/1.3.3/ace.js' %}"></script>
   <script>
     $(function () {
@@ -14,20 +15,24 @@
 
       var editor = ace.edit("aceEditor");
       editor.setTheme("ace/theme/clouds");
-      editor.getSession().setMode("ace/mode/django");
-      editor.getSession().setUseWrapMode(true);
+      editor.getSession().setOptions({
+        mode: "ace/mode/django",
+        wrap: true,
+        tabSize: 2,
+        useSoftTabs: true
+      });
 
       var $form = $("#templateForm");
       var updatePreview = false;
       var processingRequest = false;
 
       editor.on("change", function (e) {
+        $("#id_content").val(editor.getValue());
         updatePreview = true;
       });
 
       setInterval(function () {
         if (updatePreview && !processingRequest) {
-          $("#id_content").val(editor.getValue());
           $.ajax({
             url: $form.attr("data-preview-url"),
             type: $form.attr("method"),
@@ -48,9 +53,15 @@
         }
       }, 2000);  // Every two seconds
 
-      $("#templateForm").submit(function () {
+
+
+      $form.submit(function () {
         $("#id_content").val(editor.getValue());
         return true;
+      });
+
+      $form.areYouSure({
+        message: $form.attr("data-are-you-sure-message")
       });
 
     });
@@ -66,7 +77,11 @@
       </ol>
     </nav>
 
-    <form method="post" id="templateForm" data-preview-url="{% url 'templates:emailtemplate_preview' email_template.pk %}" novalidate>
+    <form id="templateForm"
+          method="post"
+          novalidate
+          data-preview-url="{% url 'templates:emailtemplate_preview' email_template.pk %}"
+          data-are-you-sure-message="{% trans 'You have unsaved changes!' %}">
       {% csrf_token %}
       <div style="display:none!important">
         {{ form.content }}

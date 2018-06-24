@@ -1,9 +1,9 @@
 from django import forms
-from django.template import Template, TemplateSyntaxError
-from django.template.loader_tags import IncludeNode, ExtendsNode
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext
+from django.template import Template, TemplateSyntaxError
+from django.template.loader_tags import ExtendsNode, IncludeNode
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from .models import EmailTemplate
 

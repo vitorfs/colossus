@@ -1,9 +1,9 @@
 from django.db import models
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
-from django.template.loader import get_template
 from django.utils.html import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from .utils import wrap_blocks
 
@@ -22,6 +22,14 @@ class EmailTemplate(models.Model):
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)
     last_used_date = models.DateTimeField(_('last used'), null=True, blank=True)
+    last_used_campaign = models.ForeignKey(
+        'campaigns.Campaign',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_('last used campaign'),
+        related_name='+'
+    )
 
     objects = EmailTemplateManager()
 

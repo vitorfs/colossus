@@ -1,7 +1,7 @@
 import base64
 
 from django.http import (
-    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+    HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404, redirect, render
 # from django.template import Context, Template

@@ -1,9 +1,8 @@
-from collections import OrderedDict
 import re
+from collections import OrderedDict
 
 from django.template.base import VariableNode
 from django.template.loader_tags import BlockNode, ExtendsNode
-
 
 BLOCK_RE = re.compile(r'{%\s*block\s*(\w+)\s*%}')
 NAMED_BLOCK_RE = r'{%%\s*block\s*%s\s*%%}'  # Accepts string formatting

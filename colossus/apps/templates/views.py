@@ -1,15 +1,16 @@
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
-from django.views.generic.base import ContextMixin
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse, reverse_lazy
 from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic.base import ContextMixin
 
-from .models import EmailTemplate
 from .forms import EmailTemplateForm
+from .models import EmailTemplate
 
 
 class EmailTemplateMixin(ContextMixin):

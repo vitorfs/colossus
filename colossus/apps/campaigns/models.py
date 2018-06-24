@@ -1,8 +1,8 @@
-import uuid
 import json
+import uuid
 
 from django.contrib.sites.shortcuts import get_current_site
-from django.db import models
+from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
@@ -12,7 +12,9 @@ from bs4 import BeautifulSoup
 
 from colossus.apps.lists.models import MailingList
 from colossus.apps.templates.models import EmailTemplate
-from colossus.apps.templates.utils import get_template_variables, get_template_blocks
+from colossus.apps.templates.utils import (
+    get_template_blocks, get_template_variables,
+)
 
 from . import constants
 from .tasks import send_campaign_task
@@ -69,12 +71,18 @@ class Campaign(models.Model):
                 self.__cached_email = self.emails.order_by('id').first()
         return self.__cached_email
 
+    @transaction.atomic
     def send(self):
-        send_campaign_task.delay(self.pk)
         self.recipients_count = self.mailing_list.get_active_subscribers().count()
         self.send_date = timezone.now()
         self.status = constants.SENT
+        for email in self.emails.select_related('template').all():
+            if email.template is not None:
+                email.template.last_used_date = timezone.now()
+                email.template.campaign = self
+                email.template.save()
         self.save()
+        send_campaign_task.delay(self.pk)
 
     def can_send(self):
         for email in self.emails.all():
@@ -206,7 +214,7 @@ class Email(models.Model):
             return True
 
     def build_template_string(self):
-        virtual_template = ['{%% extends %s %%}' % self.BASE_TEMPLATE,]
+        virtual_template = ['{%% extends %s %%}' % self.BASE_TEMPLATE, ]
         blocks = self.get_blocks()
         for block_key, block_content in blocks.items():
             if block_content:
