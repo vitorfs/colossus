@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      <li class="breadcrumb-item"><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Delete' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Are you sure?' %}</h2>
+      <p>You are about to delete the campaign <strong>{{ campaign.name }}</strong>.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" role="button">{% trans 'Confirm deletion' %}</button>
+        <a href="{% url 'campaigns:campaigns' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

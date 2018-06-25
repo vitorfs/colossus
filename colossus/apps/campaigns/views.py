@@ -1,14 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from django.views.decorators.http import require_GET
 
 from colossus.apps.templates.models import EmailTemplate
 
-from .constants import CampaignStatus
+from .constants import CampaignStatus, CampaignTypes
 from .api import get_test_email_context
 from .forms import CampaignTestEmailForm, EmailEditorForm, PlainTextEmailForm
 from .mixins import CampaignMixin
@@ -21,6 +21,12 @@ class CampaignListView(CampaignMixin, ListView):
     context_object_name = 'campaigns'
     ordering = ('-create_date',)
     paginate_by = 25
+
+    def get_context_data(self, **kwargs):
+        kwargs['campaign_types'] = CampaignTypes
+        kwargs['campaign_status'] = CampaignStatus
+        kwargs['total_count'] = Campaign.objects.count()
+        return super().get_context_data(**kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -57,6 +63,13 @@ class CampaignEditRecipientsView(CampaignMixin, UpdateView):
     def get_context_data(self, **kwargs):
         kwargs['title'] = 'Recipients'
         return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignDeleteView(CampaignMixin, DeleteView):
+    model = Campaign
+    context_object_name = 'campaign'
+    success_url = reverse_lazy('campaigns:campaigns')
 
 
 class AbstractCampaignEmailUpdateView(CampaignMixin, UpdateView):

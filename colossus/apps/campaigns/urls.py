@@ -21,4 +21,5 @@ urlpatterns = [
     path('<int:pk>/send/', views.send_campaign, name='send_campaign'),
     path('<int:pk>/send/done/', views.SendCampaignCompleteView.as_view(), name='send_campaign_complete'),
     path('<int:pk>/replicate/', views.replicate_campaign, name='replicate_campaign'),
+    path('<int:pk>/delete/', views.CampaignDeleteView.as_view(), name='delete_campaign'),
 ]

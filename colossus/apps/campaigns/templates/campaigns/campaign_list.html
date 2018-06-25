@@ -18,10 +18,10 @@
   <div class="row">
     <div class="col-3">
       <div class="list-group">
-        <a href="" class="list-group-item list-group-item-action">Recent</a>
-        <a href="" class="list-group-item list-group-item-action">Ongoing</a>
-        <a href="" class="list-group-item list-group-item-action">Draft</a>
-        <a href="" class="list-group-item list-group-item-action">Completed</a>
+        <a href="" class="list-group-item list-group-item-action">{% trans 'Recent' %}</a>
+        <a href="" class="list-group-item list-group-item-action">{% trans 'Ongoing' %}</a>
+        <a href="" class="list-group-item list-group-item-action">{% trans 'Draft' %}</a>
+        <a href="" class="list-group-item list-group-item-action">{% trans 'Completed' %}</a>
       </div>
     </div>
     <div class="col-9">
@@ -30,9 +30,9 @@
           <div class="row">
             <div class="col-6">
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search campaigns" aria-label="Search campaigns" aria-describedby="basic-addon2">
+                <input type="text" class="form-control" placeholder="{% trans 'Search campaigns' %}" aria-label="{% trans 'Search campaigns' %}" aria-describedby="basic-addon2">
                 <div class="input-group-append">
-                  <button class="btn btn-outline-primary" type="button">{% trans 'Search' %}</button>
+                  <button class="btn btn-primary" type="button">{% trans 'Search' %}</button>
                 </div>
               </div>
             </div>
@@ -55,17 +55,23 @@
               <tr>
                 <td class="align-middle">
                   <div class="d-flex align-items-center">
-                    {% if campaign.campaign_type == 1 %}
+                    {% if campaign.campaign_type == campaign_types.REGULAR %}
                     <i data-feather="mail" class="text-muted mr-3"></i>
-                    {% elif campaign.campaign_type == 2 %}
+                    {% elif campaign.campaign_type == campaign_types.AUTOMATED %}
                     <i data-feather="repeat" class="text-muted mr-3"></i>
-                    {% elif campaign.campaign_type == 3 %}
+                    {% elif campaign.campaign_type == campaign_types.AB_TEST %}
                     <i data-feather="layers" class="text-muted mr-3"></i>
                     {% endif %}
                     <div>
                       <a class="lead d-block" href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a>
                       <small class="d-block">{{ campaign.get_campaign_type_display }} ・ {{ campaign.mailing_list.name }}</small>
-                      <small class="d-block text-muted">Edited <strong>{{ campaign.update_date }}</strong></small>
+                      {% if campaign.status == campaign_status.DRAFT %}
+                        <small class="d-block text-muted">Edited <strong>{{ campaign.update_date }}</strong></small>
+                      {% elif campaign.status == campaign_status.SENT %}
+                        <small class="d-block text-muted">Sent on <strong>{{ campaign.send_date }}</strong></small>
+                      {% elif campaign.status == campaign_status.SCHEDULED %}
+                        <small class="d-block text-muted">Scheduled for <strong>{{ campaign.send_date }}</strong></small>
+                      {% endif %}
                     </div>
                   </div>
                 </td>
@@ -88,7 +94,7 @@
                   <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item" href="{% url 'campaigns:replicate_campaign' campaign.pk %}">{% trans 'Replicate' %}</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">{% trans 'Delete campaign' %}</a>
+                    <a class="dropdown-item" href="{% url 'campaigns:delete_campaign' campaign.pk %}">{% trans 'Delete campaign' %}</a>
                   </div>
                 </div>
 
@@ -97,13 +103,7 @@
             {% endfor %}
           </tbody>
         </table>
-      {% if is_paginated %}
-        <div class="card-footer">
-          <nav aria-label="{% trans 'Campaigns listing pages' %}">
-            {% include 'includes/paginator.html' %}
-          </nav>
-        </div>
-      {% endif %}
+        {% include 'includes/card_footer_paginator.html' %}
       </div>
     </div>
   </div>

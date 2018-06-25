@@ -27,9 +27,11 @@ class MailingListListView(ListView):
     model = MailingList
     context_object_name = 'mailing_lists'
     ordering = ('name',)
+    paginate_by = 25
 
     def get_context_data(self, **kwargs):
         kwargs['menu'] = 'lists'
+        kwargs['total_count'] = MailingList.objects.count()
         return super().get_context_data(**kwargs)
 
 

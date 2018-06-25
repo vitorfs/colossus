@@ -17,6 +17,27 @@
         <a href="{% url 'lists:new_list' %}" class="btn btn-primary" role="button">{% trans 'Create list' %}</a>
       </div>
     </div>
+    <div class="list-group list-group-flush">
+      <div class="list-group-item">
+        <div class="row">
+          <div class="col-6">
+            <form method="get">
+              <div class="input-group">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search lists' %}" aria-label="{% trans 'Search lists' %}" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  {% if query %}
+                    <a href="?" class="btn btn-outline-primary" role="button">
+                      {% trans 'Clear' %}
+                    </a>
+                  {% endif %}
+                  <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     <table class="table table-striped mb-0">
       <thead class="thead-light">
         <tr>
@@ -37,5 +58,6 @@
         {% endfor %}
       </tbody>
     </table>
+    {% include 'includes/card_footer_paginator.html' %}
   </div>
 {% endblock %}
