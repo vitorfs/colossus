@@ -34,7 +34,9 @@ class Chart:
 
 class SubscriptionsSummaryChart(Chart):
     """
-    Build the last 30 days subscriptions summary in the list summary
+    Build the last 30 days subscriptions summary in the list summary page.
+    Solid blue line display number of subscriptions, dashed red line shows
+    number of unsubscriptions.
     """
     def __init__(self, mailing_list):
         super().__init__(chart_type='bar')
