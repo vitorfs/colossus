@@ -4,10 +4,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.decorators.http import require_GET
 
 from colossus.apps.templates.models import EmailTemplate
 
-from . import constants
+from .constants import CampaignStatus
 from .api import get_test_email_context
 from .forms import CampaignTestEmailForm, EmailEditorForm, PlainTextEmailForm
 from .mixins import CampaignMixin
@@ -25,7 +26,7 @@ class CampaignListView(CampaignMixin, ListView):
 @method_decorator(login_required, name='dispatch')
 class CampaignCreateView(CampaignMixin, CreateView):
     model = Campaign
-    fields = ('campaign_type', 'name',)
+    fields = ('name',)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -81,11 +82,10 @@ class CampaignEditFromView(AbstractCampaignEmailUpdateView):
     fields = ('from_name', 'from_email',)
 
     def get_initial(self):
-        initial = dict()
-        if self.campaign.mailing_list is not None:
-            initial['from_name'] = self.campaign.mailing_list.campaign_default_from_name
-            initial['from_email'] = self.campaign.mailing_list.campaign_default_from_email
-        return initial
+        if not self.campaign.email and self.campaign.mailing_list is not None:
+            self.initial['from_name'] = self.campaign.mailing_list.campaign_default_from_name
+            self.initial['from_email'] = self.campaign.mailing_list.campaign_default_from_email
+        return super().get_initial()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -107,13 +107,17 @@ class CampaignEditTemplateView(AbstractCampaignEmailUpdateView):
 
     def form_valid(self, form):
         email = form.save(commit=False)
-        if email.template is None:
-            email.template_content = EmailTemplate.objects.default_content()
-        else:
-            email.template_content = email.template.content
+        email.set_template_content()
         email.set_blocks()
         email.save()
         return redirect('campaigns:campaign_edit_content', pk=self.kwargs.get('pk'))
+
+
+@method_decorator(login_required, name='dispatch')
+class SendCampaignCompleteView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/send_campaign_done.html'
 
 
 @login_required
@@ -172,7 +176,7 @@ def campaign_preview_email(request, pk):
 def send_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
 
-    if campaign.status == constants.SENT or not campaign.can_send():
+    if campaign.status == CampaignStatus.SENT or not campaign.can_send:
         return redirect(campaign.get_absolute_url())
 
     if request.method == 'POST':
@@ -185,8 +189,9 @@ def send_campaign(request, pk):
     })
 
 
-@method_decorator(login_required, name='dispatch')
-class SendCampaignCompleteView(CampaignMixin, DetailView):
-    model = Campaign
-    context_object_name = 'campaign'
-    template_name = 'campaigns/send_campaign_done.html'
+@require_GET
+@login_required
+def replicate_campaign(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    replicated_campaign = campaign.replicate()
+    return redirect(replicated_campaign)

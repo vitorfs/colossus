@@ -20,4 +20,5 @@ urlpatterns = [
     path('<int:pk>/edit/preview-email/', views.campaign_preview_email, name='campaign_preview_email'),
     path('<int:pk>/send/', views.send_campaign, name='send_campaign'),
     path('<int:pk>/send/done/', views.SendCampaignCompleteView.as_view(), name='send_campaign_complete'),
+    path('<int:pk>/replicate/', views.replicate_campaign, name='replicate_campaign'),
 ]

@@ -6,7 +6,7 @@ from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from bs4 import BeautifulSoup
 
@@ -16,7 +16,7 @@ from colossus.apps.templates.utils import (
     get_template_blocks, get_template_variables,
 )
 
-from . import constants
+from .constants import CampaignTypes, CampaignStatus
 from .tasks import send_campaign_task
 
 
@@ -25,8 +25,8 @@ class Campaign(models.Model):
     name = models.CharField(_('name'), max_length=100)
     campaign_type = models.PositiveSmallIntegerField(
         _('type'),
-        choices=constants.CAMPAIGN_TYPE_CHOICES,
-        default=constants.REGULAR
+        choices=CampaignTypes.CHOICES,
+        default=CampaignTypes.REGULAR
     )
     mailing_list = models.ForeignKey(
         MailingList,
@@ -36,7 +36,7 @@ class Campaign(models.Model):
         null=True,
         blank=True
     )
-    status = models.PositiveSmallIntegerField(_('status'), choices=constants.STATUS_CHOICES, default=constants.DRAFT)
+    status = models.PositiveSmallIntegerField(_('status'), choices=CampaignStatus.CHOICES, default=CampaignStatus.DRAFT)
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)
@@ -58,13 +58,25 @@ class Campaign(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        if self.status in (constants.DRAFT, constants.SCHEDULED):
+        if self.can_edit:
             return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
 
     @property
+    def can_edit(self):
+        return self.status in (CampaignStatus.DRAFT, CampaignStatus.SCHEDULED)
+
+    @property
+    def can_send(self):
+        for email in self.emails.all():
+            if not email.can_send:
+                return False
+        else:
+            return True
+
+    @property
     def email(self):
-        if not self.__cached_email and self.campaign_type == constants.REGULAR:
+        if not self.__cached_email and self.campaign_type == CampaignTypes.REGULAR:
             try:
                 self.__cached_email, created = Email.objects.get_or_create(campaign=self)
             except Email.MultipleObjectsReturned:
@@ -75,7 +87,7 @@ class Campaign(models.Model):
     def send(self):
         self.recipients_count = self.mailing_list.get_active_subscribers().count()
         self.send_date = timezone.now()
-        self.status = constants.SENT
+        self.status = CampaignStatus.SENT
         for email in self.emails.select_related('template').all():
             if email.template is not None:
                 email.template.last_used_date = timezone.now()
@@ -84,12 +96,39 @@ class Campaign(models.Model):
         self.save()
         send_campaign_task.delay(self.pk)
 
-    def can_send(self):
+    @transaction.atomic
+    def replicate(self):
+        copy = gettext(' (copy)')
+        slice_at = 100 - len(copy)
+        name = '%s%s' % (self.name[:slice_at], copy)
+
+        replicated_campaign = Campaign.objects.create(
+            name=name,
+            campaign_type=self.campaign_type,
+            mailing_list=self.mailing_list,
+            status=CampaignStatus.DRAFT,
+        )
+
+        replicated_emails = list()
+
         for email in self.emails.all():
-            if not email.can_send():
-                return False
-        else:
-            return True
+            replicated_email = Email(
+                campaign=replicated_campaign,
+                template=email.template,
+                template_content=email.template_content,
+                from_email=email.from_email,
+                from_name=email.from_name,
+                subject=email.subject,
+                preview=email.preview,
+                content=email.content,
+                content_html=email.content_html,
+                content_text=email.content_text
+            )
+            replicated_emails.append(replicated_email)
+
+        Email.objects.bulk_create(replicated_emails)
+
+        return replicated_campaign
 
 
 class Email(models.Model):
@@ -129,6 +168,12 @@ class Email(models.Model):
         if self.__base_template is None:
             self.__base_template = Template(self.template_content)
         return self.__base_template
+
+    def set_template_content(self):
+        if self.template is None:
+            self.template_content = EmailTemplate.objects.default_content()
+        else:
+            self.template_content = self.template.content
 
     def get_from(self):
         if self.from_name:
@@ -205,6 +250,7 @@ class Email(models.Model):
             _checklist['plaintext'] = (self.content_text != '')
         return _checklist
 
+    @property
     def can_send(self):
         checklist = self.checklist()
         for value in checklist.values():

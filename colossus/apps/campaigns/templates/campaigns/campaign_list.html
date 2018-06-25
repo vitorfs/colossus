@@ -73,7 +73,25 @@
                 <td class="align-middle">0%</td>
                 <td class="align-middle">0%</td>
                 <td class="align-middle text-right">
-                  <a href="" class="btn btn-outline-primary">Edit</a>
+
+                <div class="btn-group">
+                  <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-primary">
+                    {% if campaign.can_edit %}
+                      {% trans 'Edit' %}
+                    {% else %}
+                      {% trans 'View Report' %}
+                    {% endif %}
+                  </a>
+                  <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">{% trans 'Toggle Dropdown' %}</span>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'campaigns:replicate_campaign' campaign.pk %}">{% trans 'Replicate' %}</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">{% trans 'Delete campaign' %}</a>
+                  </div>
+                </div>
+
                 </td>
               </tr>
             {% endfor %}
