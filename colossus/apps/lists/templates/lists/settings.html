@@ -1,22 +1,15 @@
-{% extends 'lists/base.html' %}
+{% extends 'lists/base_settings.html' %}
 
 {% load crispy_forms_tags i18n %}
 
-{% block innerbreadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
-  <li class="breadcrumb-item active" aria-current="page">{% trans 'Settings' %}</li>
-{% endblock %}
-
-{% block innercontent %}
-  <div class="card-body">
-    <p>
-      List ID: {{ mailing_list.uuid }}
-      <a href="{% url 'subscribers:subscribe' mailing_list.uuid %}">{% trans 'Subscription form' %}</a>
-    </p>
-    <form method="post">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
-    </form>
-  </div>
+{% block settingscontent %}
+  <p>
+    List ID: {{ mailing_list.uuid }}
+    <a href="{% url 'subscribers:subscribe' mailing_list.uuid %}">{% trans 'Subscription form' %}</a>
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+  </form>
 {% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'lists/base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block innerbreadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+  {% if subsubmenu != 'list_settings' %}
+    <li class="breadcrumb-item"><a href="{% url 'lists:settings' mailing_list.pk %}">{% trans 'Settings' %}</a></li>
+  {% endif %}
+  <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <div class="row">
+      <div class="col-4">
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item">
+            <a class="nav-link{% if subsubmenu == 'list_settings' %} active{% endif %}" href="{% url 'lists:settings' mailing_list.pk %}">{% trans 'List settings' %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if subsubmenu == 'subscription_settings' %} active{% endif %}" href="{% url 'lists:subscription_settings' mailing_list.pk %}">{% trans 'Subscription settings' %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if subsubmenu == 'defaults' %} active{% endif %}" href="{% url 'lists:defaults' mailing_list.pk %}">{% trans 'Campaign defaults' %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if subsubmenu == 'smtp' %} active{% endif %}" href="{% url 'lists:smtp' mailing_list.pk %}">{% trans 'SMTP credentials' %}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-8">
+        {% block settingscontent %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

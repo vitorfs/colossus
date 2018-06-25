@@ -28,7 +28,12 @@ urlpatterns = [
             path('editor/<str:form_key>/', views.SubscriptionFormTemplateUpdateView.as_view(), name='edit_form_template'),  # noqa
             path('editor/<str:form_key>/preview/', views.PreviewFormTemplateView.as_view(), name='preview_form_template'),  # noqa
         ])),
-        path('settings/', views.MailingListSettingsView.as_view(), name='settings'),
+        path('settings/', include([
+            path('', views.ListSettingsView.as_view(), name='settings'),
+            path('subscription/', views.SubscriptionSettingsView.as_view(), name='subscription_settings'),
+            path('defaults/', views.CampaignDefaultsView.as_view(), name='defaults'),
+            path('smtp/', views.SMTPCredentialsView.as_view(), name='smtp'),
+        ])),
         path('charts/subscriptions-summary/', views.charts_subscriptions_summary, name='charts_subscriptions_summary')
     ])),
 ]

@@ -21,6 +21,17 @@ class MailingList(models.Model):
     campaign_default_from_email = models.EmailField(_('default from email address'), blank=True)
     campaign_default_email_subject = models.CharField(_('default subject'), max_length=150, blank=True)
     enable_recaptcha = models.BooleanField(_('enable reCAPTCHA'), default=False)
+
+    smtp_host = models.CharField(_('host'), max_length=200, blank=True)
+    smtp_port = models.PositiveIntegerField(_('port'), blank=True, null=True)
+    smtp_username = models.CharField(_('username'), max_length=200, blank=True)
+    smtp_password = models.CharField(_('password'), max_length=200, blank=True)
+    smtp_use_tls = models.BooleanField(_('use TLS'), default=True)
+    smtp_use_ssl = models.BooleanField(_('use SSL'), default=False)
+    smtp_timeout = models.PositiveIntegerField(_('timeout'), blank=True, null=True)
+    smtp_ssl_keyfile = models.TextField(_('SSL keyfile'), blank=True)
+    smtp_ssl_certfile = models.TextField(_('SSL certfile'), blank=True)
+
     forms_custom_css = models.TextField(
         _('custom CSS'),
         help_text=_('Custom CSS will be applied to all subscription form pages.'),

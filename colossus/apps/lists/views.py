@@ -158,20 +158,49 @@ class SubscriptionFormsView(MailingListMixin, TemplateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class MailingListSettingsView(UpdateView):
+class AbstractSettingsView(UpdateView):
     model = MailingList
-    fields = ('name', 'slug', 'website_url', 'contact_email_address', 'campaign_default_from_name',
-              'campaign_default_from_email', 'campaign_default_email_subject', 'enable_recaptcha', )
     context_object_name = 'mailing_list'
     template_name = 'lists/settings.html'
 
     def get_context_data(self, **kwargs):
         kwargs['menu'] = 'lists'
         kwargs['submenu'] = 'settings'
+        kwargs['subsubmenu'] = self.subsubmenu
+        kwargs['title'] = self.title
         return super().get_context_data(**kwargs)
 
     def get_success_url(self):
-        return reverse('lists:settings', kwargs={'pk': self.kwargs.get('pk')})
+        return reverse(self.success_url_name, kwargs={'pk': self.kwargs.get('pk')})
+
+
+class ListSettingsView(AbstractSettingsView):
+    fields = ('name', 'slug', 'website_url', 'contact_email_address',)
+    success_url_name = 'lists:settings'
+    subsubmenu = 'list_settings'
+    title = _('Settings')
+
+
+class SubscriptionSettingsView(AbstractSettingsView):
+    fields = ('enable_recaptcha',)
+    success_url_name = 'lists:subscription_settings'
+    subsubmenu = 'subscription_settings'
+    title = _('Subscription settings')
+
+
+class CampaignDefaultsView(AbstractSettingsView):
+    fields = ('campaign_default_from_name', 'campaign_default_from_email', 'campaign_default_email_subject',)
+    success_url_name = 'lists:defaults'
+    subsubmenu = 'defaults'
+    title = _('Campaign defaults')
+
+
+class SMTPCredentialsView(AbstractSettingsView):
+    fields = ('smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_use_tls', 'smtp_use_ssl',
+              'smtp_timeout', 'smtp_ssl_keyfile', 'smtp_ssl_certfile')
+    success_url_name = 'lists:smtp'
+    subsubmenu = 'smtp'
+    title = _('SMTP credentials')
 
 
 @login_required
