@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -11,7 +10,10 @@ from django.views.generic import (
 
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
-from .forms import CampaignTestEmailForm, EmailEditorForm, PlainTextEmailForm
+from .forms import (
+    CampaignTestEmailForm, CreateCampaignForm, EmailEditorForm,
+    PlainTextEmailForm,
+)
 from .mixins import CampaignMixin
 from .models import Campaign, Email
 
@@ -47,7 +49,7 @@ class CampaignListView(CampaignMixin, ListView):
             self.extra_context['is_filtered'] = True
             self.extra_context['query'] = query
 
-        queryset = queryset.order_by(F('send_date').desc(nulls_last=True), '-update_date')
+        queryset = queryset.order_by('-update_date')
 
         return queryset
 
@@ -55,7 +57,7 @@ class CampaignListView(CampaignMixin, ListView):
 @method_decorator(login_required, name='dispatch')
 class CampaignCreateView(CampaignMixin, CreateView):
     model = Campaign
-    fields = ('name',)
+    form_class = CreateCampaignForm
 
 
 @method_decorator(login_required, name='dispatch')

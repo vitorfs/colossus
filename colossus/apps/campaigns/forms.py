@@ -1,9 +1,25 @@
 from django import forms
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 from .api import send_campaign_email_test
-from .models import Email
+from .models import Campaign, Email
 from .utils import get_plain_text_from_html
+
+
+class CreateCampaignForm(forms.ModelForm):
+    class Meta:
+        model = Campaign
+        fields = ('name',)
+
+    def save(self, commit=True):
+        campaign = super().save(commit=False)
+        if commit:
+            with transaction.atomic():
+                campaign.save()
+                campaign.email.set_template_content()
+                campaign.email.save()
+        return campaign
 
 
 class DesignEmailForm(forms.ModelForm):
