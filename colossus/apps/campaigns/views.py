@@ -7,12 +7,13 @@ from django.views.decorators.http import require_GET
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView,
 )
+from django.utils.translation import gettext_lazy as _
 
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (
     CampaignTestEmailForm, CreateCampaignForm, EmailEditorForm,
-    PlainTextEmailForm,
+    PlainTextEmailForm, ScheduleCampaignForm
 )
 from .mixins import CampaignMixin
 from .models import Campaign, Email
@@ -86,7 +87,7 @@ class CampaignEditRecipientsView(CampaignMixin, UpdateView):
     context_object_name = 'campaign'
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = 'Recipients'
+        kwargs['title'] = _('Recipients')
         return super().get_context_data(**kwargs)
 
 
@@ -116,7 +117,7 @@ class AbstractCampaignEmailUpdateView(CampaignMixin, UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class CampaignEditFromView(AbstractCampaignEmailUpdateView):
-    title = 'From'
+    title = _('From')
     fields = ('from_name', 'from_email',)
 
     def get_initial(self):
@@ -128,19 +129,19 @@ class CampaignEditFromView(AbstractCampaignEmailUpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
-    title = 'Subject'
+    title = _('Subject')
     fields = ('subject', 'preview',)
 
 
 @method_decorator(login_required, name='dispatch')
 class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
-    title = 'Edit Plain-Text Email'
+    title = _('Edit Plain-Text Email')
     form_class = PlainTextEmailForm
 
 
 @method_decorator(login_required, name='dispatch')
 class CampaignEditTemplateView(AbstractCampaignEmailUpdateView):
-    title = 'Template'
+    title = _('Template')
     fields = ('template',)
 
     def form_valid(self, form):
@@ -156,6 +157,17 @@ class SendCampaignCompleteView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
     template_name = 'campaigns/send_campaign_done.html'
+
+
+@method_decorator(login_required, name='dispatch')
+class ScheduleCampaignView(CampaignMixin, UpdateView):
+    model = Campaign
+    context_object_name = 'campaign'
+    form_class = ScheduleCampaignForm
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Schedule campaign')
+        return super().get_context_data(**kwargs)
 
 
 @login_required

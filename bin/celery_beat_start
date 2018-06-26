@@ -1,0 +1,4 @@
+#!/bin/bash
+
+celery beat -A colossus --loglevel=INFO
+

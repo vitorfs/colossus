@@ -142,7 +142,7 @@
     <div class="card-footer">
       {% if campaign.can_send %}
         <a href="{% url 'campaigns:send_campaign' campaign.pk %}" class="btn btn-primary" role="button">{% trans 'Send campaign' %}</a>
-        <a href="" class="btn btn-outline-primary" role="button">{% trans 'Schedule' %}</a>
+        <a href="{% url 'campaigns:schedule_campaign' campaign.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Schedule' %}</a>
       {% else %}
         <a href="#" class="btn btn-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Send campaign' %}</a>
         <a href="#" class="btn btn-outline-primary disabled" tabindex="-1" role="button" aria-disabled="true">{% trans 'Schedule' %}</a>
