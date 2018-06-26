@@ -12,7 +12,6 @@ def campaign_status_badge(campaign):
         CampaignStatus.SENT: 'badge-primary',
         CampaignStatus.SCHEDULED: 'badge-warning',
         CampaignStatus.DRAFT: 'badge-secondary',
-        CampaignStatus.TRASH: 'badge-danger',
     }
     badge_class = css_classes[campaign.status]
     badge_text = campaign.get_status_display()

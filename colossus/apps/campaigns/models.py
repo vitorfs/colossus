@@ -39,9 +39,10 @@ class Campaign(models.Model):
     status = models.PositiveSmallIntegerField(
         _('status'),
         choices=CampaignStatus.CHOICES,
-        default=CampaignStatus.DRAFT
+        default=CampaignStatus.DRAFT,
+        db_index=True
     )
-    send_date = models.DateTimeField(_('send date'), null=True, blank=True)
+    send_date = models.DateTimeField(_('send date'), null=True, blank=True, db_index=True)
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)
     recipients_count = models.PositiveIntegerField(default=0)
