@@ -16,7 +16,7 @@ from colossus.apps.templates.utils import (
     get_template_blocks, get_template_variables,
 )
 
-from .constants import CampaignTypes, CampaignStatus
+from .constants import CampaignStatus, CampaignTypes
 from .tasks import send_campaign_task
 
 
@@ -36,7 +36,11 @@ class Campaign(models.Model):
         null=True,
         blank=True
     )
-    status = models.PositiveSmallIntegerField(_('status'), choices=CampaignStatus.CHOICES, default=CampaignStatus.DRAFT)
+    status = models.PositiveSmallIntegerField(
+        _('status'),
+        choices=CampaignStatus.CHOICES,
+        default=CampaignStatus.DRAFT
+    )
     send_date = models.DateTimeField(_('send date'), null=True, blank=True)
     create_date = models.DateTimeField(_('create date'), auto_now_add=True)
     update_date = models.DateTimeField(_('update date'), default=timezone.now)

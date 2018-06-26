@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.forms import modelform_factory
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
@@ -9,7 +10,6 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView, View,
 )
-from django.db.models import Q
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import (

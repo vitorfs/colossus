@@ -4,13 +4,13 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from django.views.decorators.http import require_GET
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, ListView, UpdateView,
+)
 
-from colossus.apps.templates.models import EmailTemplate
-
-from .constants import CampaignStatus, CampaignTypes
 from .api import get_test_email_context
+from .constants import CampaignStatus, CampaignTypes
 from .forms import CampaignTestEmailForm, EmailEditorForm, PlainTextEmailForm
 from .mixins import CampaignMixin
 from .models import Campaign, Email
