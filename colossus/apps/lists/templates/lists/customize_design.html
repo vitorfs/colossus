@@ -1,8 +1,62 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags i18n %}
+{% load crispy_forms_tags static i18n %}
 
 {% block title %}{% trans 'Customize design' %}{% endblock %}
+
+{% block stylesheet %}
+  <style>
+    #cssEditor, #htmlEditor {
+      border: 1px solid rgba(0,0,0,.125);
+      min-height: 300px;
+    }
+  </style>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'vendor/jquery.are-you-sure.js' %}"></script>
+  <script src="{% static 'vendor/ace/1.3.3/ace.js' %}"></script>
+  <script>
+    $(function () {
+
+      var $customCssTextarea = $("#id_forms_custom_css");
+      $customCssTextarea.after("<div id='cssEditor'>" +  $customCssTextarea.val() + "</div>");
+      $customCssTextarea.hide();
+
+      var cssEditor = ace.edit("cssEditor");
+      cssEditor.setTheme("ace/theme/clouds");
+      cssEditor.getSession().setOptions({
+        mode: "ace/mode/css",
+        wrap: true,
+        tabSize: 4,
+        useSoftTabs: true
+      });
+
+      cssEditor.on("change", function (e) {
+        $customCssTextarea.val(cssEditor.getValue());
+      });
+
+
+      var $customHeader = $("#id_forms_custom_header");
+      $customHeader.after("<div id='htmlEditor'>" +  $customHeader.val() + "</div>");
+      $customHeader.hide();
+
+      var htmlEditor = ace.edit("htmlEditor");
+      htmlEditor.setTheme("ace/theme/clouds");
+      htmlEditor.getSession().setOptions({
+        mode: "ace/mode/html",
+        wrap: true,
+        tabSize: 2,
+        useSoftTabs: true
+      });
+
+      htmlEditor.on("change", function (e) {
+        $customHeader.val(htmlEditor.getValue());
+      });
+
+    });
+  </script>
+{% endblock %}
 
 {% block content %}
   <nav aria-label="breadcrumb">

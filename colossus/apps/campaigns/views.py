@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -19,7 +20,6 @@ from .models import Campaign, Email
 class CampaignListView(CampaignMixin, ListView):
     model = Campaign
     context_object_name = 'campaigns'
-    ordering = ('-create_date',)
     paginate_by = 25
 
     def get_context_data(self, **kwargs):
@@ -27,6 +27,29 @@ class CampaignListView(CampaignMixin, ListView):
         kwargs['campaign_status'] = CampaignStatus
         kwargs['total_count'] = Campaign.objects.count()
         return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        self.extra_context = {}
+
+        queryset = super().get_queryset()
+
+        try:
+            status_filter = int(self.request.GET.get('status'))
+            if status_filter in CampaignStatus.LABELS.keys():
+                self.extra_context['status'] = status_filter
+                queryset = queryset.filter(status=status_filter)
+        except Exception:
+            status_filter = None
+
+        if self.request.GET.get('q', ''):
+            query = self.request.GET.get('q')
+            queryset = queryset.filter(name__icontains=query)
+            self.extra_context['is_filtered'] = True
+            self.extra_context['query'] = query
+
+        queryset = queryset.order_by(F('send_date').desc(nulls_last=True), '-update_date')
+
+        return queryset
 
 
 @method_decorator(login_required, name='dispatch')

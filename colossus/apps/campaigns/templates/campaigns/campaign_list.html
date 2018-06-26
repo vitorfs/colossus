@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load campaigns i18n %}
+{% load colossus campaigns i18n %}
 
 {% block title %}{% trans 'Campaigns' %}{% endblock %}
 
@@ -18,10 +18,12 @@
   <div class="row">
     <div class="col-3">
       <div class="list-group">
-        <a href="" class="list-group-item list-group-item-action">{% trans 'Recent' %}</a>
-        <a href="" class="list-group-item list-group-item-action">{% trans 'Ongoing' %}</a>
-        <a href="" class="list-group-item list-group-item-action">{% trans 'Draft' %}</a>
-        <a href="" class="list-group-item list-group-item-action">{% trans 'Completed' %}</a>
+        <a href="?" class="list-group-item list-group-item-action{% if not status %} active{% endif %}">{% trans 'Recent' %}</a>
+        {% for key, label in campaign_status.LABELS.items %}
+          <a href="?{% qs status=key %}" class="list-group-item list-group-item-action{% if status == key %} active{% endif %}">
+            {{ label }}
+          </a>
+        {% endfor %}
       </div>
     </div>
     <div class="col-9">
@@ -29,12 +31,20 @@
         <div class="card-body">
           <div class="row">
             <div class="col-6">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="{% trans 'Search campaigns' %}" aria-label="{% trans 'Search campaigns' %}" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                  <button class="btn btn-primary" type="button">{% trans 'Search' %}</button>
+              <form method="get">
+                <input type="hidden" name="status" value="{{ status }}">
+                <div class="input-group">
+                  <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search campaigns' %}" aria-label="{% trans 'Search campaigns' %}">
+                  <div class="input-group-append">
+                    {% if query %}
+                      <a href="?{% if status %}status={{ status }}{% endif %}" class="btn btn-outline-primary" role="button">
+                        {% trans 'Clear' %}
+                      </a>
+                    {% endif %}
+                    <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
             <div class="col-6">
             </div>

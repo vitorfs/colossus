@@ -63,6 +63,10 @@ class Campaign(models.Model):
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
 
     @property
+    def is_ongoing(self):
+        return self.status in (CampaignStatus.SCHEDULED,)
+
+    @property
     def can_edit(self):
         return self.status in (CampaignStatus.DRAFT, CampaignStatus.SCHEDULED)
 

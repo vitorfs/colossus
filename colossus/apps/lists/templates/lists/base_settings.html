@@ -13,8 +13,8 @@
 {% block innercontent %}
   <div class="card-body">
     <div class="row">
-      <div class="col-4">
-        <ul class="nav nav-pills flex-column">
+      <div class="col-md-5 col-lg-4">
+        <ul class="nav nav-pills flex-column mb-3">
           <li class="nav-item">
             <a class="nav-link{% if subsubmenu == 'list_settings' %} active{% endif %}" href="{% url 'lists:settings' mailing_list.pk %}">{% trans 'List settings' %}</a>
           </li>
@@ -29,7 +29,7 @@
           </li>
         </ul>
       </div>
-      <div class="col-8">
+      <div class="col-md-7 col-lg-8">
         {% block settingscontent %}
         {% endblock %}
       </div>
