@@ -162,8 +162,9 @@ class Email(models.Model):
 
     __blocks = None
     __base_template = None
+    __child_template_string = None
 
-    BASE_TEMPLATE = 'base_template'
+    BASE_TEMPLATE_VAR = 'base_template'
 
     class Meta:
         verbose_name = _('email')
@@ -177,6 +178,12 @@ class Email(models.Model):
         if self.__base_template is None:
             self.__base_template = Template(self.template_content)
         return self.__base_template
+
+    @property
+    def child_template_string(self):
+        if self.__child_template_string is None:
+            self.__child_template_string = self.build_child_template_string()
+        return self.__child_template_string
 
     def set_template_content(self):
         if self.template is None:
@@ -268,34 +275,29 @@ class Email(models.Model):
         else:
             return True
 
-    def build_template_string(self):
-        virtual_template = ['{%% extends %s %%}' % self.BASE_TEMPLATE, ]
+    def build_child_template_string(self):
+        """
+        Build a valid Django template string with `extends` block tag
+        on top and representation of each content blocks, constructed
+        from the JSON object.
+        """
+        virtual_template = ['{%% extends %s %%}' % self.BASE_TEMPLATE_VAR, ]
         blocks = self.get_blocks()
         for block_key, block_content in blocks.items():
             if block_content:
                 virtual_template.append('{%% block %s %%}\n%s\n{%% endblock %%}' % (block_key, block_content))
         return '\n\n'.join(virtual_template)
 
-    def build_flat_template_string(self):
-        """
-        Expand the blocks contents to be used in a
-        """
-        pass
-
-    def render(self, template_string, context_dict):
+    def _render(self, template_string, context_dict):
         template = Template(template_string)
         context = Context(context_dict)
         return template.render(context)
 
-    def render_html(self, context_dict):
-        template_string = self.build_template_string()
-        context_dict.update({self.BASE_TEMPLATE: self.base_template})
-        return self.render(template_string, context_dict)
+    def render(self, context_dict):
+        context_dict.update({self.BASE_TEMPLATE_VAR: self.base_template})
+        return self._render(self.child_template_string, context_dict)
 
-    def render_text(self, context_dict):
-        return self.render(self.content_text, context_dict)
-
-    def enable_tracking(self):
+    def enable_click_tracking(self):
         soup = BeautifulSoup(self.content_html, 'html5lib')
         for index, a in enumerate(soup.findAll('a')):
             href = a.attrs['href']

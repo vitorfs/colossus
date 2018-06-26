@@ -5,6 +5,8 @@ from django.core.mail import EmailMultiAlternatives, get_connection
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+import html2text
+
 from colossus.apps.subscribers.constants import ActivityTypes
 
 
@@ -25,8 +27,8 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
     if is_test:
         subject = '[%s] %s' % (_('Test'), subject)
 
-    plain_text_message = email.render_text(context)
-    rich_text_message = email.render_html(context)
+    rich_text_message = email.render(context)
+    plain_text_message = html2text.html2text(rich_text_message)
 
     headers = {
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
@@ -74,7 +76,7 @@ def send_campaign_email_test(email, recipient_list):
 
 def send_campaign(campaign):
     site = get_current_site(request=None)  # get site based on SITE_ID
-    campaign.email.enable_tracking()
+    campaign.email.enable_click_tracking()
     with get_connection() as connection:
         for subscriber in campaign.mailing_list.get_active_subscribers():
             sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)

@@ -34,7 +34,7 @@ class CampaignListView(CampaignMixin, ListView):
     def get_queryset(self):
         self.extra_context = {}
 
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('mailing_list')
 
         try:
             status_filter = int(self.request.GET.get('status'))
@@ -215,7 +215,7 @@ def campaign_preview_email(request, pk):
         if form.is_valid():
             email = form.save(commit=False)
     test_context_dict = get_test_email_context()
-    html = email.render_html(test_context_dict)
+    html = email.render(test_context_dict)
     if 'application/json' in request.META.get('HTTP_ACCEPT'):
         return JsonResponse({'html': html})
     else:

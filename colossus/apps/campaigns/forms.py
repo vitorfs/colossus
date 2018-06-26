@@ -7,7 +7,6 @@ from django.utils.translation import gettext, gettext_lazy as _
 from .api import send_campaign_email_test
 from .constants import CampaignStatus
 from .models import Campaign, Email
-from .utils import get_plain_text_from_html
 
 
 class CreateCampaignForm(forms.ModelForm):
@@ -56,19 +55,6 @@ class ScheduleCampaignForm(forms.ModelForm):
             campaign.update_date = timezone.now()
             campaign.save()
         return campaign
-
-
-class DesignEmailForm(forms.ModelForm):
-    class Meta:
-        model = Email
-        fields = ('content',)
-
-    def save(self, commit=True):
-        email = super().save(commit=False)
-        email.content_text = get_plain_text_from_html(email.content)
-        if commit:
-            email.save()
-        return email
 
 
 class PlainTextEmailForm(forms.ModelForm):
