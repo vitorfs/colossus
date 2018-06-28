@@ -97,7 +97,9 @@
             <div>
               <h5 class="mb-1">{% trans 'Content' %}</h5>
               <div>
-                <a href="#">{% trans 'Preview Email' %}</a> ・ <a href="javascript:void(0);" data-toggle="modal" data-target="#sendTestEmailModal">{% trans 'Send Test Email' %}</a>
+                <a href="javascript:void(0);" data-toggle="modal" data-target="#previewEmailModal">{% trans 'Preview Email' %}</a>
+                ・
+                <a href="javascript:void(0);" data-toggle="modal" data-target="#sendTestEmailModal">{% trans 'Send Test Email' %}</a>
               </div>
             </div>
           </div>
@@ -174,7 +176,6 @@
     </form>
   </div>
 
-
   <div class="modal fade" id="editPlainTextModal" tabindex="-1" role="dialog" aria-labelledby="editPlainTextModalLabel" aria-hidden="true">
     <form method="post" action="{% url 'campaigns:campaign_edit_plain_text_content' campaign.pk %}">
       {% csrf_token %}
@@ -197,4 +198,21 @@
       </div>
     </form>
   </div>
+
+  <div class="modal fade" id="previewEmailModal" tabindex="-1" role="dialog" aria-labelledby="previewEmailMdalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="previewEmailMdalLabel">{% trans 'Preview email' %}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-0">
+          <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100" style="min-height: 400px; border: 0 none;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}

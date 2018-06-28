@@ -214,7 +214,10 @@ def campaign_preview_email(request, pk):
         form = EmailEditorForm(email, data=request.POST)
         if form.is_valid():
             email = form.save(commit=False)
-    test_context_dict = get_test_email_context()
+    context = dict()
+    if campaign.mailing_list:
+        context['unsub'] = reverse('subscribers:unsubscribe_manual', kwargs={'mailing_list_uuid': campaign.mailing_list.uuid})
+    test_context_dict = get_test_email_context(**context)
     html = email.render(test_context_dict)
     if 'application/json' in request.META.get('HTTP_ACCEPT'):
         return JsonResponse({'html': html})

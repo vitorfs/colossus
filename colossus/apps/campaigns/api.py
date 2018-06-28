@@ -10,13 +10,14 @@ import html2text
 from colossus.apps.subscribers.constants import ActivityTypes
 
 
-def get_test_email_context():
-    context = {
-        'uuid': '[SUBSCRIBER_UUID]',
-        'name': '<< Test Name >>',
-        'unsub': '#'
-    }
-    return context
+def get_test_email_context(**kwargs):
+    if 'unsub' not in kwargs:
+        kwargs['unsub'] = '#'
+    if 'name' not in kwargs:
+        kwargs['name'] = '<< Test Name >>'
+    if 'uuid' not in kwargs:
+        kwargs['uuid'] = '[SUBSCRIBER_UUID]'
+    return kwargs
 
 
 def send_campaign_email(email, context, to, connection=None, is_test=False):
@@ -59,6 +60,7 @@ def send_campaign_email_subscriber(email, subscriber, site, connection=None):
         'subscriber_uuid': subscriber.uuid,
         'campaign_uuid': email.campaign.uuid
     })
+    # TODO: remove hardcoded http
     protocol = 'http'
     unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, path)
     context = {
