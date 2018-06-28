@@ -78,6 +78,15 @@ class CampaignEditView(CampaignMixin, DetailView):
 class CampaignDetailView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
+    extra_context = {'submenu': 'details'}
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignPreviewView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_preview.html'
+    extra_context = {'submenu': 'preview'}
 
 
 @method_decorator(login_required, name='dispatch')

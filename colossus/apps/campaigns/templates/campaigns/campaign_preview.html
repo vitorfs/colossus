@@ -1,0 +1,12 @@
+{% extends 'campaigns/base.html' %}
+
+{% load i18n %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Preview' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100" style="min-height:500px; border: 0 none;"></iframe>
+{% endblock %}

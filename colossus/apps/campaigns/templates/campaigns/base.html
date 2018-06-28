@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      {% block breadcrumb %}
+      {% endblock %}
+    </ol>
+  </nav>
+  <h2 class="mb-3">{{ campaign.name }}</h2>
+  <div class="card mb-3">
+    <div class="card-header">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link{% if submenu == 'details' %} active{% endif %}" href="{% url 'campaigns:campaign_detail' campaign.pk %}">{% trans 'Details' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if submenu == 'preview' %} active{% endif %}" href="{% url 'campaigns:campaign_preview' campaign.pk %}">{% trans 'Campaign Preview' %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if submenu == 'reports' %} active{% endif %}" href="#">{% trans 'Reports' %}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      {% block innercontent %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}
