@@ -2,6 +2,7 @@ import json
 import uuid
 
 from django.contrib.sites.shortcuts import get_current_site
+from django.utils.crypto import get_random_string
 from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import reverse
@@ -257,12 +258,16 @@ class Email(models.Model):
 
         if self.content:
             _checklist['content'] = True
-            html_template = Template(self.content)
-            html_variables = get_template_variables(html_template)
-            text_template = Template(self.content_text)
-            text_variables = get_template_variables(text_template)
 
-            _checklist['unsub'] = ('unsub' in html_variables and 'unsub' in text_variables)
+            # Generate a random string and pass it to the render function
+            # as if it was the unsubscribe url. If we can find this token in the
+            # rendered template, we can say the unsubscribe url will be rendered.
+            # Not 100% guranteed, as the end user can still bypass it (e.g.
+            # changing visibility with html).
+            token = get_random_string(50)
+            rendered_template = self.render({'unsub': token})
+            _checklist['unsub'] = token in rendered_template
+
             _checklist['plaintext'] = (self.content_text != '')
         return _checklist
 

@@ -120,7 +120,7 @@
                     {% trans 'Email contains unsubscribe link.' %}
                   {% else %}
                     <i data-feather="x" class="text-danger" style="height:15px;vertical-align:middle;"></i>
-                    {% trans 'Unsubscribe link not found.' %} <a href="">{% trans 'Resolve' %}</a>
+                    {% trans 'Unsubscribe link not found.' %} <a href="{% url 'campaigns:campaign_edit_content' campaign.pk %}">{% trans 'Resolve' %}</a>
                   {% endif %}
                 </small>
               </p>
