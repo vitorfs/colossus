@@ -1,5 +1,6 @@
 import json
 import uuid
+import re
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.crypto import get_random_string
@@ -302,23 +303,33 @@ class Email(models.Model):
         context_dict.update({self.BASE_TEMPLATE_VAR: self.base_template})
         return self._render(self.child_template_string, context_dict)
 
+    def _enable_click_tracking(self, html, start_index=0):
+        urls = re.findall(r'(?i)(href=["\']?)(https?://[^"\' >]+)', html)
+        index = 0
+        for index, data in enumerate(urls):
+            href = data[0]
+            url = data[1]
+            link, created = Link.objects.get_or_create(email=self, url=url, index=(start_index + index))
+            current_site = get_current_site(request=None)
+            protocol = 'http'
+            domain = current_site.domain
+            # We cannot use django.urls.reverse here because part of the kwargs
+            # will be processed during the sending campaign (including the `subscriber_uuid`)
+            # With the `{{ uuid }}` we are introducing an extra django template variable
+            # which will be later used to replace with the subscriber's uuid.
+            track_url = '%s://%s/track/click/%s/{{uuid}}/' % (protocol, domain, link.uuid)
+            html = re.sub(r'(?i)href=["\']?%s' % url, '%s%s' % (href, track_url), html, 1)
+        return html, (index + 1)
+
     def enable_click_tracking(self):
-        soup = BeautifulSoup(self.content_html, 'html5lib')
-        for index, a in enumerate(soup.findAll('a')):
-            href = a.attrs['href']
-            url = href.strip()
-            if url.lower().startswith('http://') or url.lower().startswith('https://'):
-                link, created = Link.objects.get_or_create(email=self, url=url, index=index)
-                current_site = get_current_site(request=None)
-                protocol = 'http'
-                domain = current_site.domain
-                # We cannot use django.urls.reverse here because part of the kwargs
-                # will be processed during the sending campaign (including the `subscriber_uuid`)
-                # With the `{{ uuid }}` we are introducing an extra django template variable
-                # which will be later used to replace with the subscriber's uuid.
-                track_url = '%s://%s/track/click/%s/{{ uuid }}/' % (protocol, domain, link.uuid)
-                a.attrs['href'] = track_url
-        self.content_html = str(soup)
+        self.template_content, index = self._enable_click_tracking(self.template_content)
+        blocks = self.get_blocks()
+        for key, html in blocks.items():
+            blocks[key], index = self._enable_click_tracking(html, index)
+        self.set_blocks(blocks)
+
+    def enable_open_tracking(self):
+        pass
 
 
 class Link(models.Model):
