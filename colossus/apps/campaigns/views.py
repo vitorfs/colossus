@@ -3,17 +3,17 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView,
 )
-from django.utils.translation import gettext_lazy as _
 
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (
     CampaignTestEmailForm, CreateCampaignForm, EmailEditorForm,
-    PlainTextEmailForm, ScheduleCampaignForm
+    PlainTextEmailForm, ScheduleCampaignForm,
 )
 from .mixins import CampaignMixin
 from .models import Campaign, Email
@@ -225,7 +225,9 @@ def campaign_preview_email(request, pk):
             email = form.save(commit=False)
     context = dict()
     if campaign.mailing_list:
-        context['unsub'] = reverse('subscribers:unsubscribe_manual', kwargs={'mailing_list_uuid': campaign.mailing_list.uuid})
+        context['unsub'] = reverse('subscribers:unsubscribe_manual', kwargs={
+            'mailing_list_uuid': campaign.mailing_list.uuid
+        })
     test_context_dict = get_test_email_context(**context)
     html = email.render(test_context_dict)
     if 'application/json' in request.META.get('HTTP_ACCEPT'):

@@ -1,22 +1,18 @@
 import json
-import uuid
 import re
+import uuid
 
 from django.contrib.sites.shortcuts import get_current_site
-from django.utils.crypto import get_random_string
 from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.translation import gettext, gettext_lazy as _
-
-from bs4 import BeautifulSoup
 
 from colossus.apps.lists.models import MailingList
 from colossus.apps.templates.models import EmailTemplate
-from colossus.apps.templates.utils import (
-    get_template_blocks, get_template_variables,
-)
+from colossus.apps.templates.utils import get_template_blocks
 
 from .constants import CampaignStatus, CampaignTypes
 from .tasks import send_campaign_task
