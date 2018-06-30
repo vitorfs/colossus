@@ -33,24 +33,24 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
     rich_text_message = email.render(context)
     plain_text_message = html2text.html2text(rich_text_message)
 
-    headers = {
-        'List-ID': '%s <%s.list-id.%s>' % (
+    headers = dict()
+    if not is_test:
+        headers['List-ID'] = '%s <%s.list-id.%s>' % (
             email.campaign.mailing_list.name,
             email.campaign.mailing_list.uuid,
             context['domain']
         ),
-        'List-Post': 'NO',
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
-    }
+        headers['List-Post'] = 'NO',
+        headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
 
-    list_subscribe_header = ['<%s>' % context['sub']]
-    list_unsubscribe_header = ['<%s>' % context['unsub']]
-    if email.campaign.mailing_list.list_manager:
-        list_subscribe_header.append('<mailto:%s?subject=subscribe>' % email.campaign.mailing_list.list_manager)
-        list_unsubscribe_header.append('<mailto:%s?subject=unsubscribe>' % email.campaign.mailing_list.list_manager)
+        list_subscribe_header = ['<%s>' % context['sub']]
+        list_unsubscribe_header = ['<%s>' % context['unsub']]
+        if email.campaign.mailing_list.list_manager:
+            list_subscribe_header.append('<mailto:%s?subject=subscribe>' % email.campaign.mailing_list.list_manager)
+            list_unsubscribe_header.append('<mailto:%s?subject=unsubscribe>' % email.campaign.mailing_list.list_manager)
 
-    headers['List-Subscribe'] = ', '.join(list_subscribe_header)
-    headers['List-Unsubscribe'] = ', '.join(list_unsubscribe_header)
+        headers['List-Subscribe'] = ', '.join(list_subscribe_header)
+        headers['List-Unsubscribe'] = ', '.join(list_unsubscribe_header)
 
     message = EmailMultiAlternatives(
         subject=subject,
