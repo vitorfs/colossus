@@ -10,6 +10,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext, gettext_lazy as _
 
+from bs4 import BeautifulSoup
+
 from colossus.apps.lists.models import MailingList
 from colossus.apps.templates.models import EmailTemplate
 from colossus.apps.templates.utils import get_template_blocks
@@ -325,7 +327,14 @@ class Email(models.Model):
         self.set_blocks(blocks)
 
     def enable_open_tracking(self):
-        pass
+        current_site = get_current_site(request=None)
+        protocol = 'http'
+        domain = current_site.domain
+        track_url = '%s://%s/track/open/%s/{{uuid}}/' % (protocol, domain, self.uuid)
+        soup = BeautifulSoup(self.template_content, 'html5lib')
+        img_tag = soup.new_tag('img', src=track_url, height='1', width='1')
+        soup.find('body').append(img_tag)
+        self.template_content = str(soup)
 
 
 class Link(models.Model):
