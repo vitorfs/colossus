@@ -61,8 +61,8 @@ def render_activity(activity):
         ),
         ActivityTypes.OPENED: lambda a: OPENED_TEMPLATE % (
             a.get_formatted_date(),
-            a.campaign.get_absolute_url(),
-            a.campaign.name
+            a.email.campaign.get_absolute_url(),
+            a.email.campaign.name
         ),
         ActivityTypes.CLICKED: lambda a: CLICKED_TEMPLATE % (
             a.get_formatted_date(),
