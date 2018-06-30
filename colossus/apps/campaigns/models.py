@@ -48,10 +48,10 @@ class Campaign(models.Model):
     recipients_count = models.PositiveIntegerField(default=0)
     track_opens = models.BooleanField(_('track opens'), default=True)
     track_clicks = models.BooleanField(_('track clicks'), default=True)
-    unique_opens_count = models.PositiveIntegerField(default=0)
-    unique_clicks_count = models.PositiveIntegerField(default=0)
-    total_opens_count = models.PositiveIntegerField(default=0)
-    total_clicks_count = models.PositiveIntegerField(default=0)
+    unique_opens_count = models.PositiveIntegerField(_('unique opens'), default=0)
+    unique_clicks_count = models.PositiveIntegerField(_('unique clicks'), default=0)
+    total_opens_count = models.PositiveIntegerField(_('total opens'), default=0)
+    total_clicks_count = models.PositiveIntegerField(_('total clicks'), default=0)
 
     __cached_email = None
 
