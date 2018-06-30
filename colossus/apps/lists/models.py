@@ -21,6 +21,12 @@ class MailingList(models.Model):
     campaign_default_from_email = models.EmailField(_('default from email address'), blank=True)
     campaign_default_email_subject = models.CharField(_('default subject'), max_length=150, blank=True)
     enable_recaptcha = models.BooleanField(_('enable reCAPTCHA'), default=False)
+    list_manager = models.EmailField(
+        _('list manager'),
+        blank=True,
+        help_text=_('''Email address to handle subscribe/unsubscribe requests.
+                       It can be a real email address or an automated route to handle callbacks/webhooks.''')
+    )
 
     smtp_host = models.CharField(_('host'), max_length=200, blank=True)
     smtp_port = models.PositiveIntegerField(_('port'), blank=True, null=True)

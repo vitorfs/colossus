@@ -7,6 +7,7 @@ app_name = 'subscribers'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('manage/', views.manage, name='manage'),
     path('goodbye/<uuid:mailing_list_uuid>/', views.goodbye, name='goodbye'),
     path('subscribe/<uuid:mailing_list_uuid>/', views.subscribe, name='subscribe'),
     path('subscribe/<uuid:mailing_list_uuid>/confirm/', views.confirm_subscription, name='confirm_subscription'),

@@ -4,10 +4,8 @@ from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404, redirect, render
-# from django.template import Context, Template
-# from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import View
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
@@ -24,9 +22,19 @@ class IndexView(View):
     def get(self, request):
         return HttpResponse('Hi there! :)')
 
+@csrf_exempt
+@require_POST
+def manage(request):
+    for k, v in request.POST.items():
+        print('%s ==> %s' % (k, v))
 
-# def render_form_template(request, form_template):
-#     html = render_to_string()
+    subject = request.POST.get('subject', '')
+    subject = subject.strip().lower()
+    if subject == 'unsubscribe':
+        return HttpResponse('unsub action')
+    elif subject == 'subscribe':
+        return HttpResponse('sub action')
+    return HttpResponse('no action tiggered.')
 
 
 @csrf_exempt

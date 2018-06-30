@@ -11,6 +11,8 @@ from colossus.apps.subscribers.constants import ActivityTypes
 
 
 def get_test_email_context(**kwargs):
+    if 'sub' not in kwargs:
+        kwargs['sub'] = '#'
     if 'unsub' not in kwargs:
         kwargs['unsub'] = '#'
     if 'name' not in kwargs:
@@ -37,9 +39,18 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
             email.campaign.mailing_list.uuid,
             context['domain']
         ),
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        'List-Unsubscribe': '<mailto:%s>, <%s>' % ('unsubscribe@mg.simpleisbetterthancomplex.com', context['unsub'])
+        'List-Post': 'NO',
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
     }
+
+    list_subscribe_header = ['<%s>' % context['sub']]
+    list_unsubscribe_header = ['<%s>' % context['unsub']]
+    if email.mailing_list.list_manager:
+        list_subscribe_header.append('<mailto:%s?subject=subscribe>' % email.mailing_list.list_manager)
+        list_unsubscribe_header.append('<mailto:%s?subject=unsubscribe>' % email.mailing_list.list_manager)
+
+    headers['List-Subscribe'] = ', '.join(list_subscribe_header)
+    headers['List-Unsubscribe'] = ', '.join(list_unsubscribe_header)
 
     message = EmailMultiAlternatives(
         subject=subject,
@@ -60,18 +71,26 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
 
 
 def send_campaign_email_subscriber(email, subscriber, site, connection=None):
-    path = reverse('subscribers:unsubscribe', kwargs={
+    # TODO: remove hardcoded http
+    protocol = 'http'
+
+    unsub_path = reverse('subscribers:unsubscribe', kwargs={
         'mailing_list_uuid': email.campaign.mailing_list.uuid,
         'subscriber_uuid': subscriber.uuid,
         'campaign_uuid': email.campaign.uuid
     })
-    # TODO: remove hardcoded http
-    protocol = 'http'
-    unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, path)
+    unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, unsub_path)
+
+    sub_path = reverse('subscribers:subscribe', kwargs={
+        'mailing_list_uuid': email.campaign.mailing_list.uuid
+    })
+    subscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, sub_path)
+
     context = {
         'domain': site.domain,
         'uuid': subscriber.uuid,
         'name': subscriber.name,
+        'sub': subscribe_absolute_url,
         'unsub': unsubscribe_absolute_url
     }
     return send_campaign_email(email, context, subscriber.get_email(), connection)
