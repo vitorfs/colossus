@@ -45,9 +45,9 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
 
     list_subscribe_header = ['<%s>' % context['sub']]
     list_unsubscribe_header = ['<%s>' % context['unsub']]
-    if email.mailing_list.list_manager:
-        list_subscribe_header.append('<mailto:%s?subject=subscribe>' % email.mailing_list.list_manager)
-        list_unsubscribe_header.append('<mailto:%s?subject=unsubscribe>' % email.mailing_list.list_manager)
+    if email.campaign.mailing_list.list_manager:
+        list_subscribe_header.append('<mailto:%s?subject=subscribe>' % email.campaign.mailing_list.list_manager)
+        list_unsubscribe_header.append('<mailto:%s?subject=unsubscribe>' % email.campaign.mailing_list.list_manager)
 
     headers['List-Subscribe'] = ', '.join(list_subscribe_header)
     headers['List-Unsubscribe'] = ', '.join(list_unsubscribe_header)
