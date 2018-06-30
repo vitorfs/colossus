@@ -32,6 +32,11 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
     plain_text_message = html2text.html2text(rich_text_message)
 
     headers = {
+        'List-ID': '%s <%s.list-id.%s>' % (
+            email.campaign.mailing_list.name,
+            email.campaign.mailing_list.uuid,
+            context['domain']
+        ),
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         'List-Unsubscribe': '<mailto:%s>, <%s>' % ('unsubscribe@mg.simpleisbetterthancomplex.com', context['unsub'])
     }
@@ -64,6 +69,7 @@ def send_campaign_email_subscriber(email, subscriber, site, connection=None):
     protocol = 'http'
     unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, path)
     context = {
+        'domain': site.domain,
         'uuid': subscriber.uuid,
         'name': subscriber.name,
         'unsub': unsubscribe_absolute_url
