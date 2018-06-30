@@ -33,7 +33,7 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
 
     headers = {
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        'List-Unsubscribe': '<%s>' % context['unsub']
+        'List-Unsubscribe': '<mailto:%s>, <%s>' % ('unsubscribe@mg.simpleisbetterthancomplex.com', context['unsub'])
     }
 
     message = EmailMultiAlternatives(
