@@ -22,6 +22,28 @@
         <strong>{% trans 'File name:' %}</strong>
         <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">{{ subscriber_import.file.name }}</a>
       </p>
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th style="width:10%">{% trans 'Index' %}</th>
+            <th style="width:40%">{% trans 'Column' %}</th>
+            <th style="width:40%">{% trans 'Subscriber Field' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for heading in subscriber_import.get_headings %}
+            <tr>
+              <td>{{ forloop.counter0 }}</td>
+              <td>{{ heading }}</td>
+              <td>
+                <select class="form-control">
+                  <option>{% trans 'Select...' %}</option>
+                </select>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}

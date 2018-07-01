@@ -1,3 +1,4 @@
+import csv
 import uuid
 
 from django.db import models
@@ -85,7 +86,19 @@ class SubscriberImport(models.Model):
         choices=Status.CHOICES
     )
 
+    __cached_headings = None
+
     class Meta:
         verbose_name = _('subscribers import')
         verbose_name_plural = _('subscribers imports')
         db_table = 'subscribers_imports'
+
+    def get_headings(self):
+        if self.__cached_headings is None:
+            with open(self.file.path, 'r') as csvfile:
+                dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                csvfile.seek(0)
+                reader = csv.reader(csvfile, dialect)
+                csv_headings = next(reader)
+                self.__cached_headings = csv_headings
+        return self.__cached_headings
