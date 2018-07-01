@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.forms import modelform_factory
-from django.http import Http404, JsonResponse
-from django.shortcuts import redirect, render
+from django.http import Http404, JsonResponse, HttpResponse
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +19,7 @@ from colossus.apps.subscribers.models import (
 from .charts import SubscriptionsSummaryChart
 from .forms import CSVImportSubscribersForm, PasteImportSubscribersForm
 from .mixins import MailingListMixin
-from .models import MailingList
+from .models import MailingList, SubscriberImport
 
 
 @method_decorator(login_required, name='dispatch')
@@ -203,16 +203,6 @@ class SMTPCredentialsView(AbstractSettingsView):
     title = _('SMTP credentials')
 
 
-@login_required
-def charts_subscriptions_summary(request, pk):
-    try:
-        mailing_list = MailingList.objects.get(pk=pk)
-        chart = SubscriptionsSummaryChart(mailing_list)
-        return JsonResponse({'chart': chart.get_settings()})
-    except MailingList.DoesNotExist:
-        return JsonResponse(status_code=400)  # bad request status code
-
-
 @method_decorator(login_required, name='dispatch')
 class FormsEditorView(MailingListMixin, TemplateView):
     template_name = 'lists/forms_editor.html'
@@ -289,3 +279,44 @@ class CustomizeDesignView(UpdateView):
 
     def get_success_url(self):
         return reverse('lists:forms_editor', kwargs={'pk': self.kwargs.get('pk')})
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscriberImportView(MailingListMixin, CreateView):
+    model = SubscriberImport
+    fields = ('file',)
+    template_name = 'lists/import_subscribers_form.html'
+    extra_context = {'title': _('Import CSV File')}
+
+    def get_success_url(self):
+        return reverse('lists:columns_mapping', kwargs={
+            'pk': self.kwargs.get('pk'),
+            'import_pk': self.object.pk
+        })
+
+
+@method_decorator(login_required, name='dispatch')
+class ColumnsMappingView(MailingListMixin, UpdateView):
+    model = SubscriberImport
+    fields = ('columns_mapping',)
+    template_name = 'lists/columns_mapping.html'
+    context_object_name = 'subscriber_import'
+
+
+@login_required
+def charts_subscriptions_summary(request, pk):
+    try:
+        mailing_list = MailingList.objects.get(pk=pk)
+        chart = SubscriptionsSummaryChart(mailing_list)
+        return JsonResponse({'chart': chart.get_settings()})
+    except MailingList.DoesNotExist:
+        return JsonResponse(status_code=400)  # bad request status code
+
+
+@login_required
+def download_subscriber_import(request, pk, import_pk):
+    subscriber_import = get_object_or_404(SubscriberImport, pk=import_pk, mailing_list_id=pk)
+    filename = subscriber_import.file.name.split('/')[-1]
+    response = HttpResponse(subscriber_import.file.read(), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    return response

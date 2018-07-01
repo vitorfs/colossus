@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% trans 'Columns Mapping' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:import_subscribers' mailing_list.pk %}">{% trans 'Import Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:csv_import_subscribers' mailing_list.pk %}">{% trans 'Import CSV File' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Columns Mapping' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Columns Mapping' %}</h2>
+      <p>
+        <strong>{% trans 'File name:' %}</strong>
+        <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">{{ subscriber_import.file.name }}</a>
+      </p>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Import' %}</button>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

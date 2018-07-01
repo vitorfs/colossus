@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from colossus.apps.core.storage import PrivateMediaStorage
 from colossus.apps.subscribers.constants import Status
 
 
@@ -67,3 +68,24 @@ class MailingList(models.Model):
     def update_subscribers_count(self):
         self.subscribers_count = self.get_active_subscribers().count()
         self.save()
+
+
+class SubscriberImport(models.Model):
+    mailing_list = models.ForeignKey(MailingList, on_delete=models.CASCADE)
+    upload_date = models.DateTimeField(_('upload date'), auto_now_add=True)
+    file = models.FileField(
+        _('CSV file'),
+        upload_to='uploads',
+        storage=PrivateMediaStorage()
+    )
+    columns_mapping = models.TextField(_('columns mapping'), blank=True)
+    subscriber_status = models.PositiveSmallIntegerField(
+        _('subscriber status'),
+        default=Status.SUBSCRIBED,
+        choices=Status.CHOICES
+    )
+
+    class Meta:
+        verbose_name = _('subscribers import')
+        verbose_name_plural = _('subscribers imports')
+        db_table = 'subscribers_imports'
