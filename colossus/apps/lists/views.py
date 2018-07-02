@@ -17,7 +17,7 @@ from colossus.apps.subscribers.models import (
 )
 
 from .charts import SubscriptionsSummaryChart
-from .forms import CSVImportSubscribersForm, PasteImportSubscribersForm
+from .forms import CSVImportSubscribersForm, PasteImportSubscribersForm, ColumnsMappingForm
 from .mixins import MailingListMixin
 from .models import MailingList, SubscriberImport
 
@@ -298,8 +298,9 @@ class SubscriberImportView(MailingListMixin, CreateView):
 @method_decorator(login_required, name='dispatch')
 class ColumnsMappingView(MailingListMixin, UpdateView):
     model = SubscriberImport
-    fields = ('columns_mapping',)
+    form_class = ColumnsMappingForm
     template_name = 'lists/columns_mapping.html'
+    pk_url_kwarg = 'import_pk'
     context_object_name = 'subscriber_import'
 
 

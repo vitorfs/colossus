@@ -22,34 +22,25 @@
         <strong>{% trans 'File name:' %}</strong>
         <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">{{ subscriber_import.file.name }}</a>
       </p>
-      <table class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th style="width:10%">{% trans 'Index' %}</th>
-            <th style="width:40%">{% trans 'Column' %}</th>
-            <th style="width:40%">{% trans 'Subscriber Field' %}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for heading in subscriber_import.get_headings %}
-            <tr>
-              <td>{{ forloop.counter0 }}</td>
-              <td>{{ heading }}</td>
-              <td>
-                <select class="form-control">
-                  <option>{% trans 'Select...' %}</option>
-                </select>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form|crispy }}
+        <table class="table table-sm table-bordered table-striped">
+          <thead>
+            <tr>
+              <th style="width:50%">{% trans 'CSV Column' %}</th>
+              <th style="width:50%">{% trans 'Map to Subscriber Field' %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ form.as_table }}
+          </tbody>
+        </table>
+
         <button type="submit" class="btn btn-success" role="button">{% trans 'Import' %}</button>
         <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
       </form>
+
     </div>
   </div>
 {% endblock %}

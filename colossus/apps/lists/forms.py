@@ -12,7 +12,7 @@ import pytz
 from colossus.apps.subscribers.constants import Status
 from colossus.apps.subscribers.models import Subscriber
 
-from .models import MailingList
+from .models import MailingList, SubscriberImport
 
 
 class CSVImportSubscribersForm(forms.Form):
@@ -111,3 +111,37 @@ class PasteImportSubscribersForm(forms.Form):
                 subscriber.update_date = timezone.now()
                 subscriber.save()
             mailing_list.update_subscribers_count()
+
+
+class ColumnsMappingForm(forms.ModelForm):
+    CHOICES = (
+        ('', 'Select...'),
+        ('email', 'Email address'),
+        ('name', 'Name'),
+        ('open_rate', 'Open rate'),
+        ('click_rate', 'Click rate'),
+        ('update_date', 'Update date'),
+        ('optin_ip_address', 'Opt-in IP address'),
+        ('optin_date', 'Opt-in date'),
+        ('confirm_ip_address', 'Confirm IP address'),
+        ('confirm_date', 'Confirm date')
+    )
+
+    class Meta:
+        model = SubscriberImport
+        fields = ('subscriber_status',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for index, heading in enumerate(self.instance.get_headings()):
+            self.fields['columns_%s' % index] = forms.ChoiceField(
+                label=heading,
+                required=False,
+                choices=self.CHOICES
+            )
+
+    def save(self, commit=True):
+        subscriber_import = super().save(commit=False)
+        if commit:
+            subscriber_import.save()
+        return subscriber_import
