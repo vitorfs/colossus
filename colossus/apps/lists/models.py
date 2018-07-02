@@ -102,3 +102,17 @@ class SubscriberImport(models.Model):
                 csv_headings = next(reader)
                 self.__cached_headings = csv_headings
         return self.__cached_headings
+
+    def get_rows(self, limit=None):
+        rows = list()
+        with open(self.file.path, 'r') as csvfile:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            csvfile.seek(0)
+            reader = csv.reader(csvfile, dialect)
+            # skip header
+            next(reader)
+            for index, row in enumerate(reader):
+                if index == limit:
+                    break
+                rows.append(row)
+        return rows

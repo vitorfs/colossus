@@ -6,6 +6,7 @@ from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 
 import pytz
 
@@ -114,30 +115,33 @@ class PasteImportSubscribersForm(forms.Form):
 
 
 class ColumnsMappingForm(forms.ModelForm):
-    CHOICES = (
-        ('', 'Select...'),
-        ('email', 'Email address'),
-        ('name', 'Name'),
-        ('open_rate', 'Open rate'),
-        ('click_rate', 'Click rate'),
-        ('update_date', 'Update date'),
-        ('optin_ip_address', 'Opt-in IP address'),
-        ('optin_date', 'Opt-in date'),
-        ('confirm_ip_address', 'Confirm IP address'),
-        ('confirm_date', 'Confirm date')
-    )
+    FIELDS = {
+        'email': 'Email address',
+        'name': 'Name',
+        'open_rate': 'Open rate',
+        'click_rate': 'Click rate',
+        'update_date': 'Update date',
+        'optin_ip_address': 'Opt-in IP address',
+        'optin_date': 'Opt-in date',
+        'confirm_ip_address': 'Confirm IP address',
+        'confirm_date': 'Confirm date'
+    }
 
     class Meta:
         model = SubscriberImport
-        fields = ('subscriber_status',)
+        fields = ()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        choices = (('', 'Select...',),) + tuple(self.FIELDS.items())
+        sample_data = self.instance.get_rows(limit=1)[0]
         for index, heading in enumerate(self.instance.get_headings()):
-            self.fields['columns_%s' % index] = forms.ChoiceField(
+            field_key = '__column_%s' % index
+            self.fields[field_key] = forms.ChoiceField(
                 label=heading,
                 required=False,
-                choices=self.CHOICES
+                choices=choices,
+                help_text='Sample data: "%s"' % sample_data[index]
             )
 
     def save(self, commit=True):
