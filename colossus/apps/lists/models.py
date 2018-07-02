@@ -1,4 +1,5 @@
 import csv
+import json
 import uuid
 
 from django.db import models
@@ -92,6 +93,17 @@ class SubscriberImport(models.Model):
         verbose_name = _('subscribers import')
         verbose_name_plural = _('subscribers imports')
         db_table = 'subscribers_imports'
+
+    def set_columns_mapping(self, columns_mapping):
+        self.columns_mapping = json.dumps(columns_mapping)
+
+    def get_columns_mapping(self):
+        columns_mapping = None
+        try:
+            columns_mapping = json.loads(self.columns_mapping)
+        except (TypeError, json.JSONDecodeError):
+            columns_mapping = dict()
+        return {int(key): value for key, value in columns_mapping.items()}
 
     def get_headings(self):
         if self.__cached_headings is None:

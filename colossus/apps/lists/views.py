@@ -126,8 +126,10 @@ class ImportSubscribersView(MailingListMixin, TemplateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class AbstractImportSuscribersView(MailingListMixin, FormView):
+class PasteEmailsImportSubscribersView(MailingListMixin, FormView):
     template_name = 'lists/import_subscribers_form.html'
+    form_class = PasteImportSubscribersForm
+    extra_context = {'title': _('Paste Emails')}
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = self.title
@@ -136,16 +138,6 @@ class AbstractImportSuscribersView(MailingListMixin, FormView):
     def form_valid(self, form):
         form.import_subscribers(self.request, self.kwargs.get('pk'))
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
-
-
-class CSVImportSubscribersView(AbstractImportSuscribersView):
-    form_class = CSVImportSubscribersForm
-    title = _('Import CSV File')
-
-
-class PasteEmailsImportSubscribersView(AbstractImportSuscribersView):
-    form_class = PasteImportSubscribersForm
-    title = _('Paste Emails')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -288,11 +280,16 @@ class SubscriberImportView(MailingListMixin, CreateView):
     template_name = 'lists/import_subscribers_form.html'
     extra_context = {'title': _('Import CSV File')}
 
-    def get_success_url(self):
-        return reverse('lists:columns_mapping', kwargs={
-            'pk': self.kwargs.get('pk'),
-            'import_pk': self.object.pk
-        })
+    def get_context_data(self, **kwargs):
+        kwargs['subscriber_imports'] = SubscriberImport.objects.order_by('-upload_date')
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        mailing_list_id = self.kwargs.get('pk')
+        subscriber_import = form.save(commit=False)
+        subscriber_import.mailing_list_id = mailing_list_id
+        subscriber_import.save()
+        return redirect('lists:columns_mapping', pk=mailing_list_id, import_pk=subscriber_import.pk)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -302,6 +299,9 @@ class ColumnsMappingView(MailingListMixin, UpdateView):
     template_name = 'lists/columns_mapping.html'
     pk_url_kwarg = 'import_pk'
     context_object_name = 'subscriber_import'
+
+    def get_success_url(self):
+        return reverse('lists:columns_mapping', kwargs=self.kwargs)
 
 
 @login_required

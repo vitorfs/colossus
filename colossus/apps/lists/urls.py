@@ -15,7 +15,6 @@ urlpatterns = [
             path('add/', views.SubscriberCreateView.as_view(), name='new_subscriber'),
 
             path('import/', views.ImportSubscribersView.as_view(), name='import_subscribers'),
-            #path('import/csv/', views.CSVImportSubscribersView.as_view(), name='csv_import_subscribers'),
             path('import/csv/', views.SubscriberImportView.as_view(), name='csv_import_subscribers'),
             path('import/csv/<int:import_pk>/', views.ColumnsMappingView.as_view(), name='columns_mapping'),
             path('import/csv/<int:import_pk>/download/', views.download_subscriber_import, name='download_subscriber_import'),

@@ -2,10 +2,11 @@ import csv
 from io import TextIOWrapper
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.utils.text import slugify
 
 import pytz
@@ -116,15 +117,15 @@ class PasteImportSubscribersForm(forms.Form):
 
 class ColumnsMappingForm(forms.ModelForm):
     FIELDS = {
-        'email': 'Email address',
-        'name': 'Name',
-        'open_rate': 'Open rate',
-        'click_rate': 'Click rate',
-        'update_date': 'Update date',
-        'optin_ip_address': 'Opt-in IP address',
-        'optin_date': 'Opt-in date',
-        'confirm_ip_address': 'Confirm IP address',
-        'confirm_date': 'Confirm date'
+        'email': _('Email address'),
+        'name': _('Name'),
+        'open_rate': _('Open rate'),
+        'click_rate': _('Click rate'),
+        'update_date': _('Update date'),
+        'optin_ip_address': _('Opt-in IP address'),
+        'optin_date': _('Opt-in date'),
+        'confirm_ip_address': _('Confirm IP address'),
+        'confirm_date': _('Confirm date')
     }
 
     class Meta:
@@ -133,19 +134,46 @@ class ColumnsMappingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        choices = (('', 'Select...',),) + tuple(self.FIELDS.items())
+        choices = (('', _('Select...'),),) + tuple(self.FIELDS.items())
         sample_data = self.instance.get_rows(limit=1)[0]
-        for index, heading in enumerate(self.instance.get_headings()):
-            field_key = '__column_%s' % index
-            self.fields[field_key] = forms.ChoiceField(
+        self.headings = self.instance.get_headings()
+        columns_mapping = self.instance.get_columns_mapping()
+        if not columns_mapping:
+            columns_mapping = list(self.FIELDS.keys())
+        self._key = lambda i: '__column_%s' % i
+        for index, heading in enumerate(self.headings):
+            self.fields[self._key(index)] = forms.ChoiceField(
                 label=heading,
                 required=False,
                 choices=choices,
-                help_text='Sample data: "%s"' % sample_data[index]
+                help_text=_('Sample data: "%s"') % sample_data[index]
             )
+            try:
+                self.initial[self._key(index)] = columns_mapping[index]
+            except (KeyError, IndexError):
+                pass
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for index, heading in enumerate(self.headings):
+            if cleaned_data.get(self._key(index), '') == 'email':
+                break
+        else:
+            email_column_required = ValidationError(
+                gettext('At least one column should mapp to "Email address" field.'),
+                code='email_column_required'
+            )
+            self.add_error(None, email_column_required)
+        return cleaned_data
 
     def save(self, commit=True):
         subscriber_import = super().save(commit=False)
+        mapping = dict()
+        for index, heading in enumerate(self.headings):
+            value = self.cleaned_data.get(self._key(index), '')
+            if value:
+                mapping[index] = value
+        subscriber_import.set_columns_mapping(mapping)
         if commit:
             subscriber_import.save()
         return subscriber_import

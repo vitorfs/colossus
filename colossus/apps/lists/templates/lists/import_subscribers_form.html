@@ -25,4 +25,20 @@
       </form>
     </div>
   </div>
+
+  {% if subscriber_imports %}
+    <div class="card mb-3">
+      <div class="card-header">
+        {% trans 'Last imports' %}
+      </div>
+      <div class="list-group list-group-flush">
+        {% for subscriber_import in subscriber_imports %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'lists:columns_mapping' mailing_list.pk subscriber_import.pk %}">{{ subscriber_import.file.name }}</a>
+            <small class="text-muted">{{ subscriber_import.upload_date }}</small>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

@@ -19,26 +19,47 @@
     <div class="card-body">
       <h2 class="card-title">{% trans 'Columns Mapping' %}</h2>
       <p>
-        <strong>{% trans 'File name:' %}</strong>
+        <strong>{% trans 'Filename:' %}</strong>
         <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">{{ subscriber_import.file.name }}</a>
       </p>
+
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">
+        {{ form.non_field_errors.as_ul }}
+      </div>
+      {% endif %}
+
+      <code><pre>{{ subscriber_import.get_columns_mapping }}</pre></code>
 
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <table class="table table-sm table-bordered table-striped">
           <thead>
             <tr>
-              <th style="width:50%">{% trans 'CSV Column' %}</th>
-              <th style="width:50%">{% trans 'Map to Subscriber Field' %}</th>
+              <th>{% trans 'Index' %}</th>
+              <th>{% trans 'CSV Column' %}</th>
+              <th>{% trans 'Map to Subscriber Field' %}</th>
             </tr>
           </thead>
           <tbody>
-            {{ form.as_table }}
+            {% for field in form %}
+              <tr>
+                <td class="align-middle">{{ forloop.counter0 }}</td>
+                <td>
+                  <label for="{{ field.id_for_label }}" class="mb-0">{{ field.label }}</label>
+                  <p class="mb-0">
+                    <small class="text-muted">{{ field.help_text }}</small>
+                  </p>
+                </td>
+                <td class="align-middle">{{ field }}</td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
 
-        <button type="submit" class="btn btn-success" role="button">{% trans 'Import' %}</button>
-        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Save columns mapping' %}</button>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>
       </form>
 
     </div>
