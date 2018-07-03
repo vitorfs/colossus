@@ -109,7 +109,6 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/public')
-PRIVATE_MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/private')
 
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = not DEBUG
@@ -226,3 +225,5 @@ CELERY_BEAT_SCHEDULE = {
 '''
     First-Party Apps Settings
 '''
+
+PRIVATE_MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/private')

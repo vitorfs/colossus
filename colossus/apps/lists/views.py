@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.forms import modelform_factory
-from django.http import Http404, JsonResponse, HttpResponse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +17,9 @@ from colossus.apps.subscribers.models import (
 )
 
 from .charts import SubscriptionsSummaryChart
-from .forms import CSVImportSubscribersForm, PasteImportSubscribersForm, ColumnsMappingForm
+from .forms import (
+    ColumnsMappingForm, CSVImportSubscribersForm, PasteImportSubscribersForm,
+)
 from .mixins import MailingListMixin
 from .models import MailingList, SubscriberImport
 
