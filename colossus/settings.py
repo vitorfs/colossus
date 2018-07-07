@@ -106,18 +106,6 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/public')
 
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_HTTPONLY = not DEBUG
-
-SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7 * 52  # one year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
-SECURE_SSL_REDIRECT = not DEBUG
-SECURE_BROWSER_XSS_FILTER = not DEBUG
-SECURE_CONTENT_TYPE_NOSNIFF = not DEBUG
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-SESSION_COOKIE_SECURE = not DEBUG
-
 MESSAGE_TAGS = {
     messages_constants.DEBUG: 'alert-dark',
     messages_constants.INFO: 'alert-primary',
@@ -201,10 +189,6 @@ LOGGING = {
 '''
     Third-Party Apps Settings
 '''
-
-DEBUG_TOOLBAR_CONFIG = {
-    # 'JQUERY_URL': '',
-}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
