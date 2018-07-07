@@ -1,0 +1,1509 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-07 23:03+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: colossus/apps/campaigns/api.py:31
+msgid "Test"
+msgstr ""
+
+#: colossus/apps/campaigns/constants.py:10
+msgid "Regular"
+msgstr ""
+
+#: colossus/apps/campaigns/constants.py:11
+msgid "Automated"
+msgstr ""
+
+#: colossus/apps/campaigns/constants.py:12
+msgid "A/B Test"
+msgstr ""
+
+#: colossus/apps/campaigns/constants.py:24
+msgid "Sent"
+msgstr ""
+
+#: colossus/apps/campaigns/constants.py:25
+msgid "Scheduled"
+msgstr ""
+
+#: colossus/apps/campaigns/constants.py:26
+msgid "Draft"
+msgstr ""
+
+#: colossus/apps/campaigns/forms.py:45
+msgid "Invalid date. Scheduled send date must be a future date."
+msgstr ""
+
+#: colossus/apps/campaigns/forms.py:67 colossus/apps/lists/forms.py:119
+#: colossus/apps/lists/templates/lists/subscriber_list.html:37
+msgid "Email address"
+msgstr ""
+
+#: colossus/apps/campaigns/forms.py:84
+#, python-format
+msgid "Block %s"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:25 colossus/apps/campaigns/models.py:156
+#: colossus/apps/lists/models.py:15 colossus/apps/subscribers/models.py:48
+#: colossus/apps/templates/models.py:20
+msgid "name"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:27 colossus/apps/subscribers/models.py:134
+msgid "type"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:34 colossus/apps/subscribers/models.py:171
+msgid "mailing list"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:40 colossus/apps/subscribers/models.py:53
+msgid "status"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:45
+msgid "send date"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:46 colossus/apps/templates/models.py:22
+msgid "create date"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:47 colossus/apps/templates/models.py:23
+msgid "update date"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:49
+msgid "track opens"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:50
+msgid "track clicks"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:51
+msgid "unique opens"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:52
+msgid "unique clicks"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:53
+msgid "total opens"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:54
+msgid "total clicks"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:59 colossus/apps/campaigns/models.py:145
+msgid "campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:60
+msgid "campaigns"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:110
+msgid " (copy)"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:149 colossus/apps/templates/models.py:37
+msgid "email template"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:154
+msgid "email template content"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:155 colossus/apps/subscribers/models.py:47
+msgid "email address"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:157
+msgid "subject"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:158
+msgid "preview"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:159
+msgid "content"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:160
+#: colossus/apps/subscribers/models.py:183
+msgid "content HTML"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:161
+#: colossus/apps/subscribers/models.py:184
+msgid "content plain text"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:170
+msgid "email"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:171
+msgid "emails"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:349
+msgid "link"
+msgstr ""
+
+#: colossus/apps/campaigns/models.py:350
+msgid "links"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/base.html:10
+#: colossus/apps/campaigns/templates/campaigns/campaign_confirm_delete.html:8
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:10
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:31
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:5
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:11
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:15
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:79
+#: colossus/apps/campaigns/templates/campaigns/send_campaign.html:10
+#: colossus/apps/campaigns/templates/campaigns/test_email_form.html:10
+#: colossus/templates/base.html:34
+msgid "Campaigns"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/base.html:20
+msgid "Details"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/base.html:23
+msgid "Campaign Preview"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/base.html:26
+msgid "Reports"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_confirm_delete.html:10
+#: colossus/apps/lists/templates/lists/subscriber_confirm_delete.html:12
+#: colossus/apps/lists/templates/lists/subscriber_form.html:39
+#: colossus/apps/templates/templates/templates/emailtemplate_confirm_delete.html:5
+#: colossus/apps/templates/templates/templates/emailtemplate_confirm_delete.html:12
+msgid "Delete"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_confirm_delete.html:15
+#: colossus/apps/lists/templates/lists/subscriber_confirm_delete.html:17
+#: colossus/apps/templates/templates/templates/emailtemplate_confirm_delete.html:17
+msgid "Are you sure?"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_confirm_delete.html:19
+#: colossus/apps/lists/templates/lists/subscriber_confirm_delete.html:21
+#: colossus/apps/templates/templates/templates/emailtemplate_confirm_delete.html:21
+msgid "Confirm deletion"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_confirm_delete.html:20
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:171
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:194
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:64
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:67
+#: colossus/apps/campaigns/templates/campaigns/test_email_form.html:22
+#: colossus/apps/lists/templates/lists/import_subscribers_form.html:24
+#: colossus/apps/lists/templates/lists/mailinglist_form.html:23
+#: colossus/apps/lists/templates/lists/subscriber_confirm_delete.html:22
+#: colossus/apps/lists/templates/lists/subscriber_form.html:37
+#: colossus/apps/templates/templates/templates/emailtemplate_confirm_delete.html:22
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:39
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:42
+msgid "Never mind"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:27
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:40
+msgid "To"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:29
+#, python-format
+msgid ""
+"All subscribers in the list <strong>%(name)s</strong>. <a href=\"\">"
+"%(count)s recipients</a>"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:35
+msgid "Edit recipients"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:41
+msgid "Who are you sending this campaign to?"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:44
+msgid "Add recipients"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:53
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:62
+#: colossus/apps/campaigns/views.py:129
+msgid "From"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:57
+msgid "Edit from"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:63
+msgid "Who is sending this campaign?"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:66
+msgid "Add from"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:75
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:85
+#: colossus/apps/campaigns/views.py:141
+msgid "Subject"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:80
+msgid "Edit subject"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:86
+msgid "What's the subject line for this campaign?"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:89
+msgid "Add subject"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:98
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:135
+msgid "Content"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:100
+msgid "Preview Email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:102
+msgid "Send Test Email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:111
+msgid "Plain-text version."
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:111
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:96
+msgid "Edit"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:114
+msgid "Plain-text version not found."
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:114
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:125
+msgid "Resolve"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:122
+msgid "Email contains unsubscribe link."
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:125
+msgid "Unsubscribe link not found."
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:130
+msgid "Edit design"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:136
+msgid "Design the content for your email."
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:139
+msgid "Design email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:146
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:149
+#: colossus/apps/campaigns/templates/campaigns/send_campaign.html:5
+#: colossus/apps/campaigns/templates/campaigns/send_campaign.html:12
+#: colossus/apps/campaigns/templates/campaigns/send_campaign.html:26
+msgid "Send campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:147
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:150
+msgid "Schedule"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:152
+#: colossus/apps/lists/templates/lists/columns_mapping.html:61
+msgid "Finish later"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:162
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:89
+#: colossus/apps/campaigns/templates/campaigns/test_email_form.html:5
+#: colossus/apps/campaigns/templates/campaigns/test_email_form.html:12
+#: colossus/apps/campaigns/templates/campaigns/test_email_form.html:17
+msgid "Send test email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:163
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:186
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:207
+msgid "Close"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:172
+#: colossus/apps/campaigns/templates/campaigns/test_email_form.html:21
+msgid "Send email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:185
+msgid "Plain-text version"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:195
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:63
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:91
+#: colossus/apps/core/templates/core/site_form.html:10
+#: colossus/apps/lists/templates/lists/base_editor.html:59
+#: colossus/apps/lists/templates/lists/customize_design.html:77
+#: colossus/apps/lists/templates/lists/edit_subscription_form_template_email.html:14
+#: colossus/apps/lists/templates/lists/edit_subscription_form_template_page.html:88
+#: colossus/apps/lists/templates/lists/settings.html:13
+#: colossus/apps/lists/templates/lists/subscriber_form.html:32
+#: colossus/apps/templates/templates/templates/emailtemplate_editor.html:96
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:38
+msgid "Save changes"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_edit.html:206
+msgid "Preview email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:5
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:42
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:56
+msgid "Create new campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:38
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:53
+msgid "Edit campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_form.html:66
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:16
+msgid "Create campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:21
+msgid "Recent"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:37
+msgid "Search campaigns"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:41
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:30
+#: colossus/apps/lists/templates/lists/subscriber_list.html:20
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:30
+msgid "Clear"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:44
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:33
+#: colossus/apps/lists/templates/lists/subscriber_list.html:23
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:33
+msgid "Search"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:56
+msgid "Campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:57
+#: colossus/apps/lists/templates/lists/subscriber_list.html:39
+msgid "Status"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:58
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:46
+msgid "Opens"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:59
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:47
+msgid "Clicks"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:98
+msgid "View Report"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:102
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:105
+msgid "Replicate"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_list.html:107
+msgid "Delete campaign"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/campaign_preview.html:7
+msgid "Preview"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:5
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:81
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:87
+msgid "Design Email"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:90
+msgid "Change template"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/email_form.html:92
+#: colossus/apps/templates/templates/templates/emailtemplate_editor.html:97
+msgid "Save and close"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/send_campaign.html:17
+msgid "Ready?"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/send_campaign.html:29
+msgid "Wait, I'm not ready"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/send_campaign_done.html:5
+#: colossus/apps/campaigns/templates/campaigns/send_campaign_done.html:10
+msgid "Your campaign has been sent!"
+msgstr ""
+
+#: colossus/apps/campaigns/templates/campaigns/send_campaign_done.html:11
+msgid "Go to reports →"
+msgstr ""
+
+#: colossus/apps/campaigns/views.py:99
+msgid "Recipients"
+msgstr ""
+
+#: colossus/apps/campaigns/views.py:147
+msgid "Edit Plain-Text Email"
+msgstr ""
+
+#: colossus/apps/campaigns/views.py:153
+msgid "Template"
+msgstr ""
+
+#: colossus/apps/campaigns/views.py:178
+msgid "Schedule campaign"
+msgstr ""
+
+#: colossus/apps/core/models.py:23
+msgid "token"
+msgstr ""
+
+#: colossus/apps/core/models.py:24
+msgid "tokens"
+msgstr ""
+
+#: colossus/apps/core/models.py:28 colossus/apps/subscribers/models.py:167
+msgid "key"
+msgstr ""
+
+#: colossus/apps/core/models.py:29
+msgid "value"
+msgstr ""
+
+#: colossus/apps/core/models.py:32
+msgid "option"
+msgstr ""
+
+#: colossus/apps/core/models.py:33
+msgid "options"
+msgstr ""
+
+#: colossus/apps/core/templates/core/settings.html:5
+#: colossus/apps/core/templates/core/settings.html:10
+#: colossus/apps/lists/templates/lists/base.html:40
+#: colossus/apps/lists/templates/lists/base_settings.html:8
+#: colossus/apps/lists/views.py:173 colossus/templates/base.html:54
+msgid "Settings"
+msgstr ""
+
+#: colossus/apps/core/templates/core/settings.html:18
+msgid "Application settings"
+msgstr ""
+
+#: colossus/apps/core/templates/core/site_form.html:6
+msgid "Site domain"
+msgstr ""
+
+#: colossus/apps/lists/charts.py:97
+msgid "Unsubscritions"
+msgstr ""
+
+#: colossus/apps/lists/charts.py:105
+msgid "Subscriptions"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:20
+msgid "Supported file type: .csv"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:22 colossus/apps/lists/forms.py:66
+msgid "Assign status to subscriber"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:61
+msgid "Paste email addresses"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:62
+msgid ""
+"One email per line, or separated by comma. Duplicate emails will be "
+"supressed."
+msgstr ""
+
+#: colossus/apps/lists/forms.py:120
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:44
+#: colossus/apps/lists/templates/lists/subscriber_list.html:38
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:46
+msgid "Name"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:121
+msgid "Open rate"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:122
+msgid "Click rate"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:123
+msgid "Update date"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:124
+msgid "Opt-in IP address"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:125
+msgid "Opt-in date"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:126
+msgid "Confirm IP address"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:127
+msgid "Confirm date"
+msgstr ""
+
+#: colossus/apps/lists/forms.py:136
+msgid "Select..."
+msgstr ""
+
+#: colossus/apps/lists/forms.py:148
+#, python-format
+msgid "Sample data: \"%s\""
+msgstr ""
+
+#: colossus/apps/lists/forms.py:162
+msgid "At least one column should mapp to \"Email address\" field."
+msgstr ""
+
+#: colossus/apps/lists/models.py:16
+msgid "list short URL"
+msgstr ""
+
+#: colossus/apps/lists/models.py:17 colossus/apps/subscribers/models.py:73
+msgid "subscribers"
+msgstr ""
+
+#: colossus/apps/lists/models.py:18 colossus/apps/subscribers/models.py:50
+msgid "opens"
+msgstr ""
+
+#: colossus/apps/lists/models.py:19 colossus/apps/subscribers/models.py:51
+msgid "clicks"
+msgstr ""
+
+#: colossus/apps/lists/models.py:20
+msgid "created"
+msgstr ""
+
+#: colossus/apps/lists/models.py:21
+msgid "contact email address"
+msgstr ""
+
+#: colossus/apps/lists/models.py:22
+msgid "website URL"
+msgstr ""
+
+#: colossus/apps/lists/models.py:22
+msgid "Where did people opt in to this list?"
+msgstr ""
+
+#: colossus/apps/lists/models.py:23
+msgid "default from name"
+msgstr ""
+
+#: colossus/apps/lists/models.py:24
+msgid "default from email address"
+msgstr ""
+
+#: colossus/apps/lists/models.py:25
+msgid "default subject"
+msgstr ""
+
+#: colossus/apps/lists/models.py:26
+msgid "enable reCAPTCHA"
+msgstr ""
+
+#: colossus/apps/lists/models.py:28
+msgid "list manager"
+msgstr ""
+
+#: colossus/apps/lists/models.py:30
+msgid ""
+"Email address to handle subscribe/unsubscribe requests.\n"
+"                       It can be a real email address or an automated route "
+"to handle callbacks/webhooks."
+msgstr ""
+
+#: colossus/apps/lists/models.py:34
+msgid "host"
+msgstr ""
+
+#: colossus/apps/lists/models.py:35
+msgid "port"
+msgstr ""
+
+#: colossus/apps/lists/models.py:36
+msgid "username"
+msgstr ""
+
+#: colossus/apps/lists/models.py:37
+msgid "password"
+msgstr ""
+
+#: colossus/apps/lists/models.py:38
+msgid "use TLS"
+msgstr ""
+
+#: colossus/apps/lists/models.py:39
+msgid "use SSL"
+msgstr ""
+
+#: colossus/apps/lists/models.py:40
+msgid "timeout"
+msgstr ""
+
+#: colossus/apps/lists/models.py:41
+msgid "SSL keyfile"
+msgstr ""
+
+#: colossus/apps/lists/models.py:42
+msgid "SSL certfile"
+msgstr ""
+
+#: colossus/apps/lists/models.py:45
+msgid "custom CSS"
+msgstr ""
+
+#: colossus/apps/lists/models.py:46
+msgid "Custom CSS will be applied to all subscription form pages."
+msgstr ""
+
+#: colossus/apps/lists/models.py:50
+msgid "custom header"
+msgstr ""
+
+#: colossus/apps/lists/models.py:51
+msgid ""
+"Header displayed on all subscription form pages. Accepts HTML.\n"
+"                       If empty, the name of the mailing list will be used."
+msgstr ""
+
+#: colossus/apps/lists/models.py:57
+msgid "list"
+msgstr ""
+
+#: colossus/apps/lists/models.py:58
+msgid "lists"
+msgstr ""
+
+#: colossus/apps/lists/models.py:77
+msgid "upload date"
+msgstr ""
+
+#: colossus/apps/lists/models.py:79
+msgid "CSV file"
+msgstr ""
+
+#: colossus/apps/lists/models.py:83
+msgid "columns mapping"
+msgstr ""
+
+#: colossus/apps/lists/models.py:85
+msgid "subscriber status"
+msgstr ""
+
+#: colossus/apps/lists/models.py:93
+msgid "subscribers import"
+msgstr ""
+
+#: colossus/apps/lists/models.py:94
+msgid "subscribers imports"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base.html:10
+#: colossus/apps/lists/templates/lists/base_editor.html:11
+#: colossus/apps/lists/templates/lists/columns_mapping.html:10
+#: colossus/apps/lists/templates/lists/customize_design.html:64
+#: colossus/apps/lists/templates/lists/forms_editor.html:9
+#: colossus/apps/lists/templates/lists/import_subscribers.html:8
+#: colossus/apps/lists/templates/lists/import_subscribers_form.html:10
+#: colossus/apps/lists/templates/lists/mailinglist_form.html:8
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:5
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:10
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:16
+#: colossus/apps/lists/templates/lists/subscriber_confirm_delete.html:8
+#: colossus/apps/lists/templates/lists/subscriber_form.html:8
+#: colossus/templates/base.html:38
+msgid "Mailing Lists"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base.html:25
+msgid "Summary"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base.html:30
+#: colossus/apps/lists/templates/lists/columns_mapping.html:12
+#: colossus/apps/lists/templates/lists/import_subscribers.html:10
+#: colossus/apps/lists/templates/lists/import_subscribers_form.html:12
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:45
+#: colossus/apps/lists/templates/lists/subscriber_confirm_delete.html:10
+#: colossus/apps/lists/templates/lists/subscriber_form.html:10
+#: colossus/apps/lists/templates/lists/subscriber_list.html:7
+msgid "Subscribers"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base.html:35
+#: colossus/apps/lists/templates/lists/base_editor.html:13
+#: colossus/apps/lists/templates/lists/customize_design.html:66
+#: colossus/apps/lists/templates/lists/forms_editor.html:11
+#: colossus/apps/lists/templates/lists/subscription_forms.html:7
+msgid "Subscription Forms"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_editor.html:14
+#: colossus/apps/lists/templates/lists/customize_design.html:67
+#: colossus/apps/lists/templates/lists/forms_editor.html:12
+#: colossus/apps/lists/templates/lists/forms_editor.html:18
+#: colossus/apps/lists/templates/lists/subscription_forms.html:17
+msgid "Forms Editor"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_editor.html:20
+msgid "Forms and response emails"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_editor.html:26
+msgid "Subscribe"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_editor.html:43
+#: colossus/apps/subscribers/templates/subscribers/unsubscribe_form.html:10
+msgid "Unsubscribe"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_editor.html:57
+#: colossus/apps/lists/templates/lists/forms_editor.html:21
+msgid "Reset defaults"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_editor.html:58
+#: colossus/apps/lists/templates/lists/forms_editor.html:22
+msgid "Customize base design"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_settings.html:19
+msgid "List settings"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_settings.html:22
+#: colossus/apps/lists/views.py:180
+msgid "Subscription settings"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_settings.html:25
+#: colossus/apps/lists/views.py:187
+msgid "Campaign defaults"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/base_settings.html:28
+#: colossus/apps/lists/views.py:195
+msgid "SMTP credentials"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:5
+#: colossus/apps/lists/templates/lists/columns_mapping.html:15
+#: colossus/apps/lists/templates/lists/columns_mapping.html:20
+msgid "Columns Mapping"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:13
+#: colossus/apps/lists/templates/lists/import_subscribers.html:11
+#: colossus/apps/lists/templates/lists/import_subscribers_form.html:13
+msgid "Import Subscribers"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:14
+#: colossus/apps/lists/views.py:281
+msgid "Import CSV File"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:22
+msgid "Filename:"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:39
+msgid "Index"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:40
+msgid "CSV Column"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:41
+msgid "Map to Subscriber Field"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:60
+msgid "Save columns mapping"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/columns_mapping.html:62
+msgid "Discard"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/customize_design.html:5
+#: colossus/apps/lists/templates/lists/customize_design.html:68
+#: colossus/apps/lists/templates/lists/customize_design.html:73
+msgid "Customize design"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/edit_subscription_form_template_page.html:73
+msgid "Design page"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/edit_subscription_form_template_page.html:81
+msgid "Preview page"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:27
+msgid "Legends:"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:29
+msgid "Form"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:32
+msgid "Web Page"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:35
+msgid "Response Email"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:40
+msgid "Subscription Workflow"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:50
+msgid "Subscribe form"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:53
+msgid ""
+"Entry point for the subscription workflow. Displays the subscription form."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:57
+#: colossus/apps/lists/templates/lists/forms_editor.html:75
+#: colossus/apps/lists/templates/lists/forms_editor.html:93
+#: colossus/apps/lists/templates/lists/forms_editor.html:111
+#: colossus/apps/lists/templates/lists/forms_editor.html:129
+#: colossus/apps/lists/templates/lists/forms_editor.html:153
+#: colossus/apps/lists/templates/lists/forms_editor.html:171
+#: colossus/apps/lists/templates/lists/forms_editor.html:189
+msgid "Customize"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:68
+#: colossus/apps/subscribers/constants.py:98
+msgid "Subscribe thank you page"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:71
+msgid ""
+"Page shown right after a successful form submission. Message instructing the "
+"user to click on the link emailed to them."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:86
+#: colossus/apps/subscribers/constants.py:99
+msgid "Opt-in confirm email"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:89
+msgid ""
+"Email message sent to the subscriber with a link to confirm the subscription "
+"process."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:104
+#: colossus/apps/subscribers/constants.py:100
+msgid "Opt-in confirm thank you page"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:107
+msgid ""
+"Web page shown after clicking and confirming the subscription. An optional "
+"redirect URL can also be provided."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:122
+#: colossus/apps/subscribers/constants.py:101
+msgid "Final welcome email"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:125
+msgid "Optional confirmation email with a welcome message."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:136
+msgid "Unsubscription Workflow"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:146
+msgid "Unsubscribe form"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:164
+#: colossus/apps/subscribers/constants.py:103
+msgid "Unsubscribe success page"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/forms_editor.html:182
+#: colossus/apps/subscribers/constants.py:104
+msgid "Goodbye email"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers.html:20
+msgid "Import CSV Files"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers.html:22
+msgid "Import subscribers from comma-separated files (.csv)."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers.html:25
+#: colossus/apps/lists/templates/lists/import_subscribers.html:37
+#: colossus/apps/lists/templates/lists/subscription_forms.html:22
+#: colossus/apps/lists/templates/lists/subscription_forms.html:34
+msgid "Select"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers.html:32
+#: colossus/apps/lists/views.py:132
+msgid "Paste Emails"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers.html:34
+msgid "Copy and paste email addresses to subscribe or unsubscribe from list."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers_form.html:23
+msgid "Import"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/import_subscribers_form.html:32
+msgid "Last imports"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/mailinglist_form.html:9
+msgid "New list"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/mailinglist_form.html:14
+msgid "Create a new list"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/mailinglist_form.html:22
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:17
+msgid "Create list"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/mailinglist_list.html:26
+msgid "Search lists"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/settings.html:8
+msgid "Subscription form"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscriber_form.html:15
+msgid "New subscriber"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscriber_form.html:34
+msgid "Create subscriber"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscriber_form.html:47
+msgid "Activities"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscriber_list.html:29
+msgid "Import subscribers"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscriber_list.html:30
+msgid "Add subscriber"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscriber_list.html:40
+msgid "Date subscribed"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscription_forms.html:19
+msgid "Customize subscription forms and response emails."
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscription_forms.html:29
+msgid "Embedded Forms"
+msgstr ""
+
+#: colossus/apps/lists/templates/lists/subscription_forms.html:31
+msgid "Create subscription forms that can be embedded on any site."
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:16
+msgid "Pending"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:17
+#: colossus/apps/subscribers/constants.py:38
+msgid "Subscribed"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:18
+#: colossus/apps/subscribers/constants.py:39
+msgid "Unsubscribed"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:19
+msgid "Cleaned"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:40
+msgid "Was sent"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:41
+msgid "Opened"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:42
+msgid "Clicked"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:58
+msgid "Email"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:59
+msgid "Page"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:70
+msgid "Subscription"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:71
+msgid "Unsubscription"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:97
+msgid "Subscribe page"
+msgstr ""
+
+#: colossus/apps/subscribers/constants.py:102
+msgid "Unsubscribe page"
+msgstr ""
+
+#: colossus/apps/subscribers/forms.py:34
+#, python-format
+msgid "The email address \"%(email)s\" is already subscribed to this list."
+msgstr ""
+
+#: colossus/apps/subscribers/forms.py:106
+#, python-format
+msgid "The email address \"%(email)s\" is not subscribed to this list."
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:52
+msgid "updated"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:54
+msgid "opt-in IP address"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:55
+msgid "opt-in date"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:56
+#: colossus/apps/subscribers/models.py:137
+msgid "confirm IP address"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:57
+msgid "confirm date"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:59
+msgid "last seen IP address"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:64
+msgid "last seen date"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:72
+msgid "subscriber"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:135
+msgid "date"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:136
+msgid "description"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:146
+msgid "activity"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:147
+msgid "activities"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:175
+msgid "redirect URL"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:177
+msgid "Instead of showing this page, redirect to URL."
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:179
+msgid "send final confirmation email?"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:180
+msgid "from email address"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:181
+msgid "from name"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:182
+msgid "email subject"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:187
+msgid "form template"
+msgstr ""
+
+#: colossus/apps/subscribers/models.py:188
+msgid "form templates"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:8
+#: colossus/apps/subscribers/templates/subscribers/confirm_email_subject.txt:2
+msgid "Please Confirm Subscription"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:11
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.txt:2
+#, python-format
+msgid "Please confirm your subscription to %(list_name)s:"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:14
+msgid "Yes, subscribe me to this list."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:17
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.txt:6
+msgid ""
+"If you received this email by mistake, simply delete it. You won't be "
+"subscribed if you don't click the confirmation link above."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:19
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.txt:8
+#, python-format
+msgid "For questions about this list, please contact: %(contact_email)s"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:22
+msgid "Confirm Subscription"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_email.html:27
+#, python-format
+msgid "Confirm subscription to %(list_name)s."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_thank_you.html:6
+#: colossus/apps/subscribers/templates/subscribers/welcome_email_subject.txt:2
+msgid "Subscription Confirmed"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_thank_you.html:7
+msgid "Thank you for subscribing to our list!"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/confirm_thank_you.html:8
+#: colossus/apps/subscribers/templates/subscribers/unsubscribe_success.html:8
+msgid "Return to our website"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/subscribe_form.html:6
+msgid "Subscribe to our mailing list"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/subscribe_form.html:9
+msgid "Subscribe to list"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/subscribe_thank_you.html:7
+msgid "Almost finished..."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/subscribe_thank_you.html:8
+msgid "We need to confirm your email address."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/subscribe_thank_you.html:9
+msgid ""
+"To complete the subscription process, please click the link in the email we "
+"just sent you."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/unsubscribe_form.html:6
+msgid "Enter your email address to unsubscribe"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/unsubscribe_success.html:6
+msgid "Unsubscribe Successful"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/unsubscribe_success.html:7
+msgid "You will no longer receive emails from this list."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/welcome_email.txt:2
+msgid "Your subscription to our list has been confirmed."
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/welcome_email.txt:4
+msgid ""
+"If at any time you wish to stop receiving our emails, you can unsubscribe "
+"using the link below:"
+msgstr ""
+
+#: colossus/apps/subscribers/templates/subscribers/welcome_email.txt:8
+#, python-format
+msgid "You may also contact us at: %(contact_email)s"
+msgstr ""
+
+#: colossus/apps/templates/forms.py:24
+msgid "Include blocks are not allowed."
+msgstr ""
+
+#: colossus/apps/templates/forms.py:31
+msgid "Extends blocks are not allowed."
+msgstr ""
+
+#: colossus/apps/templates/models.py:24
+msgid "last used"
+msgstr ""
+
+#: colossus/apps/templates/models.py:30
+msgid "last used campaign"
+msgstr ""
+
+#: colossus/apps/templates/models.py:38
+msgid "email templates"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_confirm_delete.html:10
+#: colossus/apps/templates/templates/templates/emailtemplate_editor.html:75
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:16
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:5
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:10
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:16
+#: colossus/templates/base.html:43
+msgid "Templates"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_editor.html:84
+msgid "You have unsaved changes!"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_editor.html:95
+msgid "Delete template"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:7
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:19
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:29
+msgid "Edit template"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:9
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:31
+msgid "Create a new template"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:21
+msgid "New template"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_form.html:41
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:17
+msgid "Create template"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:26
+msgid "Search templates"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:47
+msgid "Last update"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:48
+msgid "Last used"
+msgstr ""
+
+#: colossus/apps/templates/templates/templates/emailtemplate_list.html:63
+msgid "Never"
+msgstr ""
+
+#: colossus/apps/templates/views.py:113
+msgid "Email template does not exist."
+msgstr ""
+
+#: colossus/templates/base.html:30
+msgid "Dashboard"
+msgstr ""
+
+#: colossus/templates/base.html:31 colossus/templates/base.html:35
+#: colossus/templates/base.html:39 colossus/templates/base.html:44
+#: colossus/templates/includes/paginator.html:51
+msgid "(current)"
+msgstr ""
+
+#: colossus/templates/base.html:55
+msgid "Log out"
+msgstr ""
+
+#: colossus/templates/includes/card_footer_paginator.html:25
+#, python-format
+msgid "Page %(current_page)s of %(total_pages)s"
+msgstr ""
+
+#: colossus/templates/includes/card_footer_paginator.html:51
+#, python-format
+msgid ""
+"<strong>%(page_start)s — %(page_end)s</strong> of <strong>%(total)s</strong>"
+msgstr ""
+
+#: colossus/templates/includes/paginator.html:6
+#: colossus/templates/includes/paginator.html:13
+#: colossus/templates/includes/paginator.html:40
+#: colossus/templates/includes/paginator.html:44
+msgid "Previous"
+msgstr ""
+
+#: colossus/templates/includes/paginator.html:9
+msgid "First"
+msgstr ""
+
+#: colossus/templates/includes/paginator.html:25
+msgid "Last"
+msgstr ""
+
+#: colossus/templates/includes/paginator.html:28
+#: colossus/templates/includes/paginator.html:32
+#: colossus/templates/includes/paginator.html:62
+#: colossus/templates/includes/paginator.html:66
+msgid "Next"
+msgstr ""
+
+#: colossus/templates/registration/logged_out.html:23
+msgid "Good bye!"
+msgstr ""
+
+#: colossus/templates/registration/logged_out.html:25
+msgid "Log in again"
+msgstr ""
+
+#: colossus/templates/registration/login.html:29
+msgid "Log in"
+msgstr ""

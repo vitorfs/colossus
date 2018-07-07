@@ -97,6 +97,15 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+LANGUAGES = (
+    ('en-us', 'English'),
+    ('pt-br', 'Portuguese'),
+)
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'colossus/locale'),
+)
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
 STATICFILES_DIRS = [
