@@ -22,6 +22,7 @@ class IndexView(View):
     def get(self, request):
         return HttpResponse('Hi there! :)')
 
+
 @csrf_exempt
 @require_POST
 def manage(request):

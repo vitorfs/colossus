@@ -17,9 +17,7 @@ from colossus.apps.subscribers.models import (
 )
 
 from .charts import SubscriptionsSummaryChart
-from .forms import (
-    ColumnsMappingForm, CSVImportSubscribersForm, PasteImportSubscribersForm,
-)
+from .forms import ColumnsMappingForm, PasteImportSubscribersForm
 from .mixins import MailingListMixin
 from .models import MailingList, SubscriberImport
 
