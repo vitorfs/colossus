@@ -8,10 +8,6 @@ from decouple import Csv, config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ADMINS = (
-    ('Vitor Freitas', 'vitorfs@gmail.com'),
-)
-
 SECRET_KEY = config('SECRET_KEY', default=string.ascii_letters)
 
 DEBUG = config('DEBUG', default=True, cast=bool)
