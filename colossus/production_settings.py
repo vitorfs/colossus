@@ -1,4 +1,6 @@
-from .settings import *  # noqa
+# flake8: noqa
+
+from .settings import *
 
 import raven
 
@@ -15,7 +17,6 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
-
 
 '''
     Third-Party Apps Settings
