@@ -6,7 +6,7 @@ USER=colossus
 GROUP=colossus
 WORKERS=3
 BIND=unix:/home/colossus/run/gunicorn.sock
-DJANGO_SETTINGS_MODULE=colossus.settings
+DJANGO_SETTINGS_MODULE=colossus.production_settings
 DJANGO_WSGI_MODULE=colossus.wsgi
 LOG_LEVEL=error
 
