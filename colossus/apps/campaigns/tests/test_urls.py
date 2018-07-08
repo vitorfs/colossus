@@ -1,9 +1,9 @@
 from django.urls import reverse
 
-from colossus.test.testcases import ColossusTestCase
+from colossus.test.testcases import TestCase
 
 
-class CampaignsLoginRequiredTests(ColossusTestCase):
+class CampaignsLoginRequiredTests(TestCase):
     """
     Test if all the urls from campaign's app are protected with login_required decorator
     Perform a GET request to all urls. The expected outcome is a redirection
@@ -31,7 +31,7 @@ class CampaignsLoginRequiredTests(ColossusTestCase):
             ('schedule_campaign', {'pk': 1}),
         ]
         for url_name, kwargs in patterns:
-            with self.subTest('Test login required URL campaigns app', url_name=url_name):
+            with self.subTest(url_name=url_name):
                 url = reverse(f'campaigns:{url_name}', kwargs=kwargs)
                 response = self.client.get(url)
                 self.assertRedirectsLoginRequired(response, url)

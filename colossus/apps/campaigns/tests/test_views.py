@@ -1,12 +1,12 @@
 from django.urls import reverse
 
 from colossus.test.factories import UserFactory
-from colossus.test.testcases import ColossusTestCase
+from colossus.test.testcases import TestCase
 
 from .factories import CampaignFactory
 
 
-class CampaignListViewSuccessTests(ColossusTestCase):
+class CampaignListViewSuccessTests(TestCase):
     def setUp(self):
         self.campaigns = CampaignFactory.create_batch(5)
         self.user = UserFactory(username='alex')
@@ -25,5 +25,5 @@ class CampaignListViewSuccessTests(ColossusTestCase):
     def test_html_content(self):
         contents = map(lambda c: c.name, self.campaigns)
         for content in contents:
-            with self.subTest():
+            with self.subTest(content=content):
                 self.assertContains(self.response, content)
