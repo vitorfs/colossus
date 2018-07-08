@@ -3,6 +3,7 @@ from django.urls import reverse
 
 
 class ColossusTestCase(TestCase):
+
     def assertRedirectsLoginRequired(self, response, url, status_code=302,
                                      target_status_code=200, msg_prefix='',
                                      fetch_redirect_response=True):
