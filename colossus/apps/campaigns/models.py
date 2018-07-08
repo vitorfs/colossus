@@ -62,21 +62,21 @@ class Campaign(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         if self.can_edit:
             return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
 
     @property
-    def is_ongoing(self):
+    def is_ongoing(self) -> bool:
         return self.status in (CampaignStatus.SCHEDULED,)
 
     @property
-    def can_edit(self):
+    def can_edit(self) -> bool:
         return self.status in (CampaignStatus.DRAFT, CampaignStatus.SCHEDULED)
 
     @property
-    def can_send(self):
+    def can_send(self) -> bool:
         for email in self.emails.all():
             if not email.can_send:
                 return False
@@ -174,29 +174,29 @@ class Email(models.Model):
         return self.subject
 
     @property
-    def base_template(self):
+    def base_template(self) -> str:
         if self.__base_template is None:
             self.__base_template = Template(self.template_content)
         return self.__base_template
 
     @property
-    def child_template_string(self):
+    def child_template_string(self) -> str:
         if self.__child_template_string is None:
             self.__child_template_string = self.build_child_template_string()
         return self.__child_template_string
 
-    def set_template_content(self):
+    def set_template_content(self) -> str:
         if self.template is None:
             self.template_content = EmailTemplate.objects.default_content()
         else:
             self.template_content = self.template.content
 
-    def get_from(self):
+    def get_from(self) -> str:
         if self.from_name:
             return '%s <%s>' % (self.from_name, self.from_email)
         return self.from_email
 
-    def get_base_template(self):
+    def get_base_template(self) -> Template:
         """
         Retuns a Django template using `template_content` field.
         Fallback to default basic template defined by EmailTemplate.
@@ -224,19 +224,19 @@ class Email(models.Model):
         self.content = json.dumps(blocks)
         self.__blocks = blocks
 
-    def load_blocks(self):
+    def load_blocks(self) -> dict:
         try:
             blocks = json.loads(self.content)
         except (TypeError, json.JSONDecodeError):
             blocks = {'content': ''}
         return blocks
 
-    def get_blocks(self):
+    def get_blocks(self) -> dict:
         if self.__blocks is None:
             self.__blocks = self.load_blocks()
         return self.__blocks
 
-    def checklist(self):
+    def checklist(self) -> dict:
         _checklist = {
             'recipients': False,
             'from': False,
@@ -271,7 +271,7 @@ class Email(models.Model):
         return _checklist
 
     @property
-    def can_send(self):
+    def can_send(self) -> bool:
         checklist = self.checklist()
         for value in checklist.values():
             if not value:
@@ -279,7 +279,7 @@ class Email(models.Model):
         else:
             return True
 
-    def build_child_template_string(self):
+    def build_child_template_string(self) -> str:
         """
         Build a valid Django template string with `extends` block tag
         on top and representation of each content blocks, constructed
@@ -292,12 +292,12 @@ class Email(models.Model):
                 virtual_template.append('{%% block %s %%}\n%s\n{%% endblock %%}' % (block_key, block_content))
         return '\n\n'.join(virtual_template)
 
-    def _render(self, template_string, context_dict):
+    def _render(self, template_string, context_dict) -> str:
         template = Template(template_string)
         context = Context(context_dict)
         return template.render(context)
 
-    def render(self, context_dict):
+    def render(self, context_dict) -> str:
         context_dict.update({self.BASE_TEMPLATE_VAR: self.base_template})
         return self._render(self.child_template_string, context_dict)
 

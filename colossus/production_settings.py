@@ -1,8 +1,8 @@
 # flake8: noqa
 
-from .settings import *
-
 import raven
+
+from .settings import *
 
 INSTALLED_APPS += [
     'raven.contrib.django.raven_compat',
