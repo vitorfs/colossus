@@ -64,7 +64,6 @@ class SubscribeForm(forms.ModelForm):
             'confirm_link': confirm_link,
             'list_name': self.mailing_list.name,
             'contact_email': self.mailing_list.contact_email_address
-
         }
 
         subject = loader.render_to_string('subscribers/confirm_email_subject.txt', context)
