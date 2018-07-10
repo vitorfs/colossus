@@ -160,9 +160,7 @@ class Email(models.Model):
     content_html = models.TextField(_('content HTML'), blank=True)
     content_text = models.TextField(_('content plain text'), blank=True)
     unique_opens_count = models.PositiveIntegerField(_('unique opens'), default=0)
-    unique_clicks_count = models.PositiveIntegerField(_('unique clicks'), default=0)
     total_opens_count = models.PositiveIntegerField(_('total opens'), default=0)
-    total_clicks_count = models.PositiveIntegerField(_('total clicks'), default=0)
 
     __blocks = None
     __base_template = None

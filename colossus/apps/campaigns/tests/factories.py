@@ -18,7 +18,7 @@ class EmailFactory(factory.DjangoModelFactory):
 
 
 class LinkFactory(factory.DjangoModelFactory):
-    url = 'http://127.0.0.1:8000'
+    url = 'https://simpleisbetterthancomplex.com'
     email = factory.SubFactory(EmailFactory)
 
     class Meta:

@@ -134,9 +134,19 @@ class Subscriber(models.Model):
     def open(self, request, email):
         update_fields = {'total_opens_count': F('total_opens_count') + 1}
         if not self.activities.filter(activity_type=ActivityTypes.OPENED, email=email).exists():
+            # First time opening the email, count as unique open
             update_fields['unique_opens_count'] = F('unique_opens_count') + 1
         Email.objects.filter(pk=email.pk).update(**update_fields)
         self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
+
+    @transaction.atomic()
+    def click(self, request, link):
+        update_fields = {'total_clicks_count': F('total_clicks_count') + 1}
+        if not self.activities.filter(activity_type=ActivityTypes.CLICKED, link=link).exists():
+            # First time clicking on a link, count as unique click
+            update_fields['unique_clicks_count'] = F('unique_clicks_count') + 1
+        Link.objects.filter(pk=link.pk).update(**update_fields)
+        self.create_activity(ActivityTypes.CLICKED, link=link, ip_address=get_client_ip(request))
 
 
 class Activity(models.Model):

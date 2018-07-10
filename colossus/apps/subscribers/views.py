@@ -11,9 +11,8 @@ from django.views.generic import View
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
-from colossus.utils import get_client_ip
 
-from .constants import ActivityTypes, Status
+from .constants import Status
 from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
 
@@ -126,7 +125,7 @@ def track_open(request, email_uuid, subscriber_uuid):
         email = Email.objects.get(uuid=email_uuid)
         subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
         subscriber.open(request, email)
-    except Exception as e:
+    except Exception:
         pass  # fail silently
 
     pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')  # noqa
@@ -136,11 +135,10 @@ def track_open(request, email_uuid, subscriber_uuid):
 @require_GET
 def track_click(request, link_uuid, subscriber_uuid):
     link = get_object_or_404(Link, uuid=link_uuid)
-    # TODO: increase click count
 
     try:
-        sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.create_activity(ActivityTypes.CLICKED, link=link, ip_address=get_client_ip(request))
+        subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
+        subscriber.click(request, link)
     except Subscriber.DoesNotExist:
         pass  # fail silently
 
