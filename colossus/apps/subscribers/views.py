@@ -124,9 +124,8 @@ def goodbye(request, mailing_list_uuid):
 def track_open(request, email_uuid, subscriber_uuid):
     try:
         email = Email.objects.get(uuid=email_uuid)
-        # TODO: increase open count
-        sub = Subscriber.objects.get(uuid=subscriber_uuid)
-        sub.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
+        subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
+        subscriber.open(request, email)
     except Exception as e:
         pass  # fail silently
 

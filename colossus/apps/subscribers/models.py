@@ -3,6 +3,7 @@ import uuid
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.mail import send_mail
 from django.db import models, transaction
+from django.db.models import F
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -128,6 +129,14 @@ class Subscriber(models.Model):
             .select_related('subscriber__mailing_list', 'email__campaign', 'link') \
             .filter(**filter_kwargs) \
             .order_by('-date')
+
+    @transaction.atomic()
+    def open(self, request, email):
+        update_fields = {'total_opens_count': F('total_opens_count') + 1}
+        if not self.activities.filter(activity_type=ActivityTypes.OPENED, email=email).exists():
+            update_fields['unique_opens_count'] = F('unique_opens_count') + 1
+        Email.objects.filter(pk=email.pk).update(**update_fields)
+        self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
 
 
 class Activity(models.Model):
