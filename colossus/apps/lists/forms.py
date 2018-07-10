@@ -1,8 +1,10 @@
 import csv
 from io import TextIOWrapper
+from smtplib import SMTPAuthenticationError
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.mail.backends.smtp import EmailBackend
 from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
@@ -176,3 +178,32 @@ class ColumnsMappingForm(forms.ModelForm):
         if commit:
             subscriber_import.save()
         return subscriber_import
+
+
+class MailingListSMTPForm(forms.ModelForm):
+    class Meta:
+        model = MailingList
+        fields = ('smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_use_tls', 'smtp_use_ssl',
+                  'smtp_timeout', 'smtp_ssl_keyfile', 'smtp_ssl_certfile')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        smtp_email_backend = EmailBackend(
+            host=cleaned_data.get('smtp_host'),
+            port=cleaned_data.get('smtp_port'),
+            username=cleaned_data.get('smtp_username'),
+            password=cleaned_data.get('smtp_password'),
+            use_tls=cleaned_data.get('smtp_use_tls'),
+            fail_silently=False,
+            use_ssl=cleaned_data.get('smtp_use_ssl'),
+            timeout=cleaned_data.get('smtp_timeout'),
+            ssl_keyfile=cleaned_data.get('smtp_ssl_keyfile'),
+            ssl_certfile=cleaned_data.get('smtp_ssl_certfile')
+        )
+        try:
+            smtp_email_backend.open()
+        except ConnectionRefusedError:
+            raise ValidationError(_('Connection refused'), code='connection_refused')
+        except SMTPAuthenticationError as err:
+            raise ValidationError(str(err), code='auth_error')
+        return cleaned_data

@@ -17,7 +17,7 @@ from colossus.apps.subscribers.models import (
 )
 
 from .charts import SubscriptionsSummaryChart
-from .forms import ColumnsMappingForm, PasteImportSubscribersForm
+from .forms import ColumnsMappingForm, PasteImportSubscribersForm, MailingListSMTPForm
 from .mixins import MailingListMixin
 from .models import MailingList, SubscriberImport
 
@@ -188,8 +188,7 @@ class CampaignDefaultsView(AbstractSettingsView):
 
 
 class SMTPCredentialsView(AbstractSettingsView):
-    fields = ('smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_use_tls', 'smtp_use_ssl',
-              'smtp_timeout', 'smtp_ssl_keyfile', 'smtp_ssl_certfile')
+    form_class = MailingListSMTPForm
     success_url_name = 'lists:smtp'
     subsubmenu = 'smtp'
     title = _('SMTP credentials')

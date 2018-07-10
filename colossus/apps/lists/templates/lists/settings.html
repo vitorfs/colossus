@@ -7,7 +7,7 @@
     List ID: {{ mailing_list.uuid }}
     <a href="{% url 'subscribers:subscribe' mailing_list.uuid %}">{% trans 'Subscription form' %}</a>
   </p>
-  <form method="post">
+  <form method="post" autocomplete="off">
     {% csrf_token %}
     {{ form|crispy }}
     <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
