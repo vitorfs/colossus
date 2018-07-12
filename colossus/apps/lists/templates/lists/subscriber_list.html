@@ -13,7 +13,7 @@
       <div class="col-6">
         <form method="get">
           <div class="input-group">
-            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search subscribers" aria-label="Search subscribers" aria-describedby="basic-addon2">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search subscribers' %}" aria-label="Search subscribers" aria-describedby="basic-addon2">
             <div class="input-group-append">
               {% if query %}
                 <a href="?" class="btn btn-outline-primary" role="button">

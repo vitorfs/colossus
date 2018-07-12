@@ -89,7 +89,7 @@
       <div class="mb-3 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <h2 class="mb-0 mr-2">{{ email_template.name }}</h2>
-          <a href="{% url 'templates:emailtemplate_edit' email_template.pk %}" class="btn btn-sm btn-link" role="button">Edit name</a>
+          <a href="{% url 'templates:emailtemplate_edit' email_template.pk %}" class="btn btn-sm btn-link" role="button">{% trans 'Edit name' %}</a>
         </div>
         <div>
           <a href="{% url 'templates:emailtemplate_delete' email_template.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Delete template' %}</a>
