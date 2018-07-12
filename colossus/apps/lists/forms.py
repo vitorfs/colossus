@@ -161,7 +161,7 @@ class ColumnsMappingForm(forms.ModelForm):
                 break
         else:
             email_column_required = ValidationError(
-                gettext('At least one column should mapp to "Email address" field.'),
+                gettext('At least one column should map to "Email address" field.'),
                 code='email_column_required'
             )
             self.add_error(None, email_column_required)

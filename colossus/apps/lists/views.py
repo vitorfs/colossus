@@ -133,10 +133,6 @@ class PasteEmailsImportSubscribersView(MailingListMixin, FormView):
     form_class = PasteImportSubscribersForm
     extra_context = {'title': _('Paste Emails')}
 
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = self.title
-        return super().get_context_data(**kwargs)
-
     def form_valid(self, form):
         form.import_subscribers(self.request, self.kwargs.get('pk'))
         return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
