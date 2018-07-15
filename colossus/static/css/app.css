@@ -1,24 +1,27 @@
 body {
-  background-color: #f9f9f9;
+    background-color: #f9f9f9;
+}
+
+nav.navbar .navbar-brand, .logo {
+    font-family: 'Goudy Bookletter 1911', serif;
 }
 
 nav.navbar .navbar-brand {
-  font-family: 'Goudy Bookletter 1911', serif;
-  font-size: 1.4rem;
+    font-size: 1.4rem;
 }
 
 .table-sm {
-  font-size: 87.5%;
+    font-size: 87.5%;
 }
 
-.alert ul {
-  margin-bottom: 0;
-  list-style: none;
-  padding: 0;
+.alert ul,
+form small.form-text ul {
+    margin-bottom: 0;
+    list-style: none;
+    padding: 0;
 }
-
 
 .pagination .page-item {
-  min-width: 38px;
-  text-align: center;
+    min-width: 38px;
+    text-align: center;
 }

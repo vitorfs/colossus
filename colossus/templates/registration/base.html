@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block stylesheet %}
+  <style>
+    body {
+      background-color: #fff;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <h1 class="logo mt-4 text-center">Colossus</h1>
+    <div class="row justify-content-center">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}
