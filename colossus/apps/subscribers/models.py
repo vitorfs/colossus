@@ -137,6 +137,7 @@ class Subscriber(models.Model):
             # First time opening the email, count as unique open
             update_fields['unique_opens_count'] = F('unique_opens_count') + 1
         Email.objects.filter(pk=email.pk).update(**update_fields)
+        Campaign.objects.filter(pk=email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
 
     @transaction.atomic()
@@ -146,6 +147,7 @@ class Subscriber(models.Model):
             # First time clicking on a link, count as unique click
             update_fields['unique_clicks_count'] = F('unique_clicks_count') + 1
         Link.objects.filter(pk=link.pk).update(**update_fields)
+        Campaign.objects.filter(pk=link.email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.CLICKED, link=link, ip_address=get_client_ip(request))
 
 

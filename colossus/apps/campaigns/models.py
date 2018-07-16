@@ -176,7 +176,7 @@ class Email(models.Model):
         return self.subject
 
     @property
-    def base_template(self) -> str:
+    def base_template(self) -> Template:
         if self.__base_template is None:
             self.__base_template = Template(self.template_content)
         return self.__base_template
@@ -187,7 +187,7 @@ class Email(models.Model):
             self.__child_template_string = self.build_child_template_string()
         return self.__child_template_string
 
-    def set_template_content(self) -> str:
+    def set_template_content(self):
         if self.template is None:
             self.template_content = EmailTemplate.objects.default_content()
         else:
