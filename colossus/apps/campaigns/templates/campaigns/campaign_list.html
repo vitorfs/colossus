@@ -86,8 +86,8 @@
                   </div>
                 </td>
                 <td class="align-middle">{{ campaign|campaign_status_badge }}</td>
-                <td class="align-middle">0%</td>
-                <td class="align-middle">0%</td>
+                <td class="align-middle">{{ campaign.open_rate|percent }}</td>
+                <td class="align-middle">{{ campaign.click_rate|percent }}</td>
                 <td class="align-middle text-right">
 
                 <div class="btn-group">

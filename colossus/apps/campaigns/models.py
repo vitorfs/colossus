@@ -50,10 +50,8 @@ class Campaign(models.Model):
     track_clicks = models.BooleanField(_('track clicks'), default=True)
     unique_opens_count = models.PositiveIntegerField(_('unique opens'), default=0, editable=False)
     total_opens_count = models.PositiveIntegerField(_('total opens'), default=0, editable=False)
-    open_rate = models.FloatField(_('open rate'), default=0.0, editable=False)
     unique_clicks_count = models.PositiveIntegerField(_('unique clicks'), default=0, editable=False)
     total_clicks_count = models.PositiveIntegerField(_('total clicks'), default=0, editable=False)
-    click_rate = models.FloatField(_('click rate'), default=0.0, editable=False)
 
     __cached_email = None
 
