@@ -8,12 +8,6 @@ from colossus.test.testcases import TestCase
 from .factories import SubscriberFactory
 
 
-class SubscriberTestCase(TestCase):
-    def setUp(self):
-        self.subscriber = SubscriberFactory()
-        self.factory = RequestFactory()
-
-
 class SubscriberOpenEmailTests(TestCase):
     def setUp(self):
         factory = RequestFactory()
@@ -110,3 +104,100 @@ class SubscriberClickLinkTests(TestCase):
         self.assertEqual(2, self.link.total_clicks_count)
         self.assertEqual(1, self.subscriber_1.activities.filter(activity_type=ActivityTypes.CLICKED).count())
         self.assertEqual(1, self.subscriber_2.activities.filter(activity_type=ActivityTypes.CLICKED).count())
+
+
+class SubscriberUpdateOpenRateTests(TestCase):
+    def setUp(self):
+        self.subscriber = SubscriberFactory()
+        self.email = EmailFactory()
+
+    def test_division_by_zero(self):
+        """
+        Test if the the code is handling division by zero.
+        There should never be an OPENED activity without a SENT activity (thus not being possible to have a
+        division by zero). But just in case.
+        """
+        self.assertEqual(0.0, self.subscriber.update_open_rate())
+
+    def test_update_open_rate_distinct_count(self):
+        """
+        Test if the update count is only considering distinct open entries
+        """
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.OPENED, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.OPENED, email=self.email)
+        self.assertEqual(1.0, self.subscriber.update_open_rate())
+
+    def test_open_without_sent(self):
+        """
+        Test open count without sent activity
+        This should not happen under normal circumstances
+        """
+        self.subscriber.create_activity(ActivityTypes.OPENED, email=self.email)
+        self.assertEqual(0.0, self.subscriber.update_open_rate())
+
+    def test_sent_without_open(self):
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.assertEqual(0.0, self.subscriber.update_open_rate())
+
+    def test_update_open_rate_50_percent(self):
+        self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.OPENED, email=self.email)
+        self.assertEqual(0.5, self.subscriber.update_open_rate())
+
+    def test_round_percentage(self):
+        self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
+        self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.OPENED, email=self.email)
+        self.assertEqual(0.33, self.subscriber.update_open_rate())
+
+
+class SubscriberUpdateClickRateTests(TestCase):
+    def setUp(self):
+        self.subscriber = SubscriberFactory()
+        self.email = EmailFactory()
+        self.link = LinkFactory(email=self.email)
+
+    def test_division_by_zero(self):
+        """
+        Test if the the code is handling division by zero.
+        There should never be an OPENED activity without a SENT activity (thus not being possible to have a
+        division by zero). But just in case.
+        """
+        self.assertEqual(0.0, self.subscriber.update_click_rate())
+
+    def test_update_click_rate_distinct_count(self):
+        """
+        Test if the update count is only considering distinct open entries
+        """
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
+        self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
+        self.assertEqual(1.0, self.subscriber.update_click_rate())
+
+    def test_open_without_sent(self):
+        """
+        Test open count without sent activity
+        This should not happen under normal circumstances
+        """
+        self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
+        self.assertEqual(0.0, self.subscriber.update_click_rate())
+
+    def test_sent_without_open(self):
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.assertEqual(0.0, self.subscriber.update_click_rate())
+
+    def test_update_click_rate_50_percent(self):
+        self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
+        self.assertEqual(0.5, self.subscriber.update_click_rate())
+
+    def test_round_percentage(self):
+        self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
+        self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
+        self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
+        self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
+        self.assertEqual(0.33, self.subscriber.update_click_rate())

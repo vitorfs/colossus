@@ -3,7 +3,7 @@ import uuid
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.mail import send_mail
 from django.db import models, transaction
-from django.db.models import F
+from django.db.models import Count, F, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -140,6 +140,19 @@ class Subscriber(models.Model):
         Campaign.objects.filter(pk=email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
 
+    def update_open_rate(self) -> float:
+        count = self.activities.values('email_id', 'activity_type').aggregate(
+            sent=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.SENT)),
+            opened=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.OPENED)),
+        )
+        try:
+            self.open_rate = round(count['opened'] / count['sent'], 2)
+        except ZeroDivisionError:
+            self.open_rate = 0.0
+        finally:
+            self.save()
+        return self.open_rate
+
     @transaction.atomic()
     def click(self, request, link):
         update_fields = {'total_clicks_count': F('total_clicks_count') + 1}
@@ -148,7 +161,20 @@ class Subscriber(models.Model):
             update_fields['unique_clicks_count'] = F('unique_clicks_count') + 1
         Link.objects.filter(pk=link.pk).update(**update_fields)
         Campaign.objects.filter(pk=link.email.campaign_id).update(**update_fields)
-        self.create_activity(ActivityTypes.CLICKED, link=link, ip_address=get_client_ip(request))
+        self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=get_client_ip(request))
+
+    def update_click_rate(self) -> float:
+        count = self.activities.values('email_id', 'activity_type').aggregate(
+            sent=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.SENT)),
+            clicked=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.CLICKED)),
+        )
+        try:
+            self.click_rate = round(count['clicked'] / count['sent'], 2)
+        except ZeroDivisionError:
+            self.click_rate = 0.0
+        finally:
+            self.save()
+        return self.click_rate
 
 
 class Activity(models.Model):
