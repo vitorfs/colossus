@@ -1,6 +1,6 @@
 {% extends 'lists/base.html' %}
 
-{% load i18n subscribers %}
+{% load colossus i18n subscribers %}
 
 {% block innerbreadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
@@ -35,8 +35,9 @@
     <thead class="thead-light">
       <tr>
         <th>{% trans 'Email address' %}</th>
-        <th>{% trans 'Name' %}</th>
         <th>{% trans 'Status' %}</th>
+        <th>{% trans 'Opens' %}</th>
+        <th>{% trans 'Clicks' %}</th>
         <th>{% trans 'Date subscribed' %}</th>
       </tr>
     </thead>
@@ -44,8 +45,9 @@
       {% for subscriber in subscribers %}
         <tr>
           <td><a href="{% url 'lists:edit_subscriber' mailing_list.pk subscriber.pk %}">{{ subscriber.email }}</a></td>
-          <td>{{ subscriber.name }}</td>
           <td>{{ subscriber|status_badge }}</td>
+          <td>{{ subscriber.open_rate|percent }}</td>
+          <td>{{ subscriber.click_rate|percent }}</td>
           <td>{{ subscriber.optin_date }}</td>
         </tr>
       {% endfor %}
