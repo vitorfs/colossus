@@ -140,20 +140,19 @@ class Subscriber(models.Model):
         Campaign.objects.filter(pk=email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
         self.update_open_rate()
+        self.mailing_list.update_open_rate()
 
-    @transaction.atomic()
     def update_open_rate(self) -> float:
         count = self.activities.values('email_id', 'activity_type').aggregate(
             sent=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.SENT)),
             opened=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.OPENED)),
         )
         try:
-            self.open_rate = round(count['opened'] / count['sent'], 2)
+            self.open_rate = round(count['opened'] / count['sent'], 4)
         except ZeroDivisionError:
             self.open_rate = 0.0
         finally:
-            self.save()
-            self.mailing_list.update_open_rate()
+            self.save(update_fields=['open_rate'])
         return self.open_rate
 
     @transaction.atomic()
@@ -166,20 +165,19 @@ class Subscriber(models.Model):
         Campaign.objects.filter(pk=link.email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=get_client_ip(request))
         self.update_click_rate()
+        self.mailing_list.update_click_rate()
 
-    @transaction.atomic()
     def update_click_rate(self) -> float:
         count = self.activities.values('email_id', 'activity_type').aggregate(
             sent=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.SENT)),
             clicked=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.CLICKED)),
         )
         try:
-            self.click_rate = round(count['clicked'] / count['sent'], 2)
+            self.click_rate = round(count['clicked'] / count['sent'], 4)
         except ZeroDivisionError:
             self.click_rate = 0.0
         finally:
-            self.save()
-            self.mailing_list.update_click_rate()
+            self.save(update_fields=['click_rate'])
         return self.click_rate
 
 

@@ -180,7 +180,7 @@ class SubscriberUpdateOpenRateTests(TestCase):
         self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
         self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
         self.subscriber.create_activity(ActivityTypes.OPENED, email=self.email)
-        self.assertEqual(0.33, self.subscriber.update_open_rate())
+        self.assertEqual(0.3333, self.subscriber.update_open_rate())
 
 
 class SubscriberUpdateClickRateTests(TestCase):
@@ -236,4 +236,4 @@ class SubscriberUpdateClickRateTests(TestCase):
         self.subscriber.create_activity(ActivityTypes.SENT, email=EmailFactory())
         self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
         self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
-        self.assertEqual(0.33, self.subscriber.update_click_rate())
+        self.assertEqual(0.3333, self.subscriber.update_click_rate())

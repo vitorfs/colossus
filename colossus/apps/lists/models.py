@@ -75,13 +75,13 @@ class MailingList(models.Model):
 
     def update_click_rate(self) -> float:
         qs = self.subscribers.aggregate(Avg('click_rate'))
-        self.click_rate = round(qs['click_rate__avg'], 2)
+        self.click_rate = round(qs['click_rate__avg'], 4)
         self.save(update_fields=['click_rate'])
         return self.click_rate
 
     def update_open_rate(self) -> float:
         qs = self.subscribers.aggregate(Avg('open_rate'))
-        self.open_rate = round(qs['open_rate__avg'], 2)
+        self.open_rate = round(qs['open_rate__avg'], 4)
         self.save(update_fields=['open_rate'])
         return self.open_rate
 

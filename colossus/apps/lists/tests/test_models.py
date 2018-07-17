@@ -52,7 +52,7 @@ class MailingListUpdateOpenRateTests(TestCase):
 
     def test_round_percentage(self):
         SubscriberFactory(mailing_list=self.mailing_list, open_rate=0.0)
-        self.assertEqual(0.33, self.mailing_list.update_open_rate())
+        self.assertEqual(0.3333, self.mailing_list.update_open_rate())
 
 
 class MailingListUpdateClickRateTests(TestCase):
@@ -70,4 +70,4 @@ class MailingListUpdateClickRateTests(TestCase):
 
     def test_round_percentage(self):
         SubscriberFactory(mailing_list=self.mailing_list, click_rate=0.0)
-        self.assertEqual(0.33, self.mailing_list.update_click_rate())
+        self.assertEqual(0.3333, self.mailing_list.update_click_rate())

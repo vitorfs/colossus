@@ -33,5 +33,5 @@ def dict(dictionary, key):
 
 @register.filter
 def percent(value):
-    percentage = round(value * 100)
+    percentage = round(value * 100, 1)
     return f'{percentage}%'
