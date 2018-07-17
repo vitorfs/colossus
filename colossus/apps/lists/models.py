@@ -3,6 +3,7 @@ import json
 import uuid
 
 from django.db import models
+from django.db.models import Avg
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -67,9 +68,22 @@ class MailingList(models.Model):
     def get_active_subscribers(self):
         return self.subscribers.filter(status=Status.SUBSCRIBED)
 
-    def update_subscribers_count(self):
+    def update_subscribers_count(self) -> int:
         self.subscribers_count = self.get_active_subscribers().count()
-        self.save()
+        self.save(update_fields=['subscribers_count'])
+        return self.subscribers_count
+
+    def update_click_rate(self) -> float:
+        qs = self.subscribers.aggregate(Avg('click_rate'))
+        self.click_rate = round(qs['click_rate__avg'], 2)
+        self.save(update_fields=['click_rate'])
+        return self.click_rate
+
+    def update_open_rate(self) -> float:
+        qs = self.subscribers.aggregate(Avg('open_rate'))
+        self.open_rate = round(qs['open_rate__avg'], 2)
+        self.save(update_fields=['open_rate'])
+        return self.open_rate
 
 
 class SubscriberImport(models.Model):
