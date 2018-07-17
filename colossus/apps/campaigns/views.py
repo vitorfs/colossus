@@ -54,12 +54,12 @@ class CampaignListView(CampaignMixin, ListView):
         queryset = queryset.annotate(
             open_rate=Case(
                 When(recipients_count=0, then=0.0),
-                default=F('unique_opens_count') / F('recipients_count'),
+                default=F('unique_opens_count') * 1.0 / F('recipients_count'),
                 output_field=FloatField()
             ),
             click_rate=Case(
                 When(recipients_count=0, then=0.0),
-                default=F('unique_clicks_count') / F('recipients_count'),
+                default=F('unique_clicks_count') * 1.0 / F('recipients_count'),
                 output_field=FloatField()
             )
         )
