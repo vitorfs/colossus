@@ -161,7 +161,7 @@ class Subscriber(models.Model):
         if not self.activities.filter(activity_type=ActivityTypes.CLICKED, link=link).exists():
             # First time clicking on a link, count as unique click
             update_fields['unique_clicks_count'] = F('unique_clicks_count') + 1
-            if not self.activities.filter(activity_type=ActivityTypes.OPENED, link=link).exists():
+            if not self.activities.filter(activity_type=ActivityTypes.OPENED, email=link.email).exists():
                 # For the user to click on the email, he/she must have opened it. In some cases the open pixel won't
                 # be triggered. So in those cases, force an open record
                 self.open(request, link.email)
