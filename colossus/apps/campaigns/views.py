@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Case, F, When
+from django.db.models import Case, F, When, FloatField
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -54,11 +54,13 @@ class CampaignListView(CampaignMixin, ListView):
         queryset = queryset.annotate(
             open_rate=Case(
                 When(recipients_count=0, then=0.0),
-                default=F('unique_opens_count') / F('recipients_count')
+                default=F('unique_opens_count') / F('recipients_count'),
+                output_field=FloatField()
             ),
             click_rate=Case(
                 When(recipients_count=0, then=0.0),
-                default=F('unique_clicks_count') / F('recipients_count')
+                default=F('unique_clicks_count') / F('recipients_count'),
+                output_field=FloatField()
             )
         )
 

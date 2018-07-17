@@ -157,6 +157,7 @@ class Subscriber(models.Model):
 
     @transaction.atomic()
     def click(self, request, link):
+        # TODO: Work the click logic to do a proper counting of the email opens
         update_fields = {'total_clicks_count': F('total_clicks_count') + 1}
         if not self.activities.filter(activity_type=ActivityTypes.CLICKED, link=link).exists():
             # First time clicking on a link, count as unique click
