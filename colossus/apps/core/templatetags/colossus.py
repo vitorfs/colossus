@@ -29,3 +29,9 @@ def qs(context, **kwargs):
 @register.simple_tag
 def dict(dictionary, key):
     return dictionary[key]
+
+
+@register.filter
+def percent(value):
+    percentage = round(value * 100)
+    return f'{percentage}%'
