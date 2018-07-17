@@ -139,6 +139,7 @@ class Subscriber(models.Model):
         Email.objects.filter(pk=email.pk).update(**update_fields)
         Campaign.objects.filter(pk=email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
+        self.update_open_rate()
 
     def update_open_rate(self) -> float:
         count = self.activities.values('email_id', 'activity_type').aggregate(
@@ -162,6 +163,7 @@ class Subscriber(models.Model):
         Link.objects.filter(pk=link.pk).update(**update_fields)
         Campaign.objects.filter(pk=link.email.campaign_id).update(**update_fields)
         self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=get_client_ip(request))
+        self.update_click_rate()
 
     def update_click_rate(self) -> float:
         count = self.activities.values('email_id', 'activity_type').aggregate(

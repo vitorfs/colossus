@@ -13,15 +13,22 @@ class SubscriberOpenEmailTests(TestCase):
         factory = RequestFactory()
         self.email = EmailFactory()
         self.subscriber_1 = SubscriberFactory()
+        self.subscriber_1.create_activity(ActivityTypes.SENT, email=self.email)  # mock email sent activity
         self.request_1 = factory.get(reverse('subscribers:open', kwargs={
             'email_uuid': self.email.uuid,
             'subscriber_uuid': self.subscriber_1.uuid
         }))
         self.subscriber_2 = SubscriberFactory()
+        self.subscriber_2.create_activity(ActivityTypes.SENT, email=self.email)  # mock email sent activity
         self.request_2 = factory.get(reverse('subscribers:open', kwargs={
             'email_uuid': self.email.uuid,
             'subscriber_uuid': self.subscriber_2.uuid
         }))
+
+    def test_open_rate_updated(self):
+        self.assertEqual(0.0, self.subscriber_1.open_rate)
+        self.subscriber_1.open(self.request_1, self.email)
+        self.assertEqual(1.0, self.subscriber_1.open_rate)
 
     def test_open_email_once(self):
         self.subscriber_1.open(self.request_1, self.email)
@@ -62,15 +69,22 @@ class SubscriberClickLinkTests(TestCase):
         factory = RequestFactory()
         self.link = LinkFactory()
         self.subscriber_1 = SubscriberFactory()
+        self.subscriber_1.create_activity(ActivityTypes.SENT, email=self.link.email)  # mock email sent activity
         self.request_1 = factory.get(reverse('subscribers:click', kwargs={
             'link_uuid': self.link.uuid,
             'subscriber_uuid': self.subscriber_1.uuid
         }))
         self.subscriber_2 = SubscriberFactory()
+        self.subscriber_2.create_activity(ActivityTypes.SENT, email=self.link.email)  # mock email sent activity
         self.request_2 = factory.get(reverse('subscribers:click', kwargs={
             'link_uuid': self.link.uuid,
             'subscriber_uuid': self.subscriber_2.uuid
         }))
+
+    def test_click_rate_update(self):
+        self.assertEqual(0.0, self.subscriber_1.click_rate)
+        self.subscriber_1.click(self.request_1, self.link)
+        self.assertEqual(1.0, self.subscriber_1.click_rate)
 
     def test_click_link_once(self):
         self.subscriber_1.click(self.request_1, self.link)
