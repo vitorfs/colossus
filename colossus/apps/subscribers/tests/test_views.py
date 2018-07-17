@@ -24,28 +24,8 @@ class TrackOpenTests(TestCase):
     def test_content_type(self):
         self.assertEqual(self.response['Content-Type'], 'image/png')
 
-    def test_subscriber_open_called(self):
-        pass
-
-    def test_email_open_count(self):
-        self.email.refresh_from_db()
-        self.email.campaign.refresh_from_db()
-        self.assertEqual(1, self.email.campaign.unique_opens_count)
-        self.assertEqual(1, self.email.campaign.total_opens_count)
-        self.assertEqual(1, self.email.unique_opens_count)
-        self.assertEqual(1, self.email.total_opens_count)
-        self.assertEqual(1, Activity.objects.filter(activity_type=ActivityTypes.OPENED).count())
-
-    def test_email_open_two_times_count(self):
-        # Simulate open email again
-        self.client.get(self.url)
-        self.email.refresh_from_db()
-        self.email.campaign.refresh_from_db()
-        self.assertEqual(1, self.email.campaign.unique_opens_count)
-        self.assertEqual(2, self.email.campaign.total_opens_count)
-        self.assertEqual(1, self.email.unique_opens_count)
-        self.assertEqual(2, self.email.total_opens_count)
-        self.assertEqual(2, Activity.objects.filter(activity_type=ActivityTypes.OPENED).count())
+    def test_subscriber_opened_email(self):
+        self.assertTrue(Activity.objects.filter(activity_type=ActivityTypes.OPENED).exists())
 
 
 class TrackClickTests(TestCase):
@@ -61,22 +41,5 @@ class TrackClickTests(TestCase):
     def test_redirection(self):
         self.assertRedirects(self.response, self.link.url, fetch_redirect_response=False)
 
-    def test_link_click_count(self):
-        self.link.refresh_from_db()
-        self.link.email.campaign.refresh_from_db()
-        self.assertEqual(1, self.link.email.campaign.unique_clicks_count)
-        self.assertEqual(1, self.link.email.campaign.total_clicks_count)
-        self.assertEqual(1, self.link.unique_clicks_count)
-        self.assertEqual(1, self.link.total_clicks_count)
-        self.assertEqual(1, Activity.objects.filter(activity_type=ActivityTypes.CLICKED).count())
-
-    def test_link_click_two_times_count(self):
-        # Simulate click link again
-        self.client.get(self.url)
-        self.link.refresh_from_db()
-        self.link.email.campaign.refresh_from_db()
-        self.assertEqual(1, self.link.email.campaign.unique_clicks_count)
-        self.assertEqual(2, self.link.email.campaign.total_clicks_count)
-        self.assertEqual(1, self.link.unique_clicks_count)
-        self.assertEqual(2, self.link.total_clicks_count)
-        self.assertEqual(2, Activity.objects.filter(activity_type=ActivityTypes.CLICKED).count())
+    def test_subscriber_clicked_link(self):
+        self.assertTrue(Activity.objects.filter(activity_type=ActivityTypes.CLICKED).exists())
