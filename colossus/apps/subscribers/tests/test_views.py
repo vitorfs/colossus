@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from colossus.apps.campaigns.tests.factories import EmailFactory, LinkFactory
@@ -8,6 +9,7 @@ from colossus.test.testcases import TestCase
 from .factories import SubscriberFactory
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class TrackOpenTests(TestCase):
     def setUp(self):
         self.subscriber = SubscriberFactory()
@@ -28,6 +30,7 @@ class TrackOpenTests(TestCase):
         self.assertTrue(Activity.objects.filter(activity_type=ActivityTypes.OPENED).exists())
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class TrackClickTests(TestCase):
     def setUp(self):
         self.subscriber = SubscriberFactory()

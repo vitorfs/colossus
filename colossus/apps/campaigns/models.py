@@ -2,6 +2,7 @@ import json
 import re
 import uuid
 
+from django.apps import apps
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models, transaction
 from django.db.models import Count
@@ -15,7 +16,6 @@ from bs4 import BeautifulSoup
 
 from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.constants import ActivityTypes
-from colossus.apps.subscribers.models import Activity
 from colossus.apps.templates.models import EmailTemplate
 from colossus.apps.templates.utils import get_template_blocks
 
@@ -144,6 +144,7 @@ class Campaign(models.Model):
         return replicated_campaign
 
     def update_clicks_count_and_rate(self) -> tuple:
+        Activity = apps.get_model('subscribers', 'Activity')
         qs = Activity.objects.filter(email__campaign=self, activity_type=ActivityTypes.CLICKED) \
             .values('subscriber_id') \
             .order_by('subscriber_id') \
@@ -158,6 +159,7 @@ class Campaign(models.Model):
         return (self.unique_clicks_count, self.total_clicks_count, self.click_rate)
 
     def update_opens_count_and_rate(self) -> tuple:
+        Activity = apps.get_model('subscribers', 'Activity')
         qs = Activity.objects.filter(email__campaign=self, activity_type=ActivityTypes.OPENED) \
             .values('subscriber_id') \
             .order_by('subscriber_id') \

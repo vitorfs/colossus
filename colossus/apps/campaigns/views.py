@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Case, F, When, FloatField
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -50,19 +49,6 @@ class CampaignListView(CampaignMixin, ListView):
             queryset = queryset.filter(name__icontains=query)
             self.extra_context['is_filtered'] = True
             self.extra_context['query'] = query
-
-        queryset = queryset.annotate(
-            open_rate=Case(
-                When(recipients_count=0, then=0.0),
-                default=F('unique_opens_count') * 1.0 / F('recipients_count'),
-                output_field=FloatField()
-            ),
-            click_rate=Case(
-                When(recipients_count=0, then=0.0),
-                default=F('unique_clicks_count') * 1.0 / F('recipients_count'),
-                output_field=FloatField()
-            )
-        )
 
         queryset = queryset.order_by('-update_date')
 

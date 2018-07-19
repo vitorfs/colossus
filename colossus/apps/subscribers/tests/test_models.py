@@ -1,5 +1,4 @@
-from django.test import RequestFactory
-from django.urls import reverse
+from django.test import override_settings
 
 from colossus.apps.campaigns.tests.factories import EmailFactory, LinkFactory
 from colossus.apps.lists.tests.factories import MailingListFactory
@@ -10,33 +9,27 @@ from colossus.test.testcases import TestCase
 from .factories import SubscriberFactory
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class SubscriberOpenEmailTests(TestCase):
     def setUp(self):
-        factory = RequestFactory()
         mailing_list = MailingListFactory()
         self.email = EmailFactory()
         self.subscriber_1 = SubscriberFactory(mailing_list=mailing_list)
         self.subscriber_1.create_activity(ActivityTypes.SENT, email=self.email)  # mock email sent activity
-        self.request_1 = factory.get(reverse('subscribers:open', kwargs={
-            'email_uuid': self.email.uuid,
-            'subscriber_uuid': self.subscriber_1.uuid
-        }))
         self.subscriber_2 = SubscriberFactory(mailing_list=mailing_list)
         self.subscriber_2.create_activity(ActivityTypes.SENT, email=self.email)  # mock email sent activity
-        self.request_2 = factory.get(reverse('subscribers:open', kwargs={
-            'email_uuid': self.email.uuid,
-            'subscriber_uuid': self.subscriber_2.uuid
-        }))
 
     def test_open_rate_updated(self):
         self.assertEqual(0.0, self.subscriber_1.open_rate)
-        self.subscriber_1.open(self.request_1, self.email)
+        self.subscriber_1.open(self.email)
+        self.subscriber_1.refresh_from_db()
+        self.subscriber_1.mailing_list.refresh_from_db()
         self.assertEqual(1.0, self.subscriber_1.open_rate)
         # two subscribers, one with open_rate = 1.0 other with open_rate = 0.0, expected mailing list open_rate = 0.5
         self.assertEqual(0.5, self.subscriber_1.mailing_list.open_rate)
 
     def test_open_email_once(self):
-        self.subscriber_1.open(self.request_1, self.email)
+        self.subscriber_1.open(self.email)
         self.email.refresh_from_db()
         self.email.campaign.refresh_from_db()
         self.assertEqual(1, self.email.campaign.unique_opens_count)
@@ -46,8 +39,8 @@ class SubscriberOpenEmailTests(TestCase):
         self.assertEqual(1, self.subscriber_1.activities.filter(activity_type=ActivityTypes.OPENED).count())
 
     def test_open_email_twice(self):
-        self.subscriber_1.open(self.request_1, self.email)
-        self.subscriber_1.open(self.request_1, self.email)
+        self.subscriber_1.open(self.email)
+        self.subscriber_1.open(self.email)
         self.email.refresh_from_db()
         self.email.campaign.refresh_from_db()
         self.assertEqual(1, self.email.campaign.unique_opens_count)
@@ -57,8 +50,8 @@ class SubscriberOpenEmailTests(TestCase):
         self.assertEqual(2, self.subscriber_1.activities.filter(activity_type=ActivityTypes.OPENED).count())
 
     def test_two_subscribers_open_email_once(self):
-        self.subscriber_1.open(self.request_1, self.email)
-        self.subscriber_2.open(self.request_2, self.email)
+        self.subscriber_1.open(self.email)
+        self.subscriber_2.open(self.email)
         self.email.refresh_from_db()
         self.email.campaign.refresh_from_db()
         self.assertEqual(2, self.email.campaign.unique_opens_count)
@@ -69,33 +62,27 @@ class SubscriberOpenEmailTests(TestCase):
         self.assertEqual(1, self.subscriber_2.activities.filter(activity_type=ActivityTypes.OPENED).count())
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class SubscriberClickLinkTests(TestCase):
     def setUp(self):
-        self.factory = RequestFactory()
         mailing_list = MailingListFactory()
         self.link = LinkFactory()
         self.subscriber_1 = SubscriberFactory(mailing_list=mailing_list)
         self.subscriber_1.create_activity(ActivityTypes.SENT, email=self.link.email)  # mock email sent activity
-        self.request_1 = self.factory.get(reverse('subscribers:click', kwargs={
-            'link_uuid': self.link.uuid,
-            'subscriber_uuid': self.subscriber_1.uuid
-        }))
         self.subscriber_2 = SubscriberFactory(mailing_list=mailing_list)
         self.subscriber_2.create_activity(ActivityTypes.SENT, email=self.link.email)  # mock email sent activity
-        self.request_2 = self.factory.get(reverse('subscribers:click', kwargs={
-            'link_uuid': self.link.uuid,
-            'subscriber_uuid': self.subscriber_2.uuid
-        }))
 
     def test_click_rate_update(self):
         self.assertEqual(0.0, self.subscriber_1.click_rate)
-        self.subscriber_1.click(self.request_1, self.link)
+        self.subscriber_1.click(self.link)
+        self.subscriber_1.refresh_from_db()
+        self.subscriber_1.mailing_list.refresh_from_db()
         self.assertEqual(1.0, self.subscriber_1.click_rate)
         # two subscribers, one with click_rate = 1.0 other with click_rate = 0.0 expected mailing list click_rate = 0.5
         self.assertEqual(0.5, self.subscriber_1.mailing_list.click_rate)
 
     def test_click_link_once(self):
-        self.subscriber_1.click(self.request_1, self.link)
+        self.subscriber_1.click(self.link)
         self.link.refresh_from_db()
         self.link.email.campaign.refresh_from_db()
         self.assertEqual(1, self.link.email.campaign.unique_clicks_count)
@@ -105,8 +92,8 @@ class SubscriberClickLinkTests(TestCase):
         self.assertEqual(1, self.subscriber_1.activities.filter(activity_type=ActivityTypes.CLICKED).count())
 
     def test_click_link_twice(self):
-        self.subscriber_1.click(self.request_1, self.link)
-        self.subscriber_1.click(self.request_1, self.link)
+        self.subscriber_1.click(self.link)
+        self.subscriber_1.click(self.link)
         self.link.refresh_from_db()
         self.link.email.campaign.refresh_from_db()
         self.assertEqual(1, self.link.email.campaign.unique_clicks_count)
@@ -116,8 +103,8 @@ class SubscriberClickLinkTests(TestCase):
         self.assertEqual(2, self.subscriber_1.activities.filter(activity_type=ActivityTypes.CLICKED).count())
 
     def test_two_subscribers_click_link_once(self):
-        self.subscriber_1.click(self.request_1, self.link)
-        self.subscriber_2.click(self.request_2, self.link)
+        self.subscriber_1.click(self.link)
+        self.subscriber_2.click(self.link)
         self.link.refresh_from_db()
         self.link.email.campaign.refresh_from_db()
         self.assertEqual(2, self.link.email.campaign.unique_clicks_count)
@@ -129,12 +116,8 @@ class SubscriberClickLinkTests(TestCase):
 
     def test_click_two_links_same_email(self):
         link_2 = LinkFactory(email=self.link.email)
-        request_2 = self.factory.get(reverse('subscribers:click', kwargs={
-            'link_uuid': link_2.uuid,
-            'subscriber_uuid': self.subscriber_1.uuid
-        }))
-        self.subscriber_1.click(self.request_1, self.link)
-        self.subscriber_1.click(request_2, link_2)
+        self.subscriber_1.click(self.link)
+        self.subscriber_1.click(link_2)
 
         self.link.refresh_from_db()
         link_2.refresh_from_db()
@@ -151,24 +134,20 @@ class SubscriberClickLinkTests(TestCase):
         self.assertEqual(2, self.subscriber_1.activities.filter(activity_type=ActivityTypes.CLICKED).count())
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class SubscriberClickLinkForceOpenTests(TestCase):
     def setUp(self):
-        factory = RequestFactory()
         mailing_list = MailingListFactory()
         self.link = LinkFactory()
         self.subscriber = SubscriberFactory(mailing_list=mailing_list)
         self.subscriber.create_activity(ActivityTypes.SENT, email=self.link.email)  # mock email sent activity
-        self.request = factory.get(reverse('subscribers:click', kwargs={
-            'link_uuid': self.link.uuid,
-            'subscriber_uuid': self.subscriber.uuid
-        }))
 
     def test_click_without_open(self):
         """
         Test clicking on a link without opening the email first
         The `click` method should enforce the email opening
         """
-        self.subscriber.click(self.request, self.link)
+        self.subscriber.click(self.link)
 
         # refresh models
         self.link.refresh_from_db()
@@ -195,8 +174,8 @@ class SubscriberClickLinkForceOpenTests(TestCase):
         Only the first `click` method should trigger the email opening
 
         """
-        self.subscriber.click(self.request, self.link)  # trigger `open` method
-        self.subscriber.click(self.request, self.link)  # this time it should not trigger the `open` method
+        self.subscriber.click(self.link)  # trigger `open` method
+        self.subscriber.click(self.link)  # this time it should not trigger the `open` method
 
         # refresh models
         self.link.refresh_from_db()
@@ -221,9 +200,9 @@ class SubscriberClickLinkForceOpenTests(TestCase):
         """
         Test opening email and clicking on a link twice
         """
-        self.subscriber.click(self.request, self.link)
-        self.subscriber.open(self.request, self.link.email)
-        self.subscriber.click(self.request, self.link)
+        self.subscriber.click(self.link)
+        self.subscriber.open(self.link.email)
+        self.subscriber.click(self.link)
 
         # refresh models
         self.link.refresh_from_db()
@@ -248,10 +227,10 @@ class SubscriberClickLinkForceOpenTests(TestCase):
         """
         Test opening email and clicking on a link twice
         """
-        self.subscriber.open(self.request, self.link.email)
-        self.subscriber.click(self.request, self.link)
-        self.subscriber.open(self.request, self.link.email)
-        self.subscriber.click(self.request, self.link)
+        self.subscriber.open(self.link.email)
+        self.subscriber.click(self.link)
+        self.subscriber.open(self.link.email)
+        self.subscriber.click(self.link)
 
         # refresh models
         self.link.refresh_from_db()

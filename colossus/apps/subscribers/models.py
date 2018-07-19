@@ -3,7 +3,7 @@ import uuid
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.mail import send_mail
 from django.db import models, transaction
-from django.db.models import Count, F, Q
+from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
-from colossus.apps.subscribers.tasks import update_open_rate, update_click_rate
+from colossus.apps.subscribers.tasks import update_click_rate, update_open_rate
 from colossus.utils import get_client_ip
 
 from .activities import render_activity
