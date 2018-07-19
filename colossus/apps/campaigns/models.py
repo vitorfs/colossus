@@ -4,6 +4,7 @@ import uuid
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models, transaction
+from django.db.models import Count
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
@@ -13,6 +14,8 @@ from django.utils.translation import gettext, gettext_lazy as _
 from bs4 import BeautifulSoup
 
 from colossus.apps.lists.models import MailingList
+from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.apps.subscribers.models import Activity
 from colossus.apps.templates.models import EmailTemplate
 from colossus.apps.templates.utils import get_template_blocks
 
@@ -52,6 +55,8 @@ class Campaign(models.Model):
     total_opens_count = models.PositiveIntegerField(_('total opens'), default=0, editable=False)
     unique_clicks_count = models.PositiveIntegerField(_('unique clicks'), default=0, editable=False)
     total_clicks_count = models.PositiveIntegerField(_('total clicks'), default=0, editable=False)
+    open_rate = models.FloatField(_('opens'), default=0.0, editable=False)
+    click_rate = models.FloatField(_('clicks'), default=0.0, editable=False)
 
     __cached_email = None
 
@@ -136,8 +141,35 @@ class Campaign(models.Model):
             replicated_emails.append(replicated_email)
 
         Email.objects.bulk_create(replicated_emails)
-
         return replicated_campaign
+
+    def update_clicks_count_and_rate(self) -> tuple:
+        qs = Activity.objects.filter(email__campaign=self, activity_type=ActivityTypes.CLICKED) \
+            .values('subscriber_id') \
+            .order_by('subscriber_id') \
+            .aggregate(unique_count=Count('subscriber_id', distinct=True), total_count=Count('subscriber_id'))
+        self.unique_clicks_count = qs['unique_count']
+        self.total_clicks_count = qs['total_count']
+        try:
+            self.click_rate = self.unique_clicks_count / self.recipients_count
+        except ZeroDivisionError:
+            self.click_rate = 0.0
+        self.save(update_fields=['unique_clicks_count', 'total_clicks_count', 'click_rate'])
+        return (self.unique_clicks_count, self.total_clicks_count, self.click_rate)
+
+    def update_opens_count_and_rate(self) -> tuple:
+        qs = Activity.objects.filter(email__campaign=self, activity_type=ActivityTypes.OPENED) \
+            .values('subscriber_id') \
+            .order_by('subscriber_id') \
+            .aggregate(unique_count=Count('subscriber_id', distinct=True), total_count=Count('subscriber_id'))
+        self.unique_opens_count = qs['unique_count']
+        self.total_opens_count = qs['total_count']
+        try:
+            self.open_rate = self.unique_opens_count / self.recipients_count
+        except ZeroDivisionError:
+            self.open_rate = 0.0
+        self.save(update_fields=['unique_opens_count', 'total_opens_count', 'open_rate'])
+        return (self.unique_opens_count, self.total_opens_count, self.open_rate)
 
 
 class Email(models.Model):
@@ -159,8 +191,10 @@ class Email(models.Model):
     content = models.TextField(_('content'), blank=True)
     content_html = models.TextField(_('content HTML'), blank=True)
     content_text = models.TextField(_('content plain text'), blank=True)
-    unique_opens_count = models.PositiveIntegerField(_('unique opens'), default=0)
-    total_opens_count = models.PositiveIntegerField(_('total opens'), default=0)
+    unique_opens_count = models.PositiveIntegerField(_('unique opens'), default=0, editable=False)
+    total_opens_count = models.PositiveIntegerField(_('total opens'), default=0, editable=False)
+    unique_clicks_count = models.PositiveIntegerField(_('unique clicks'), default=0, editable=False)
+    total_clicks_count = models.PositiveIntegerField(_('total clicks'), default=0, editable=False)
 
     __blocks = None
     __base_template = None
@@ -338,13 +372,33 @@ class Email(models.Model):
         soup.find('body').append(img_tag)
         self.template_content = str(soup)
 
+    def update_clicks_count(self) -> tuple:
+        qs = self.activities.filter(activity_type=ActivityTypes.CLICKED) \
+            .values('subscriber_id') \
+            .order_by('subscriber_id') \
+            .aggregate(unique_count=Count('subscriber_id', distinct=True), total_count=Count('subscriber_id'))
+        self.unique_clicks_count = qs['unique_count']
+        self.total_clicks_count = qs['total_count']
+        self.save(update_fields=['unique_clicks_count', 'total_clicks_count'])
+        return (self.unique_clicks_count, self.total_clicks_count)
+
+    def update_opens_count(self) -> tuple:
+        qs = self.activities.filter(activity_type=ActivityTypes.OPENED) \
+            .values('subscriber_id') \
+            .order_by('subscriber_id') \
+            .aggregate(unique_count=Count('subscriber_id', distinct=True), total_count=Count('subscriber_id'))
+        self.unique_opens_count = qs['unique_count']
+        self.total_opens_count = qs['total_count']
+        self.save(update_fields=['unique_opens_count', 'total_opens_count'])
+        return (self.unique_opens_count, self.total_opens_count)
+
 
 class Link(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.ForeignKey(Email, on_delete=models.CASCADE)
     url = models.URLField(max_length=2048)
-    unique_clicks_count = models.PositiveIntegerField(default=0)
-    total_clicks_count = models.PositiveIntegerField(default=0)
+    unique_clicks_count = models.PositiveIntegerField(default=0, editable=False)
+    total_clicks_count = models.PositiveIntegerField(default=0, editable=False)
     index = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
@@ -353,3 +407,13 @@ class Link(models.Model):
 
     def __str__(self):
         return self.url
+
+    def update_clicks_count(self) -> tuple:
+        qs = self.activities.values('subscriber_id').order_by('subscriber_id').aggregate(
+            unique_count=Count('subscriber_id', distinct=True),
+            total_count=Count('subscriber_id')
+        )
+        self.unique_clicks_count = qs['unique_count']
+        self.total_clicks_count = qs['total_count']
+        self.save(update_fields=['unique_clicks_count', 'total_clicks_count'])
+        return (self.unique_clicks_count, self.total_clicks_count)

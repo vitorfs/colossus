@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
+from colossus.apps.subscribers.tasks import update_open_rate, update_click_rate
 from colossus.utils import get_client_ip
 
 from .activities import render_activity
@@ -130,17 +131,13 @@ class Subscriber(models.Model):
             .filter(**filter_kwargs) \
             .order_by('-date')
 
-    @transaction.atomic()
-    def open(self, request, email):
-        update_fields = {'total_opens_count': F('total_opens_count') + 1}
-        if not self.activities.filter(activity_type=ActivityTypes.OPENED, email=email).exists():
-            # First time opening the email, count as unique open
-            update_fields['unique_opens_count'] = F('unique_opens_count') + 1
-        Email.objects.filter(pk=email.pk).update(**update_fields)
-        Campaign.objects.filter(pk=email.campaign_id).update(**update_fields)
-        self.create_activity(ActivityTypes.OPENED, email=email, ip_address=get_client_ip(request))
-        self.update_open_rate()
-        self.mailing_list.update_open_rate()
+    def open(self, email, ip_address=None):
+        self.create_activity(ActivityTypes.OPENED, email=email, ip_address=ip_address)
+        update_open_rate.delay(self.pk, email.pk)
+
+    def click(self, link, ip_address=None):
+        self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=ip_address)
+        update_click_rate.delay(self.pk, link.pk)
 
     def update_open_rate(self) -> float:
         count = self.activities.values('email_id', 'activity_type').aggregate(
@@ -154,23 +151,6 @@ class Subscriber(models.Model):
         finally:
             self.save(update_fields=['open_rate'])
         return self.open_rate
-
-    @transaction.atomic()
-    def click(self, request, link):
-        # TODO: Work the click logic to do a proper counting of the email opens
-        update_fields = {'total_clicks_count': F('total_clicks_count') + 1}
-        if not self.activities.filter(activity_type=ActivityTypes.CLICKED, link=link).exists():
-            # First time clicking on a link, count as unique click
-            update_fields['unique_clicks_count'] = F('unique_clicks_count') + 1
-            if not self.activities.filter(activity_type=ActivityTypes.OPENED, email=link.email).exists():
-                # For the user to click on the email, he/she must have opened it. In some cases the open pixel won't
-                # be triggered. So in those cases, force an open record
-                self.open(request, link.email)
-        Link.objects.filter(pk=link.pk).update(**update_fields)
-        Campaign.objects.filter(pk=link.email.campaign_id).update(**update_fields)
-        self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=get_client_ip(request))
-        self.update_click_rate()
-        self.mailing_list.update_click_rate()
 
     def update_click_rate(self) -> float:
         count = self.activities.values('email_id', 'activity_type').aggregate(

@@ -2,7 +2,7 @@ import base64
 
 from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
-)
+    Http404)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
@@ -11,6 +11,7 @@ from django.views.generic import View
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
+from colossus.utils import get_client_ip
 
 from .constants import Status
 from .forms import SubscribeForm, UnsubscribeForm
@@ -124,7 +125,8 @@ def track_open(request, email_uuid, subscriber_uuid):
     try:
         email = Email.objects.get(uuid=email_uuid)
         subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
-        subscriber.open(request, email)
+        ip_address = get_client_ip(request)
+        subscriber.open(email, ip_address)
     except Exception:
         pass  # fail silently
 
@@ -134,12 +136,14 @@ def track_open(request, email_uuid, subscriber_uuid):
 
 @require_GET
 def track_click(request, link_uuid, subscriber_uuid):
-    link = get_object_or_404(Link, uuid=link_uuid)
-
+    link = None
     try:
+        link = Link.objects.filter(uuid=link_uuid).select_related('email').get()
         subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
-        subscriber.click(request, link)
+        ip_address = get_client_ip(request)
+        subscriber.click(link, ip_address)
+    except Link.DoesNotExist:
+        raise Http404
     except Subscriber.DoesNotExist:
         pass  # fail silently
-
     return HttpResponseRedirect(link.url)
