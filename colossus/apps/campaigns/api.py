@@ -105,8 +105,10 @@ def send_campaign_email_test(email, recipient_list):
 
 def send_campaign(campaign):
     site = get_current_site(request=None)  # get site based on SITE_ID
-    campaign.email.enable_click_tracking()
-    campaign.email.enable_open_tracking()
+    if campaign.track_clicks:
+        campaign.email.enable_click_tracking()
+    if campaign.track_opens:
+        campaign.email.enable_open_tracking()
     with get_connection() as connection:
         for subscriber in campaign.mailing_list.get_active_subscribers():
             sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
