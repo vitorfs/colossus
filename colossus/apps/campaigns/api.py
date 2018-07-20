@@ -112,3 +112,5 @@ def send_campaign(campaign):
             sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
             if sent:
                 subscriber.create_activity(ActivityTypes.SENT, email=campaign.email)
+                subscriber.update_open_and_click_rate()
+        campaign.mailing_list.update_open_and_click_rate()

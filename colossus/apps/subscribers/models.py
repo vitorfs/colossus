@@ -165,6 +165,20 @@ class Subscriber(models.Model):
             self.save(update_fields=['click_rate'])
         return self.click_rate
 
+    def update_open_and_click_rate(self):
+        count = self.activities.values('email_id', 'activity_type').aggregate(
+            sent=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.SENT)),
+            opened=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.OPENED)),
+            clicked=Count('email_id', distinct=True, filter=Q(activity_type=ActivityTypes.CLICKED)),
+        )
+        try:
+            self.open_rate = round(count['opened'] / count['sent'], 4)
+            self.click_rate = round(count['clicked'] / count['sent'], 4)
+        except ZeroDivisionError:
+            self.open_rate = 0.0
+            self.click_rate = 0.0
+        self.save(update_fields=['open_rate', 'click_rate'])
+
 
 class Activity(models.Model):
     activity_type = models.PositiveSmallIntegerField(_('type'), choices=ActivityTypes.CHOICES)

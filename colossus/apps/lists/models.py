@@ -85,6 +85,15 @@ class MailingList(models.Model):
         self.save(update_fields=['open_rate'])
         return self.open_rate
 
+    def update_open_and_click_rate(self):
+        qs = self.subscribers.aggregate(
+            open=Avg('open_rate'),
+            click=Avg('click_rate')
+        )
+        self.open_rate = round(qs['open'], 4)
+        self.click_rate = round(qs['click'], 4)
+        self.save(update_fields=['open_rate', 'click_rate'])
+
 
 class SubscriberImport(models.Model):
     mailing_list = models.ForeignKey(MailingList, on_delete=models.CASCADE)
