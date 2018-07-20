@@ -12,7 +12,10 @@ from django.utils.translation import gettext_lazy as _
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
-from colossus.apps.subscribers.tasks import update_click_rate, update_open_rate
+from colossus.apps.subscribers.tasks import (
+    update_click_rate, update_open_rate,
+    update_rates_after_subscriber_deletion,
+)
 from colossus.utils import get_client_ip
 
 from .activities import render_activity
@@ -91,6 +94,15 @@ class Subscriber(models.Model):
         if self.__status != self.status:
             self.mailing_list.update_subscribers_count()
             self.__status = self.status
+
+    def delete(self, using=None, keep_parents=False):
+        email_ids = list(self.activities.filter(activity_type=ActivityTypes.SENT).values_list('email_id', flat=True))
+        link_ids = list(self.activities.filter(activity_type=ActivityTypes.CLICKED)
+                        .values_list('link_id', flat=True)
+                        .order_by('link_id')
+                        .distinct())
+        super().delete(using, keep_parents)
+        update_rates_after_subscriber_deletion.delay(self.mailing_list_id, email_ids, link_ids)
 
     def get_email(self):
         if self.name:

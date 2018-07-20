@@ -20,7 +20,7 @@ from colossus.apps.templates.models import EmailTemplate
 from colossus.apps.templates.utils import get_template_blocks
 
 from .constants import CampaignStatus, CampaignTypes
-from .tasks import send_campaign_task
+from .tasks import send_campaign_task, update_rates_after_campaign_deletion
 
 
 class Campaign(models.Model):
@@ -71,6 +71,10 @@ class Campaign(models.Model):
         if self.can_edit:
             return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
+
+    def delete(self, using=None, keep_parents=False):
+        super().delete(using, keep_parents)
+        update_rates_after_campaign_deletion.delay(self.mailing_list_id)
 
     @property
     def is_ongoing(self) -> bool:

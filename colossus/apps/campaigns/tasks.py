@@ -24,3 +24,12 @@ def send_scheduled_campaigns_task():
     if campaigns.exists():
         for campaign in campaigns:
             campaign.send()
+
+
+@shared_task
+def update_rates_after_campaign_deletion(mailing_list_id):
+    MailingList = apps.get_model('lists', 'MailingList')
+    mailing_list = MailingList.objects.only('pk').get(pk=mailing_list_id)
+    for subscriber in mailing_list.subscribers.only('pk'):
+        subscriber.update_open_and_click_rate()
+    mailing_list.update_open_and_click_rate()

@@ -3,6 +3,7 @@ from django.db import transaction
 
 from celery import shared_task
 
+from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.constants import ActivityTypes
 
 
@@ -43,3 +44,21 @@ def update_click_rate(subscriber_id, link_id):
             link.email.campaign.update_clicks_count_and_rate()
     except (Subscriber.DoesNotExist, Link.DoesNotExist):
         pass  # TODO: log exceptions
+
+
+@shared_task
+def update_rates_after_subscriber_deletion(mailing_list_id, email_ids, link_ids):
+    mailing_list = MailingList.objects.only('pk').get(pk=mailing_list_id)
+    mailing_list.update_open_and_click_rate()
+
+    Email = apps.get_model('campaigns', 'Email')
+    emails = Email.objects.filter(pk__in=email_ids).select_related('campaign').only('pk', 'campaign__id')
+    for email in emails:
+        email.update_clicks_count()
+        email.update_opens_count()
+        email.campaign.update_opens_count_and_rate()
+
+    Link = apps.get_model('campaigns', 'Link')
+    links = Link.objects.filter(pk__in=link_ids).only('pk')
+    for link in links:
+        link.update_clicks_count()
