@@ -149,6 +149,10 @@ class Subscriber(models.Model):
 
     def click(self, link, ip_address=None):
         self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=ip_address)
+        if ip_address is not None:
+            self.last_seen_date = timezone.now()
+            self.last_seen_ip_address = ip_address
+            self.save(update_fields=['last_seen_date', 'last_seen_ip_address'])
         update_click_rate.delay(self.pk, link.pk)
 
     def update_open_rate(self) -> float:

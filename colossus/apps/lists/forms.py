@@ -39,15 +39,20 @@ class CSVImportSubscribersForm(forms.Form):
         for row in reader:
             if '@' in row[0]:
                 email = Subscriber.objects.normalize_email(row[0])
-                optin_date = timezone.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S')
-                confirm_date = timezone.datetime.strptime(row[6], '%Y-%m-%d %H:%M:%S')
+                name = row[1].strip()
+                optin_ip_address = row[2].strip()
+                optin_date = timezone.datetime.strptime(row[3], '%Y-%m-%d %H:%M:%S')
+                optin_date = pytz.utc.localize(optin_date)
+                confirm_ip_address = row[4]
+                confirm_date = timezone.datetime.strptime(row[5], '%Y-%m-%d %H:%M:%S')
+                confirm_date = pytz.utc.localize(confirm_date)
                 subscriber = Subscriber(
                     email=email,
-                    name=row[2],
-                    optin_date=pytz.utc.localize(optin_date),
-                    optin_ip_address=row[5],
-                    confirm_date=pytz.utc.localize(confirm_date),
-                    confirm_ip_address=row[7],
+                    name=name,
+                    optin_ip_address=optin_ip_address,
+                    optin_date=optin_date,
+                    confirm_ip_address=confirm_ip_address,
+                    confirm_date=confirm_date,
                     status=status,
                     mailing_list_id=mailing_list_id
                 )
