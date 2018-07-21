@@ -134,8 +134,13 @@ class PasteEmailsImportSubscribersView(MailingListMixin, FormView):
     extra_context = {'title': _('Paste Emails')}
 
     def form_valid(self, form):
-        form.import_subscribers(self.request, self.kwargs.get('pk'))
-        return redirect('lists:subscribers', pk=self.kwargs.get('pk'))
+        try:
+            mailing_list_id = self.kwargs.get('pk')
+            mailing_list = MailingList.objects.only('pk').get(pk=mailing_list_id)
+            form.import_subscribers(mailing_list)
+            return redirect('lists:subscribers', pk=mailing_list_id)
+        except MailingList.DoesNotExist:
+            raise Http404
 
 
 @method_decorator(login_required, name='dispatch')

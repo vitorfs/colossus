@@ -12,11 +12,13 @@ class SubscriberFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Subscriber
+        django_get_or_create = ('email',)
 
 
 class ActivityFactory(factory.DjangoModelFactory):
     date = timezone.now()
     ip_address = '127.0.0.1'
+    subscriber = factory.SubFactory(SubscriberFactory)
 
     class Meta:
         model = Activity

@@ -19,6 +19,8 @@ SENT_TEMPLATE = '<small class="text-muted">%s</small> <strong>Was sent</strong> 
 CLICKED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Clicked</strong>
                       <a href="%s">a link</a> in the email <a href="%s">%s</a>.'''
 
+IMPORTED_TEMPLATE = '<small class="text-muted">Imported to the List %s on %s</small>'
+
 
 def render_unsubscribe_activity(activity):
     if activity.campaign is not None:
@@ -31,7 +33,7 @@ def render_unsubscribe_activity(activity):
 
 def render_activity(activity):
     """
-    This module is reponsible for defining the templates and the rendering
+    This module is responsible for defining the templates and the rendering
     functions for the Subscriber's activities regarding their interaction with the
     mailing list and emails.
 
@@ -69,6 +71,10 @@ def render_activity(activity):
             a.link.url,
             a.link.email.campaign.get_absolute_url(),
             a.link.email.campaign.name
+        ),
+        ActivityTypes.IMPORTED: lambda a: IMPORTED_TEMPLATE % (
+            a.subscriber.mailing_list.name,
+            a.get_formatted_date()
         ),
     }
     renderer = renderers[activity.activity_type]

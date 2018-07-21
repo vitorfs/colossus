@@ -132,7 +132,6 @@ class SubscriberImport(models.Model):
         self.columns_mapping = json.dumps(columns_mapping)
 
     def get_columns_mapping(self):
-        columns_mapping = None
         try:
             columns_mapping = json.loads(self.columns_mapping)
         except (TypeError, json.JSONDecodeError):

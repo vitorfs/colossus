@@ -12,7 +12,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import pytz
 
-from colossus.apps.subscribers.constants import Status
+from colossus.apps.subscribers.constants import ActivityTypes, Status
 from colossus.apps.subscribers.models import Subscriber
 
 from .models import MailingList, SubscriberImport
@@ -66,7 +66,7 @@ class CSVImportSubscribersForm(forms.Form):
 class PasteImportSubscribersForm(forms.Form):
     emails = forms.CharField(
         label=_('Paste email addresses'),
-        help_text=_('One email per line, or separated by comma. Duplicate emails will be supressed.'),
+        help_text=_('One email per line, or separated by comma. Duplicate emails will be suppressed.'),
         widget=forms.Textarea()
     )
     status = forms.ChoiceField(
@@ -83,10 +83,10 @@ class PasteImportSubscribersForm(forms.Form):
         or by commas.
         Normalize the email addresses inside a loop and call the email validator
         for each email.
-        Emails are addded to a dictionary so to remove the duplicates and at the
+        Emails are added to a dictionary so to remove the duplicates and at the
         same time preserve the case informed. The dictionary key is the lower case
         of the email, and the value is its original form.
-        After the code interates through all the emails, return only the values of
+        After the code iterates through all the emails, return only the values of
         the dictionary.
         """
         cleaned_data = super().clean()
@@ -100,8 +100,7 @@ class PasteImportSubscribersForm(forms.Form):
         cleaned_data['emails'] = cleaned_emails.values()
         return cleaned_data
 
-    def import_subscribers(self, request, mailing_list_id):
-        mailing_list = MailingList.objects.get(pk=mailing_list_id)
+    def import_subscribers(self, mailing_list):
         emails = self.cleaned_data.get('emails')
         status = self.cleaned_data.get('status')
         with transaction.atomic():
@@ -114,7 +113,7 @@ class PasteImportSubscribersForm(forms.Form):
                     }
                 )
                 if created:
-                    pass
+                    subscriber.create_activity(ActivityTypes.IMPORTED)
                 subscriber.status = status
                 subscriber.update_date = timezone.now()
                 subscriber.save()
