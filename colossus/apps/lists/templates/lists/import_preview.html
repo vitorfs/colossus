@@ -43,7 +43,7 @@
             <thead>
             <tr>
               {% for header in subscriber_import.get_headings %}
-                <th>{{ header }}</th>
+                <th{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ header }}</th>
               {% endfor %}
             </tr>
             </thead>
@@ -51,7 +51,7 @@
             {% for row in subscriber_import.get_rows %}
               <tr>
                 {% for col in row %}
-                  <td>{{ col }}</td>
+                  <td{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ col }}</td>
                 {% endfor %}
               </tr>
             {% endfor %}
