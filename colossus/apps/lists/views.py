@@ -11,6 +11,7 @@ from django.views.generic import (
     UpdateView, View,
 )
 
+from colossus.apps.lists.constants import ImportTypes
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import (
     Subscriber, SubscriptionFormTemplate,
@@ -292,6 +293,17 @@ class SubscriberImportView(MailingListMixin, CreateView):
         subscriber_import.mailing_list_id = mailing_list_id
         subscriber_import.save()
         return redirect('lists:columns_mapping', pk=mailing_list_id, import_pk=subscriber_import.pk)
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscriberImportPreviewView(MailingListMixin, DetailView):
+    model = SubscriberImport
+    template_name = 'lists/import_preview.html'
+    pk_url_kwarg = 'import_pk'
+    context_object_name = 'subscriber_import'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(import_types=ImportTypes)
 
 
 @method_decorator(login_required, name='dispatch')

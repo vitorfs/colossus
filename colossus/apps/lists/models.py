@@ -148,6 +148,9 @@ class SubscriberImport(models.Model):
                 self.__cached_headings = csv_headings
         return self.__cached_headings
 
+    def get_str_headings(self):
+        return ', '.join(self.get_headings())
+
     def get_rows(self, limit=None):
         rows = list()
         with open(self.file.path, 'r') as csvfile:

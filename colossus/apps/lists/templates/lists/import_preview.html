@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% trans 'Preview' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:import_subscribers' mailing_list.pk %}">{% trans 'Import Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:csv_import_subscribers' mailing_list.pk %}">{% trans 'Import CSV File' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Preview' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Preview' %}</h2>
+      <p>
+        <strong>{% trans 'Filename:' %}</strong>
+        <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">
+          {{ subscriber_import.file.name }}
+        </a>
+      </p>
+      {% if subscriber_import.import_type == import_types.BASIC %}
+        <p>Colossus will import the data from the CSV file using the following format:</p>
+        <pre><code>email<sup>1</sup>, name, optin_ip_address, optin_date<sup>2</sup>, confirm_ip_address, confirm_date<sup>2</sup></code></pre>
+        <p class="mb-0">
+          <small class="text-muted"><sup>1</sup> Email field is mandatory</small>
+        </p>
+        <p>
+          <small class="text-muted"><sup>2</sup> Date format: 2001-12-31 23:59:59</small>
+        </p>
+      {% endif %}
+      <hr>
+      <p>Columns order found in the CSV file:</p>
+      <pre><code>{{ subscriber_import.get_str_headings }}</code></pre>
+      <div class="card mb-3">
+        <div class="table-responsive">
+          <table class="table table-sm table-striped mb-0">
+            <thead>
+            <tr>
+              {% for header in subscriber_import.get_headings %}
+                <th>{{ header }}</th>
+              {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in subscriber_import.get_rows %}
+              <tr>
+                {% for col in row %}
+                  <td>{{ col }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
+      <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>
+    </div>
+  </div>
+{% endblock %}
