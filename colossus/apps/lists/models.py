@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from colossus.apps.core.storage import PrivateMediaStorage
+from colossus.apps.lists.constants import ImportTypes, ImportStatus
 from colossus.apps.subscribers.constants import Status
 
 
@@ -108,6 +109,16 @@ class SubscriberImport(models.Model):
         _('subscriber status'),
         default=Status.SUBSCRIBED,
         choices=Status.CHOICES
+    )
+    import_type = models.PositiveSmallIntegerField(
+        _('import type'),
+        default=ImportTypes.BASIC,
+        choices=ImportTypes.CHOICES
+    )
+    status = models.PositiveSmallIntegerField(
+        _('status'),
+        default=ImportStatus.PENDING,
+        choices=ImportStatus.CHOICES
     )
 
     __cached_headings = None
