@@ -99,7 +99,14 @@ def send_campaign_email_subscriber(email, subscriber, site, connection=None):
 
 
 def send_campaign_email_test(email, recipient_list):
-    context = get_test_email_context()
+    site = get_current_site(request=None)
+    # TODO: remove hardcoded http
+    protocol = 'http'
+    unsubscribe_path = reverse('subscribers:unsubscribe_manual', kwargs={
+        'mailing_list_uuid': email.campaign.mailing_list.uuid
+    })
+    unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, unsubscribe_path)
+    context = get_test_email_context(unsub=unsubscribe_absolute_url)
     return send_campaign_email(email, context, recipient_list, is_test=True)
 
 
