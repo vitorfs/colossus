@@ -36,6 +36,7 @@ class EmailTemplate(models.Model):
     class Meta:
         verbose_name = _('email template')
         verbose_name_plural = _('email templates')
+        db_table = 'colossus_email_templates'
 
     def __str__(self):
         return self.name

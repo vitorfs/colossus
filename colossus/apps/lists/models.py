@@ -58,7 +58,7 @@ class MailingList(models.Model):
     class Meta:
         verbose_name = _('list')
         verbose_name_plural = _('lists')
-        db_table = 'mailing_lists'
+        db_table = 'colossus_mailing_lists'
 
     def __str__(self):
         return self.name
@@ -126,7 +126,7 @@ class SubscriberImport(models.Model):
     class Meta:
         verbose_name = _('subscribers import')
         verbose_name_plural = _('subscribers imports')
-        db_table = 'subscribers_imports'
+        db_table = 'colossus_subscribers_imports'
 
     def set_columns_mapping(self, columns_mapping):
         self.columns_mapping = json.dumps(columns_mapping)

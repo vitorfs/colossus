@@ -63,6 +63,7 @@ class Campaign(models.Model):
     class Meta:
         verbose_name = _('campaign')
         verbose_name_plural = _('campaigns')
+        db_table = 'colossus_campaigns'
 
     def __str__(self):
         return self.name
@@ -211,6 +212,7 @@ class Email(models.Model):
     class Meta:
         verbose_name = _('email')
         verbose_name_plural = _('emails')
+        db_table = 'colossus_emails'
 
     def __str__(self):
         return self.subject
@@ -410,6 +412,7 @@ class Link(models.Model):
     class Meta:
         verbose_name = _('link')
         verbose_name_plural = _('links')
+        db_table = 'colossus_links'
 
     def __str__(self):
         return self.url

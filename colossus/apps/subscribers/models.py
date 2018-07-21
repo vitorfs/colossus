@@ -77,6 +77,7 @@ class Subscriber(models.Model):
         verbose_name = _('subscriber')
         verbose_name_plural = _('subscribers')
         unique_together = (('email', 'mailing_list',),)
+        db_table = 'colossus_subscribers'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -211,6 +212,7 @@ class Activity(models.Model):
     class Meta:
         verbose_name = _('activity')
         verbose_name_plural = _('activities')
+        db_table = 'colossus_activities'
 
     @property
     def as_html(self):
@@ -252,6 +254,7 @@ class SubscriptionFormTemplate(models.Model):
     class Meta:
         verbose_name = _('form template')
         verbose_name_plural = _('form templates')
+        db_table = 'colossus_form_templates'
 
     def __str__(self):
         return self.get_key_display()

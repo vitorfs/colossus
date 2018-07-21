@@ -22,6 +22,7 @@ class Token(models.Model):
     class Meta:
         verbose_name = _('token')
         verbose_name_plural = _('tokens')
+        db_table = 'colossus_tokens'
 
 
 class Option(models.Model):
@@ -31,6 +32,7 @@ class Option(models.Model):
     class Meta:
         verbose_name = _('option')
         verbose_name_plural = _('options')
+        db_table = 'colossus_options'
 
     def __str__(self):
         if len(self.value) > 30:
