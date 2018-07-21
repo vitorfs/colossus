@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from colossus.apps.core.storage import PrivateMediaStorage
-from colossus.apps.lists.constants import ImportTypes, ImportStatus
+from colossus.apps.lists.constants import ImportStatus, ImportTypes
 from colossus.apps.subscribers.constants import Status
 
 

@@ -1,15 +1,13 @@
-.. Colossus documentation master file, created by
-   sphinx-quickstart on Tue Jun 12 12:02:48 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Colossus's documentation!
+Colossus's technical documentation
 ====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   install
+   modules
+   test
 
 
 Indices and tables
