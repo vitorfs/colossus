@@ -19,7 +19,7 @@ SENT_TEMPLATE = '<small class="text-muted">%s</small> <strong>Was sent</strong> 
 CLICKED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Clicked</strong>
                       <a href="%s">a link</a> in the email <a href="%s">%s</a>.'''
 
-IMPORTED_TEMPLATE = '<small class="text-muted">Imported to the List %s on %s</small>'
+IMPORTED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Imported</strong> to the List %s'
 
 
 def render_unsubscribe_activity(activity):
@@ -73,8 +73,8 @@ def render_activity(activity):
             a.link.email.campaign.name
         ),
         ActivityTypes.IMPORTED: lambda a: IMPORTED_TEMPLATE % (
+            a.get_formatted_date(),
             a.subscriber.mailing_list.name,
-            a.get_formatted_date()
         ),
     }
     renderer = renderers[activity.activity_type]

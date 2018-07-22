@@ -5,6 +5,7 @@ from celery import shared_task
 
 from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.utils import get_location
 
 
 @shared_task
@@ -62,3 +63,13 @@ def update_rates_after_subscriber_deletion(mailing_list_id, email_ids, link_ids)
     links = Link.objects.filter(pk__in=link_ids).only('pk')
     for link in links:
         link.update_clicks_count()
+
+
+@shared_task
+def update_subscriber_location(ip_address, subscriber_id, activity_id):
+    location = get_location(ip_address)
+    if location is not None:
+        Subscriber = apps.get_model('subscribers', 'Subscriber')
+        Subscriber.objects.filter(pk=subscriber_id, last_seen_ip_address=ip_address).update(location=location)
+        Activity = apps.get_model('subscribers', 'Activity')
+        Activity.objects.filter(pk=activity_id, ip_address=ip_address).update(location=location)

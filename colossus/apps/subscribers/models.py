@@ -10,12 +10,12 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
-from colossus.apps.core.models import Token
+from colossus.apps.core.models import Token, City
 from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.tasks import (
     update_click_rate, update_open_rate,
     update_rates_after_subscriber_deletion,
-)
+    update_subscriber_location)
 from colossus.utils import get_client_ip
 
 from .activities import render_activity
@@ -67,6 +67,13 @@ class Subscriber(models.Model):
         null=True
     )
     last_seen_date = models.DateTimeField(_('last seen date'), null=True, blank=True)
+    location = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name=_('location'),
+        related_name='subscribers',
+    )
     tokens = GenericRelation(Token)
 
     objects = SubscriberManager()
@@ -145,15 +152,18 @@ class Subscriber(models.Model):
             .order_by('-date')
 
     def open(self, email, ip_address=None):
-        self.create_activity(ActivityTypes.OPENED, email=email, ip_address=ip_address)
+        activity = self.create_activity(ActivityTypes.OPENED, email=email, ip_address=ip_address)
+        if ip_address is not None:
+            update_subscriber_location.delay(ip_address, self.pk, activity.pk)
         update_open_rate.delay(self.pk, email.pk)
 
     def click(self, link, ip_address=None):
-        self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=ip_address)
+        activity = self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=ip_address)
         if ip_address is not None:
             self.last_seen_date = timezone.now()
             self.last_seen_ip_address = ip_address
             self.save(update_fields=['last_seen_date', 'last_seen_ip_address'])
+            update_subscriber_location.delay(ip_address, self.pk, activity.pk)
         update_click_rate.delay(self.pk, link.pk)
 
     def update_open_rate(self) -> float:
@@ -202,6 +212,13 @@ class Activity(models.Model):
     date = models.DateTimeField(_('date'), auto_now_add=True)
     description = models.TextField(_('description'), blank=True)
     ip_address = models.GenericIPAddressField(_('confirm IP address'), unpack_ipv4=True, blank=True, null=True)
+    location = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name=_('location'),
+        related_name='activities',
+    )
     subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE, related_name='activities')
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, null=True, blank=True, related_name='activities')
     email = models.ForeignKey(Email, on_delete=models.CASCADE, null=True, blank=True, related_name='activities')

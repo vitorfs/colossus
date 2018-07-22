@@ -140,6 +140,8 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 
 LOGIN_REDIRECT_URL = 'campaigns:campaigns'
 
+GEOIP_PATH = os.path.join(BASE_DIR, 'bin/GeoLite2')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

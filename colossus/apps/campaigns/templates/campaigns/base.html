@@ -12,7 +12,13 @@
       {% endblock %}
     </ol>
   </nav>
-  <h2 class="mb-3">{{ campaign.name }}</h2>
+  <div class="d-flex align-items-center mb-3">
+    <h2 class="mb-0 mr-2">{{ campaign.name }}</h2>
+    <a href="{% url 'campaigns:campaign_edit_name' campaign.pk %}" class="btn btn-sm btn-link" role="button">
+      <span class="fa fa-pencil-alt"></span>
+      {% trans 'Rename' %}
+    </a>
+  </div>
   <div class="card mb-3">
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs">
@@ -23,7 +29,7 @@
           <a class="nav-link{% if submenu == 'preview' %} active{% endif %}" href="{% url 'campaigns:campaign_preview' campaign.pk %}">{% trans 'Campaign Preview' %}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if submenu == 'reports' %} active{% endif %}" href="#">{% trans 'Reports' %}</a>
+          <a class="nav-link{% if submenu == 'reports' %} active{% endif %}" href="{% url 'campaigns:campaign_reports' campaign.pk %}">{% trans 'Reports' %}</a>
         </li>
       </ul>
     </div>
@@ -32,4 +38,6 @@
       {% endblock %}
     </div>
   </div>
+  {% block outercontent %}
+  {% endblock %}
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -9,6 +10,8 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView,
 )
 
+from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.apps.subscribers.models import Activity
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (
@@ -16,7 +19,7 @@ from .forms import (
     PlainTextEmailForm, ScheduleCampaignForm,
 )
 from .mixins import CampaignMixin
-from .models import Campaign, Email
+from .models import Campaign, Email, Link
 
 
 @method_decorator(login_required, name='dispatch')
@@ -90,6 +93,26 @@ class CampaignPreviewView(CampaignMixin, DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
+class CampaignReportsView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_reports.html'
+    extra_context = {'submenu': 'reports'}
+
+    def get_context_data(self, **kwargs):
+        kwargs['links'] = Link.objects.filter(email__campaign_id=self.kwargs.get('pk')) \
+            .only('url', 'total_clicks_count') \
+            .order_by('-total_clicks_count')
+        locations = Activity.objects \
+            .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
+            .values('location__country__code', 'location__country__name') \
+            .annotate(total_opens=Count('id')) \
+            .order_by('-total_opens')
+        kwargs['locations'] = locations
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
 class CampaignEditRecipientsView(CampaignMixin, UpdateView):
     model = Campaign
     fields = ('mailing_list',)
@@ -97,6 +120,17 @@ class CampaignEditRecipientsView(CampaignMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _('Recipients')
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignEditNameView(CampaignMixin, UpdateView):
+    model = Campaign
+    fields = ('name',)
+    context_object_name = 'campaign'
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = _('Rename campaign')
         return super().get_context_data(**kwargs)
 
 

@@ -40,3 +40,35 @@ class Option(models.Model):
         else:
             value = self.value
         return '%s=%s' % (self.key, value)
+
+
+class Country(models.Model):
+    code = models.CharField(_('country code'), max_length=2, unique=True)
+    name = models.CharField(_('name'), max_length=200)
+
+    class Meta:
+        verbose_name = _('country')
+        verbose_name_plural = _('countries')
+        db_table = 'colossus_countries'
+
+    def __str__(self):
+        return self.name
+
+
+class City(models.Model):
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name=_('country'),
+        related_name='cities'
+    )
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name = _('city')
+        verbose_name_plural = _('cities')
+        db_table = 'colossus_cities'
+
+    def __str__(self):
+        return self.name

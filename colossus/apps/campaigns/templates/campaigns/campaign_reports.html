@@ -1,0 +1,110 @@
+{% extends 'campaigns/base.html' %}
+
+{% load colossus static i18n l10n humanize %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'vendor/flag-icon/css/flag-icon.min.css' %}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Reports' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="row">
+    <div class="col">
+      <div class="d-flex justify-content-between">
+        <h5>Open rate</h5>
+        <span>{{ campaign.open_rate|percentage }}%</span>
+      </div>
+      <div class="progress mb-2">
+        <div class="progress-bar"
+             role="progressbar"
+             style="width: {{ campaign.open_rate|percentage|unlocalize }}%"
+             aria-valuenow="{{ campaign.open_rate|percentage|unlocalize }}"
+             aria-valuemin="0"
+             aria-valuemax="100"></div>
+      </div>
+      <small class="d-flex justify-content-between text-muted">
+        <span>List average</span>
+        <span>{{ campaign.mailing_list.open_rate|percentage }}%</span>
+      </small>
+      <small class="d-flex justify-content-between text-muted">
+        <span>Unique opens</span>
+        <span>{{ campaign.unique_opens_count|intcomma }}</span>
+      </small>
+      <small class="d-flex justify-content-between text-muted">
+        <span>Total opens</span>
+        <span>{{ campaign.total_opens_count|intcomma }}</span>
+      </small>
+    </div>
+    <div class="col">
+      <div class="d-flex justify-content-between">
+        <h5>Click rate</h5>
+        <span>{{ campaign.click_rate|percentage }}%</span>
+      </div>
+      <div class="progress mb-2">
+        <div class="progress-bar"
+             role="progressbar"
+             style="width: {{ campaign.click_rate|percentage|unlocalize }}%"
+             aria-valuenow="{{ campaign.click_rate|percentage|unlocalize }}"
+             aria-valuemin="0"
+             aria-valuemax="100"></div>
+      </div>
+      <small class="d-flex justify-content-between text-muted">
+        <span>List average</span>
+        <span>{{ campaign.mailing_list.click_rate|percentage }}%</span>
+      </small>
+      <small class="d-flex justify-content-between text-muted">
+        <span>Unique clicks</span>
+        <span>{{ campaign.unique_clicks_count|intcomma }}</span>
+      </small>
+      <small class="d-flex justify-content-between text-muted">
+        <span>Total clicks</span>
+        <span>{{ campaign.total_clicks_count|intcomma }}</span>
+      </small>
+    </div>
+  </div>
+{% endblock %}
+
+{% block outercontent %}
+  <div class="card mb-3">
+    <div class="card-header">{% trans 'Links' %}</div>
+    <div class="card-body">
+      {% for link in links %}
+        <p class="card-text d-flex justify-content-between">
+          <a href="{{ link.url }}" target="_blank" rel="nofollow noopener">{{ link.url }}</a>
+          <span>{{ link.total_clicks_count|intcomma }}</span>
+        </p>
+      {% empty %}
+        <p class="card-text">
+          <em>{% trans 'This campaign had no links.' %}</em>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+  <div class="card-header">
+    {% trans 'Locations' %}
+  </div>
+  <div class="card-body">
+  <div class="row">
+    <div class="col-6">
+    {% for location in locations %}
+      <p class="card-text d-flex justify-content-between">
+      <span>
+        {% if location.location__country__code is not None %}
+          <span class="flag-icon flag-icon-{{ location.location__country__code|lower }} mr-2"></span>
+        {% endif %}
+        {{ location.location__country__name|default_if_none:'Unkown' }}
+      </span>
+      <span>{{ location.total_opens|intcomma }}</span>
+      </p>
+    {% endfor %}
+    </div>
+  </div>
+  </div>
+  </div>
+{% endblock %}

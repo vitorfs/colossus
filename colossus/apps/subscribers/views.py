@@ -126,6 +126,8 @@ def track_open(request, email_uuid, subscriber_uuid):
         email = Email.objects.get(uuid=email_uuid)
         subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
         ip_address = get_client_ip(request)
+        ip_address = '87.92.113.76'
+        ip_address = '66.249.79.28'
         subscriber.open(email, ip_address)
     except Exception:
         pass  # fail silently
