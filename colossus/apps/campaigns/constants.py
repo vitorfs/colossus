@@ -19,11 +19,17 @@ class CampaignStatus:
     SENT = 1
     SCHEDULED = 2
     DRAFT = 3
+    QUEUED = 4
+    DELIVERING = 5
+    PAUSED = 6
 
     LABELS = {
         SENT: _('Sent'),
         SCHEDULED: _('Scheduled'),
         DRAFT: _('Draft'),
+        QUEUED: _('Queued'),
+        DELIVERING: _('Delivering'),
+        PAUSED: _('Paused'),
     }
 
     CHOICES = tuple(LABELS.items())

@@ -106,7 +106,7 @@ class Campaign(models.Model):
     def send(self):
         self.recipients_count = self.mailing_list.get_active_subscribers().count()
         self.send_date = timezone.now()
-        self.status = CampaignStatus.SENT
+        self.status = CampaignStatus.QUEUED
         for email in self.emails.select_related('template').all():
             if email.template is not None:
                 email.template.last_used_date = timezone.now()

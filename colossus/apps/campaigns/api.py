@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 
 import html2text
 
+from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.subscribers.constants import ActivityTypes
 
 
@@ -111,6 +112,8 @@ def send_campaign_email_test(email, recipient_list):
 
 
 def send_campaign(campaign):
+    campaign.status = CampaignStatus.DELIVERING
+    campaign.save(update_fields=['status'])
     site = get_current_site(request=None)  # get site based on SITE_ID
     if campaign.track_clicks:
         campaign.email.enable_click_tracking()
@@ -123,3 +126,5 @@ def send_campaign(campaign):
                 subscriber.create_activity(ActivityTypes.SENT, email=campaign.email)
                 subscriber.update_open_and_click_rate()
         campaign.mailing_list.update_open_and_click_rate()
+        campaign.status = CampaignStatus.SENT
+        campaign.save(update_fields=['status'])
