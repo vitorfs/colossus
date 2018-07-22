@@ -18,11 +18,13 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="card-title">{% trans 'Preview' %}</h2>
-      <p>
+      <p class="mb-0">
         <strong>{% trans 'Filename:' %}</strong>
-        <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">
-          {{ subscriber_import.file.name }}
-        </a>
+        {{ subscriber_import.file.name }}
+      </p>
+      <p>
+        <strong>{% trans 'Size:' %}</strong>
+        {{ subscriber_import.size }} rows
       </p>
       {% if subscriber_import.import_type == import_types.BASIC %}
         <p>Colossus will import the data from the CSV file using the following format:</p>
@@ -34,10 +36,16 @@
           <small class="text-muted"><sup>2</sup> Date format: 2001-12-31 23:59:59</small>
         </p>
       {% endif %}
-      <hr>
-      <p>Columns order found in the CSV file:</p>
-      <pre><code>{{ subscriber_import.get_str_headings }}</code></pre>
       <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <span class="far fa-file mr-2"></span>
+            {{ subscriber_import.file.name }}
+          </div>
+          <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">
+            <span class="fas fa-cloud-download-alt"></span>
+          </a>
+        </div>
         <div class="table-responsive">
           <table class="table table-sm table-striped mb-0">
             <thead>
@@ -48,7 +56,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for row in subscriber_import.get_rows %}
+            {% for row in subscriber_import.get_preview %}
               <tr>
                 {% for col in row %}
                   <td{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ col }}</td>
@@ -58,9 +66,22 @@
             </tbody>
           </table>
         </div>
+        {% if subscriber_import.size > 10 %}
+          <div class="card-footer">
+            <p class="card-text text-muted">
+              <small>
+                Showing first 10 entries. Total entries in the file: {{ subscriber_import.size }}.
+              </small>
+            </p>
+          </div>
+        {% endif %}
       </div>
-      <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
-      <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>
+      <form action="" method="post">
+        {% csrf_token %}
+        <button type="button" role="button" class="btn btn-success">{% trans 'Confirm import' %}</button>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
+        <a href="{% url 'lists:delete_subscriber_import' mailing_list.pk subscriber_import.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>
+      </form>
     </div>
   </div>
 {% endblock %}

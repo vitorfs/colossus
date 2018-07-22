@@ -120,6 +120,7 @@ class SubscriberImport(models.Model):
         default=ImportStatus.PENDING,
         choices=ImportStatus.CHOICES
     )
+    size = models.PositiveIntegerField(_('size'), default=0)
 
     __cached_headings = None
 
@@ -127,6 +128,10 @@ class SubscriberImport(models.Model):
         verbose_name = _('subscribers import')
         verbose_name_plural = _('subscribers imports')
         db_table = 'colossus_subscribers_imports'
+
+    def delete(self, using=None, keep_parents=False):
+        super().delete(using, keep_parents)
+        self.file.delete(save=False)
 
     def set_columns_mapping(self, columns_mapping):
         self.columns_mapping = json.dumps(columns_mapping)
@@ -164,3 +169,15 @@ class SubscriberImport(models.Model):
                     break
                 rows.append(row)
         return rows
+
+    def get_preview(self):
+        return self.get_rows(limit=10)
+
+    def set_size(self, save=True):
+        with open(self.file.path, 'r') as csvfile:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            csvfile.seek(0)
+            reader = csv.reader(csvfile, dialect)
+            self.size = sum(1 for row in reader)
+        if save:
+            self.save(update_fields=['size'])

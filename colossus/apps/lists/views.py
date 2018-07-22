@@ -292,7 +292,8 @@ class SubscriberImportView(MailingListMixin, CreateView):
         subscriber_import = form.save(commit=False)
         subscriber_import.mailing_list_id = mailing_list_id
         subscriber_import.save()
-        return redirect('lists:columns_mapping', pk=mailing_list_id, import_pk=subscriber_import.pk)
+        subscriber_import.set_size()
+        return redirect('lists:import_preview', pk=mailing_list_id, import_pk=subscriber_import.pk)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -303,7 +304,8 @@ class SubscriberImportPreviewView(MailingListMixin, DetailView):
     context_object_name = 'subscriber_import'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(import_types=ImportTypes)
+        kwargs['import_types'] = ImportTypes
+        return super().get_context_data(**kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -316,6 +318,17 @@ class ColumnsMappingView(MailingListMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('lists:columns_mapping', kwargs=self.kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscriberImportDeleteView(MailingListMixin, DeleteView):
+    model = SubscriberImport
+    pk_url_kwarg = 'import_pk'
+    context_object_name = 'subscriber_import'
+    template_name = 'lists/subscriber_import_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
 @login_required

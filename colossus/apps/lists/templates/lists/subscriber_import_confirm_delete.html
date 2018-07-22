@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:import_subscribers' mailing_list.pk %}">{% trans 'Import Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:csv_import_subscribers' mailing_list.pk %}">{% trans 'Import CSV File' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:import_preview' mailing_list.pk subscriber_import.pk %}">{% trans 'Preview' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Delete' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Are you sure?' %}</h2>
+      <p>You are about to delete the file <strong>{{ subscriber_import.file.name }}</strong>.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" role="button">{% trans 'Confirm deletion' %}</button>
+        <a href="{% url 'lists:import_preview' mailing_list.pk subscriber_import.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}
