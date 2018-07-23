@@ -95,9 +95,7 @@
     {% for location in locations %}
       <p class="card-text d-flex justify-content-between">
       <span>
-        {% if location.location__country__code is not None %}
-          <span class="flag-icon flag-icon-{{ location.location__country__code|lower }} mr-2"></span>
-        {% endif %}
+        {{ location.location__country__code|flag }}
         {{ location.location__country__name|default_if_none:'Unkown' }}
       </span>
       <span>{{ location.total_opens|intcomma }}</span>

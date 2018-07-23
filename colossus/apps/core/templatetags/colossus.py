@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -39,3 +40,11 @@ def percent(value):
 @register.filter
 def percentage(value):
     return round(value * 100, 1)
+
+@register.filter
+def flag(country_code):
+    if country_code is not None:
+        html = '<span class="flag-icon flag-icon-%s mr-2"></span>' % country_code.lower()
+        return mark_safe(html)
+    else:
+        return ''
