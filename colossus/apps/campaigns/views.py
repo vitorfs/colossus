@@ -100,15 +100,27 @@ class CampaignReportsView(CampaignMixin, DetailView):
     extra_context = {'submenu': 'reports'}
 
     def get_context_data(self, **kwargs):
-        kwargs['links'] = Link.objects.filter(email__campaign_id=self.kwargs.get('pk')) \
+        links = Link.objects.filter(email__campaign_id=self.kwargs.get('pk')) \
             .only('url', 'total_clicks_count') \
             .order_by('-total_clicks_count')
+
+        subscribers = Activity.objects \
+            .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
+            .values('subscriber__email') \
+            .annotate(total_opens=Count('id')) \
+            .order_by('-total_opens')
+
         locations = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
             .values('location__country__code', 'location__country__name') \
             .annotate(total_opens=Count('id')) \
             .order_by('-total_opens')
-        kwargs['locations'] = locations
+
+        kwargs.update({
+            'links': links,
+            'subscribers': subscribers,
+            'locations': locations,
+        })
         return super().get_context_data(**kwargs)
 
 

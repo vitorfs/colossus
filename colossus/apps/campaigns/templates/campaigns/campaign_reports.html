@@ -86,23 +86,33 @@
   </div>
 
   <div class="card mb-3">
-  <div class="card-header">
-    {% trans 'Locations' %}
-  </div>
-  <div class="card-body">
-  <div class="row">
-    <div class="col-6">
-    {% for location in locations %}
-      <p class="card-text d-flex justify-content-between">
-      <span>
-        {{ location.location__country__code|flag }}
-        {{ location.location__country__name|default_if_none:'Unkown' }}
-      </span>
-      <span>{{ location.total_opens|intcomma }}</span>
-      </p>
-    {% endfor %}
+    <div class="card-header">
+      {% trans 'Subscribers' %}
+    </div>
+    <div class="card-body">
+      {% for subscriber in subscribers %}
+        <p class="card-text d-flex justify-content-between">
+          {{ subscriber.subscriber__email }}
+          <span>{{ subscriber.total_opens|intcomma }}</span>
+        </p>
+      {% endfor %}
     </div>
   </div>
-  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      {% trans 'Locations' %}
+    </div>
+    <div class="card-body">
+      {% for location in locations %}
+        <p class="card-text d-flex justify-content-between">
+          <span>
+            {{ location.location__country__code|flag }}
+            {{ location.location__country__name|default_if_none:'Unkown' }}
+          </span>
+          <span>{{ location.total_opens|intcomma }}</span>
+        </p>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}
