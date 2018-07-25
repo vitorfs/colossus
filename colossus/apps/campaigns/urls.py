@@ -10,6 +10,7 @@ urlpatterns = [
     path('<int:pk>/', views.CampaignDetailView.as_view(), name='campaign_detail'),
     path('<int:pk>/preview/', views.CampaignPreviewView.as_view(), name='campaign_preview'),
     path('<int:pk>/reports/', views.CampaignReportsView.as_view(), name='campaign_reports'),
+    path('<int:pk>/links/', views.CampaignLinksView.as_view(), name='campaign_links'),
     path('<int:pk>/edit/', views.CampaignEditView.as_view(), name='campaign_edit'),
     path('<int:pk>/edit/name/', views.CampaignEditNameView.as_view(), name='campaign_edit_name'),
     path('<int:pk>/edit/recipients/', views.CampaignEditRecipientsView.as_view(), name='campaign_edit_recipients'),

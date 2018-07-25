@@ -93,6 +93,18 @@ class CampaignPreviewView(CampaignMixin, DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
+class CampaignLinksView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_links.html'
+    extra_context = {'submenu': 'links'}
+
+    def get_context_data(self, **kwargs):
+        kwargs['links'] = self.object.get_links().only('url', 'total_clicks_count')
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
 class CampaignReportsView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
@@ -100,9 +112,7 @@ class CampaignReportsView(CampaignMixin, DetailView):
     extra_context = {'submenu': 'reports'}
 
     def get_context_data(self, **kwargs):
-        links = Link.objects.filter(email__campaign_id=self.kwargs.get('pk')) \
-            .only('url', 'total_clicks_count') \
-            .order_by('-total_clicks_count')
+        links = self.object.get_links().only('url', 'total_clicks_count')
 
         subscribers = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \

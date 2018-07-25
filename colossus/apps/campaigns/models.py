@@ -178,6 +178,14 @@ class Campaign(models.Model):
         self.save(update_fields=['unique_opens_count', 'total_opens_count', 'open_rate'])
         return (self.unique_opens_count, self.total_opens_count, self.open_rate)
 
+    def get_links(self):
+        """
+        A method to list campaign's links
+        :return: All links associated with the campaign, ordered by the total number of clicks
+        """
+        links = Link.objects.filter(email__campaign=self).order_by('-total_clicks_count')
+        return links
+
 
 class Email(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

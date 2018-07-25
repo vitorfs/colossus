@@ -1,0 +1,36 @@
+{% extends 'campaigns/base.html' %}
+
+{% load i18n %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Links' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="row">
+    <div class="col-8">
+      <strong>{% trans 'Link' %}</strong>
+    </div>
+    <div class="col-2 text-right">
+      <strong>{% trans 'Unique clicks' %}</strong>
+    </div>
+    <div class="col-2 text-right">
+      <strong>{% trans 'Total clicks' %}</strong>
+    </div>
+  </div>
+  <hr class="my-2">
+  {% for link in links %}
+    <div class="row{% if not forloop.last %} mb-1{% endif %}">
+      <div class="col-8">
+        <span class="text-muted">[{{ link.index }}]</span>
+        <a href="{{ link.url }}" rel="noopener nofollow" target="_blank">{{ link.url }}</a>
+        <small class="ml-1">
+          <a href="">(edit link)</a>
+        </small>
+      </div>
+      <div class="col-2 text-right">{{ link.unique_clicks_count }}</div>
+      <div class="col-2 text-right">{{ link.total_clicks_count }}</div>
+    </div>
+  {% endfor %}
+{% endblock %}
