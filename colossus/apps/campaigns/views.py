@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET
 from django.views.generic import (
@@ -233,6 +235,29 @@ class ScheduleCampaignView(CampaignMixin, UpdateView):
     def get_context_data(self, **kwargs):
         kwargs['title'] = _('Schedule campaign')
         return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class LinkUpdateView(SuccessMessageMixin, CampaignMixin, UpdateView):
+    model = Link
+    fields = ('url',)
+    context_object_name = 'link'
+    pk_url_kwarg = 'link_pk'
+    extra_context = {'submenu': 'links'}
+    success_message = 'The link <strong>%s</strong> was updated successfully.'
+
+    def get_queryset(self):
+        return super().get_queryset().select_related()
+
+    def get_context_data(self, **kwargs):
+        kwargs['campaign'] = self.object.email.campaign
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return reverse('campaigns:campaign_links', kwargs={'pk': self.kwargs.get('pk')})
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(self.success_message % self.object.short_uuid)
 
 
 @login_required

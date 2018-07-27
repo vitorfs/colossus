@@ -28,9 +28,11 @@
         <li class="nav-item">
           <a class="nav-link{% if submenu == 'preview' %} active{% endif %}" href="{% url 'campaigns:campaign_preview' campaign.pk %}">{% trans 'Campaign Preview' %}</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link{% if submenu == 'links' %} active{% endif %}" href="{% url 'campaigns:campaign_links' campaign.pk %}">{% trans 'Links' %}</a>
-        </li>
+        {% if campaign.track_clicks %}
+          <li class="nav-item">
+            <a class="nav-link{% if submenu == 'links' %} active{% endif %}" href="{% url 'campaigns:campaign_links' campaign.pk %}">{% trans 'Links' %}</a>
+          </li>
+        {% endif %}
         <li class="nav-item">
           <a class="nav-link{% if submenu == 'reports' %} active{% endif %}" href="{% url 'campaigns:campaign_reports' campaign.pk %}">{% trans 'Reports' %}</a>
         </li>

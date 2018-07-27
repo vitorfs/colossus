@@ -1,6 +1,6 @@
 {% extends 'campaigns/base.html' %}
 
-{% load i18n %}
+{% load i18n humanize %}
 
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
@@ -8,29 +8,32 @@
 {% endblock %}
 
 {% block innercontent %}
-  <div class="row">
-    <div class="col-8">
-      <strong>{% trans 'Link' %}</strong>
-    </div>
-    <div class="col-2 text-right">
-      <strong>{% trans 'Unique clicks' %}</strong>
-    </div>
-    <div class="col-2 text-right">
-      <strong>{% trans 'Total clicks' %}</strong>
-    </div>
-  </div>
-  <hr class="my-2">
-  {% for link in links %}
-    <div class="row{% if not forloop.last %} mb-1{% endif %}">
-      <div class="col-8">
-        <span class="text-muted">[{{ link.index }}]</span>
-        <a href="{{ link.url }}" rel="noopener nofollow" target="_blank">{{ link.url }}</a>
-        <small class="ml-1">
-          <a href="">(edit link)</a>
-        </small>
-      </div>
-      <div class="col-2 text-right">{{ link.unique_clicks_count }}</div>
-      <div class="col-2 text-right">{{ link.total_clicks_count }}</div>
-    </div>
-  {% endfor %}
+  <table class="table table-striped table-bordered mb-0">
+    <thead>
+      <tr>
+        <th>{% trans 'ID' %}</th>
+        <th>{% trans 'URL' %}</th>
+        <th class="text-right">{% trans 'Index' %}</th>
+        <th class="text-right">{% trans 'Unique clicks' %}</th>
+        <th class="text-right">{% trans 'Total clicks' %}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+        <tr>
+          <td>{{ link.short_uuid }}</td>
+          <td>
+            <a href="{{ link.url }}" rel="noopener nofollow" target="_blank">{{ link.url }}</a>
+          </td>
+          <td class="text-right">{{ link.index }}</td>
+          <td class="text-right">{{ link.unique_clicks_count|intcomma }}</td>
+          <td class="text-right">{{ link.total_clicks_count|intcomma }}</td>
+          <td class="text-right">
+            <a href="{% url 'campaigns:edit_link' campaign.pk link.pk %}" class="btn btn-primary btn-sm">{% trans 'Edit URL' %}</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

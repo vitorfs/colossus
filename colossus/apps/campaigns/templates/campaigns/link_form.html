@@ -1,0 +1,24 @@
+{% extends 'campaigns/base.html' %}
+
+{% load i18n crispy_forms_tags %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_links' campaign.pk %}">{% trans 'Links' %}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Edit URL' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="id_uuid">ID</label>
+      <input type="text" class="form-control" value="{{ link.uuid }}" readonly>
+    </div>
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+    <a href="{% url 'campaigns:campaign_links' campaign.pk %}" class="btn btn-outline-secondary" role="button">
+      {% trans 'Never mind' %}
+    </a>
+  </form>
+{% endblock %}

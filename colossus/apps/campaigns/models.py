@@ -411,11 +411,11 @@ class Email(models.Model):
 
 class Link(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    email = models.ForeignKey(Email, on_delete=models.CASCADE, related_name='links')
-    url = models.URLField(max_length=2048)
-    unique_clicks_count = models.PositiveIntegerField(default=0, editable=False)
-    total_clicks_count = models.PositiveIntegerField(default=0, editable=False)
-    index = models.PositiveSmallIntegerField(default=0)
+    email = models.ForeignKey(Email, on_delete=models.CASCADE, related_name='links', verbose_name=_('email'))
+    url = models.URLField(_('URL'), max_length=2048)
+    unique_clicks_count = models.PositiveIntegerField(_('unique clicks count'), default=0, editable=False)
+    total_clicks_count = models.PositiveIntegerField(_('total clicks count'), default=0, editable=False)
+    index = models.PositiveSmallIntegerField(_('index'), default=0)
 
     class Meta:
         verbose_name = _('link')
@@ -424,6 +424,10 @@ class Link(models.Model):
 
     def __str__(self):
         return self.url
+
+    @property
+    def short_uuid(self):
+        return str(self.uuid)[:8]
 
     def update_clicks_count(self) -> tuple:
         qs = self.activities.values('subscriber_id').order_by('subscriber_id').aggregate(
