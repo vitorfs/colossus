@@ -7,7 +7,7 @@ urlpatterns = [
     path('', include('colossus.apps.subscribers.urls', namespace='subscribers')),
     path('dashboard/', core_views.dashboard, name='dashboard'),
     path('settings/', core_views.SiteUpdateView.as_view(), name='settings'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('colossus.apps.accounts.urls')),
     path('lists/', include('colossus.apps.lists.urls', namespace='lists')),
     path('templates/', include('colossus.apps.templates.urls', namespace='templates')),
     path('campaigns/', include('colossus.apps.campaigns.urls', namespace='campaigns')),

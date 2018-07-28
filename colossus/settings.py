@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'crispy_forms',
 
+    'colossus.apps.accounts',
     'colossus.apps.campaigns',
     'colossus.apps.core',
     'colossus.apps.templates',

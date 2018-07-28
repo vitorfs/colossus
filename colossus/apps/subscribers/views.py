@@ -1,16 +1,21 @@
 import base64
 
+from django.contrib import messages
 from django.http import (
     Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.views.generic import View
+from django.utils.translation import gettext as _
+
+from ratelimit.decorators import ratelimit
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
+from colossus.ratelimit import ip_key, admin_rate
 from colossus.utils import get_client_ip
 
 from .constants import Status
@@ -39,14 +44,22 @@ def manage(request):
 
 
 @csrf_exempt
+@require_http_methods(['GET', 'POST'])
+@ratelimit(key=ip_key, rate=admin_rate, method='POST')
 def subscribe(request, mailing_list_uuid):
     if 'application/json' in request.META.get('HTTP_ACCEPT'):
         pass
     else:
         pass
 
-    mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
-    if request.method == 'POST':
+    mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
+
+    is_limited = getattr(request, 'limited', False)
+
+    if is_limited:
+        messages.warning(request, _('Too many requests. Your IP address is blocked for 5 minutes.'))
+
+    if request.method == 'POST' and not is_limited:
         form = SubscribeForm(mailing_list=mailing_list, data=request.POST)
         if form.is_valid():
             form.subscribe(request)
@@ -65,6 +78,7 @@ def confirm_subscription(request, mailing_list_uuid):
     return render(request, 'subscribers/subscribe_thank_you.html', {'mailing_list': mailing_list})
 
 
+@require_GET
 def confirm_double_optin_token(request, mailing_list_uuid, token):
     try:
         mailing_list = MailingList.objects.get(uuid=mailing_list_uuid)
@@ -82,6 +96,7 @@ def confirm_double_optin_token(request, mailing_list_uuid, token):
     return render(request, 'subscribers/confirm_thank_you.html', {'mailing_list': mailing_list})
 
 
+@require_http_methods(['GET', 'POST'])
 def unsubscribe_manual(request, mailing_list_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
     if request.method == 'POST':
@@ -94,11 +109,12 @@ def unsubscribe_manual(request, mailing_list_uuid):
     return render(request, 'subscribers/unsubscribe_form.html', {'form': form, 'mailing_list': mailing_list})
 
 
+@require_GET
 def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
 
     try:
-        sub = Subscriber.objects.get(uuid=subscriber_uuid, mailing_list=mailing_list)
+        subscriber = Subscriber.objects.get(uuid=subscriber_uuid, mailing_list=mailing_list)
     except Subscriber.DoesNotExist:
         return redirect('subscribers:unsubscribe_manual', mailing_list_uuid=mailing_list_uuid)
 
@@ -107,8 +123,8 @@ def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
     except Campaign.DoesNotExist:
         campaign = None
 
-    if sub.status == Status.SUBSCRIBED:
-        sub.unsubscribe(request, campaign)
+    if subscriber.status == Status.SUBSCRIBED:
+        subscriber.unsubscribe(request, campaign)
         return redirect('subscribers:goodbye', mailing_list_uuid=mailing_list_uuid)
     else:
         return HttpResponse('This email address was not found in our list.', content_type='text/plain')
