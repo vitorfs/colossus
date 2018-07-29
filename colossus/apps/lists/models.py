@@ -2,14 +2,17 @@ import csv
 import json
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from colossus.apps.core.storage import PrivateMediaStorage
 from colossus.apps.lists.constants import ImportStatus, ImportTypes
 from colossus.apps.subscribers.constants import Status
+from colossus.storage import PrivateMediaStorage
+
+User = get_user_model()
 
 
 class MailingList(models.Model):
@@ -97,7 +100,21 @@ class MailingList(models.Model):
 
 
 class SubscriberImport(models.Model):
-    mailing_list = models.ForeignKey(MailingList, on_delete=models.CASCADE)
+    mailing_list = models.ForeignKey(
+        MailingList,
+        on_delete=models.CASCADE,
+        related_name='subscribers_imports',
+        verbose_name=_('mailing list')
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        editable=False,
+        related_name='subscribers_imports',
+        verbose_name=_('user')
+    )
     upload_date = models.DateTimeField(_('upload date'), auto_now_add=True)
     file = models.FileField(
         _('CSV file'),

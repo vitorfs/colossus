@@ -37,9 +37,11 @@ def percent(value):
     percentage = round(value * 100, 1)
     return f'{percentage}%'
 
+
 @register.filter
 def percentage(value):
     return round(value * 100, 1)
+
 
 @register.filter
 def flag(country_code):

@@ -1,5 +1,3 @@
-import csv
-from io import TextIOWrapper
 from smtplib import SMTPAuthenticationError
 
 from django import forms
@@ -9,8 +7,6 @@ from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
-
-import pytz
 
 from colossus.apps.subscribers.constants import ActivityTypes, Status
 from colossus.apps.subscribers.models import Subscriber
@@ -28,39 +24,7 @@ class CSVImportSubscribersForm(forms.Form):
     )
 
     def import_subscribers(self, request, mailing_list_id):
-        mailing_list = MailingList.objects.get(pk=mailing_list_id)
-        upload_file = self.cleaned_data.get('upload_file')
-        status = self.cleaned_data.get('status')
-        csvfile = TextIOWrapper(upload_file, encoding=request.encoding)
-        dialect = csv.Sniffer().sniff(csvfile.read(1024))
-        csvfile.seek(0)
-        reader = csv.reader(csvfile, dialect)
-        subscribers = list()
-        for row in reader:
-            if '@' in row[0]:
-                email = Subscriber.objects.normalize_email(row[0])
-                name = row[1].strip()
-                optin_ip_address = row[2].strip()
-                optin_date = timezone.datetime.strptime(row[3], '%Y-%m-%d %H:%M:%S')
-                optin_date = pytz.utc.localize(optin_date)
-                confirm_ip_address = row[4]
-                confirm_date = timezone.datetime.strptime(row[5], '%Y-%m-%d %H:%M:%S')
-                confirm_date = pytz.utc.localize(confirm_date)
-                subscriber = Subscriber(
-                    email=email,
-                    name=name,
-                    optin_ip_address=optin_ip_address,
-                    optin_date=optin_date,
-                    confirm_ip_address=confirm_ip_address,
-                    confirm_date=confirm_date,
-                    status=status,
-                    mailing_list_id=mailing_list_id
-                )
-                subscribers.append(subscriber)
-            else:
-                continue
-        Subscriber.objects.bulk_create(subscribers)
-        mailing_list.update_subscribers_count()
+        pass
 
 
 class PasteImportSubscribersForm(forms.Form):

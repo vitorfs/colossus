@@ -47,6 +47,19 @@
         </a>
       </div>
       <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="javascript:void(0);" tabindex="0" class="nav-link" id="notifications" role="button" title="{% trans 'Notifications' %}">
+            {% if notifications_count > 0 %}
+              <span class="fa fa-bell text-primary"></span>
+              <small class="align-text-top">
+                <span class="badge badge-pill badge-danger">{{ notifications_count }}</span>
+              </small>
+            {% else %}
+              <span class="far fa-bell"></span>
+            {% endif %}
+            <span class="sr-only">{% trans 'Notifications' %}</span>
+          </a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userName" data-toggle="dropdown" aria-haspopup="true"
              aria-expanded="false">
@@ -74,6 +87,19 @@
     </div>
   {% endblock main %}
 {% endblock body %}
+<div id="notificationsContent" style="display: none;">
+  {% for notification in notifications %}
+    <div>
+      <a href="" class="d-block">{{ notification.text }}</a>
+      <small class="text-muted">{{ notification.date|date:"D d M Y - P" }}</small>
+      {% if not forloop.last %}
+        <hr class="my-2">
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="mb-0 text-muted">All cleared up!</p>
+  {% endfor %}
+</div>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
@@ -103,6 +129,14 @@
     });
     $(".datetimeinput").datetimepicker({
       format: 'YYYY-MM-DD HH:mm:ss'
+    });
+    $("#notifications").popover({
+      container: 'body',
+      html: true,
+      placement: 'bottom',
+      content: function () {
+        return $("#notificationsContent").html();
+      }
     });
   });
 </script>

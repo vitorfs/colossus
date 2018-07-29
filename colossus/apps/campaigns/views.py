@@ -14,6 +14,7 @@ from django.views.generic import (
 
 from colossus.apps.subscribers.constants import ActivityTypes
 from colossus.apps.subscribers.models import Activity
+
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (

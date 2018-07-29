@@ -1,7 +1,8 @@
 from django.contrib.gis.geoip2 import GeoIP2
+
 from geoip2.errors import AddressNotFoundError
 
-from colossus.apps.core.models import Country, City
+from colossus.apps.core.models import City, Country
 
 
 def get_client_ip(request):
@@ -11,6 +12,10 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def ip_address_key(group, request):
+    return get_client_ip(request)
 
 
 def get_location(ip_address):

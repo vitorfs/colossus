@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'colossus.apps.core',
     'colossus.apps.templates',
     'colossus.apps.lists',
+    'colossus.apps.notifications',
     'colossus.apps.subscribers',
 ]
 
@@ -47,6 +48,8 @@ MIDDLEWARE = [
 
 SITE_ID = 1
 
+AUTH_USER_MODEL = 'accounts.User'
+
 ROOT_URLCONF = 'colossus.urls'
 
 TEMPLATES = [
@@ -62,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'colossus.apps.notifications.context_processors.notifications',
             ],
         },
     },

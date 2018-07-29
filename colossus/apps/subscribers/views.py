@@ -5,18 +5,19 @@ from django.http import (
     Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from django.views.generic import View
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import (
+    require_GET, require_http_methods, require_POST,
+)
+from django.views.generic import View
 
 from ratelimit.decorators import ratelimit
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token
 from colossus.apps.lists.models import MailingList
-from colossus.ratelimit import ip_key, admin_rate
-from colossus.utils import get_client_ip
+from colossus.utils import get_client_ip, ip_address_key
 
 from .constants import Status
 from .forms import SubscribeForm, UnsubscribeForm
@@ -45,7 +46,7 @@ def manage(request):
 
 @csrf_exempt
 @require_http_methods(['GET', 'POST'])
-@ratelimit(key=ip_key, rate=admin_rate, method='POST')
+@ratelimit(key=ip_address_key, rate='10/5m', method='POST')
 def subscribe(request, mailing_list_uuid):
     if 'application/json' in request.META.get('HTTP_ACCEPT'):
         pass
@@ -53,7 +54,6 @@ def subscribe(request, mailing_list_uuid):
         pass
 
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
-
     is_limited = getattr(request, 'limited', False)
 
     if is_limited:
@@ -97,9 +97,15 @@ def confirm_double_optin_token(request, mailing_list_uuid, token):
 
 
 @require_http_methods(['GET', 'POST'])
+@ratelimit(key=ip_address_key, rate='5/5m', method='POST')
 def unsubscribe_manual(request, mailing_list_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
-    if request.method == 'POST':
+    is_limited = getattr(request, 'limited', False)
+
+    if is_limited:
+        messages.warning(request, _('Too many requests. Your IP address is blocked for 5 minutes.'))
+
+    if request.method == 'POST' and not is_limited:
         form = UnsubscribeForm(mailing_list=mailing_list, data=request.POST)
         if form.is_valid():
             form.unsubscribe(request)
@@ -110,6 +116,7 @@ def unsubscribe_manual(request, mailing_list_uuid):
 
 
 @require_GET
+@ratelimit(key=ip_address_key, rate='5/5m', method='GET', block=True)
 def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
 
@@ -137,6 +144,7 @@ def goodbye(request, mailing_list_uuid):
 
 
 @require_GET
+@ratelimit(key=ip_address_key, rate='100/h', method='GET', block=True)
 def track_open(request, email_uuid, subscriber_uuid):
     try:
         email = Email.objects.get(uuid=email_uuid)
@@ -151,6 +159,7 @@ def track_open(request, email_uuid, subscriber_uuid):
 
 
 @require_GET
+@ratelimit(key=ip_address_key, rate='100/h', method='GET', block=True)
 def track_click(request, link_uuid, subscriber_uuid):
     link = None
     try:
