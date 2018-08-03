@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+from colossus.apps.campaigns.models import Campaign
 from colossus.test.factories import UserFactory
 from colossus.test.testcases import TestCase
 
@@ -7,8 +8,13 @@ from .factories import CampaignFactory
 
 
 class CampaignListViewSuccessTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        CampaignFactory.create_batch(5)
+
     def setUp(self):
-        self.campaigns = CampaignFactory.create_batch(5)
+        self.campaigns = Campaign.objects.all()
         self.user = UserFactory(username='alex')
         self.client.login(username='alex', password='123')
         self.url = reverse('campaigns:campaigns')
