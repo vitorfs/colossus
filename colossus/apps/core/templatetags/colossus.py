@@ -1,3 +1,5 @@
+from typing import Any, Dict, Union, List, Tuple
+
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -27,9 +29,18 @@ def qs(context, **kwargs):
     return query.urlencode()
 
 
-@register.simple_tag
-def dict(dictionary, key):
-    return dictionary[key]
+@register.filter
+def get(collection: Union[Dict, List, Tuple], key: Any):
+    if type(collection) == list or type(collection) == tuple:
+        try:
+            key = int(key)
+            return collection[key]
+        except Exception:
+            return ''
+    elif type(collection) == dict:
+        return collection.get(key, '')
+    else:
+        return ''
 
 
 @register.filter

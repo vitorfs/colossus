@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags i18n %}
+{% load colossus crispy_forms_tags i18n %}
 
 {% block title %}{% trans 'Preview' %}{% endblock %}
 
@@ -58,15 +58,23 @@
         <div class="table-responsive">
           <table class="table table-sm table-striped table-bordered mb-0" id="tablePreview">
             <thead>
-            <tr>
-              {% for header in subscriber_import.get_headings %}
-                <th{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ header }}</th>
-              {% endfor %}
-            </tr>
+              <tr>
+                <th>Subscriber Fields</th>
+                {% for header in subscriber_import.get_headings %}
+                  <th>{{ default_template|get:forloop.counter0|get:0 }}</th>
+                {% endfor %}
+              </tr>
+              <tr>
+                <th>CSV Import File</th>
+                {% for header in subscriber_import.get_headings %}
+                  <th{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ header }}</th>
+                {% endfor %}
+              </tr>
             </thead>
             <tbody>
             {% for row in subscriber_import.get_preview %}
               <tr>
+                <td></td>
                 {% for col in row %}
                   <td{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ col }}</td>
                 {% endfor %}
