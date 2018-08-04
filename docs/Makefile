@@ -14,7 +14,13 @@ help:
 
 .PHONY: help Makefile
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+help:
+	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  spelling   to check for typos in documentation"
+
+
+spelling:
+	$(SPHINXBUILD) -b spelling $(SOURCEDIR) $(BUILDDIR)/spelling $(SPHINXOPTS)
+	@echo
+	@echo "Check finished. Wrong words can be found in " \
+		"$(BUILDDIR)/spelling/output.txt."
