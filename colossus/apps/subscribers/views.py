@@ -1,10 +1,12 @@
 import base64
+import logging
 from uuid import UUID
 
 from django.contrib import messages
 from django.http import (
-    Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
-    HttpRequest)
+    Http404, HttpRequest, HttpResponse, HttpResponseBadRequest,
+    HttpResponseRedirect,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
@@ -23,6 +25,8 @@ from colossus.utils import get_client_ip, ip_address_key
 from .constants import Status
 from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
+
+logger = logging.getLogger(__name__)
 
 
 class IndexView(View):
@@ -187,5 +191,10 @@ def track_click(request: HttpRequest,
     except Link.DoesNotExist:
         raise Http404
     except Subscriber.DoesNotExist:
-        pass  # fail silently
+        # fail silently
+        logger.info('track_click call to non-existing Subscriber instance'
+                    'uuid = "%s"' % str(subscriber_uuid))
+    except Exception:
+        logger.exception('Failed to track click on link "%s" from subscriber '
+                         '"%s"' % (str(link_uuid), str(subscriber_uuid)))
     return HttpResponseRedirect(link.url)
