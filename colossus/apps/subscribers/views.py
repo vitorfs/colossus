@@ -1,9 +1,10 @@
 import base64
+from uuid import UUID
 
 from django.contrib import messages
 from django.http import (
     Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect,
-)
+    HttpRequest)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
@@ -160,8 +161,24 @@ def track_open(request, email_uuid, subscriber_uuid):
 
 @require_GET
 @ratelimit(key=ip_address_key, rate='100/h', method='GET', block=True)
-def track_click(request, link_uuid, subscriber_uuid):
-    link = None
+def track_click(request: HttpRequest,
+                link_uuid: UUID,
+                subscriber_uuid: UUID) -> HttpResponseRedirect:
+    """
+    Track subscriber's click on links on email from campaigns.
+    Triggers celery tasks to update total and unique click count.
+    Affects subscriber click rate, mailing list click rate and campaign click
+    rate.
+
+    This view can only be accessed via GET request and has a limit of 100
+    requests per hour per IP address.
+
+    :param request: A Django HTTP Request object
+    :param link_uuid: A Link instance uuid field
+    :param subscriber_uuid: A Subscriber instance uuid field
+    :return: Redirection to the link's target URL
+    """
+    link: Link
     try:
         link = Link.objects.filter(uuid=link_uuid).select_related('email').get()
         subscriber = Subscriber.objects.get(uuid=subscriber_uuid)

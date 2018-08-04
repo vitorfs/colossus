@@ -1,12 +1,32 @@
+from typing import Optional
+
 from django.contrib.gis.geoip2 import GeoIP2
+from django.http import HttpRequest
 
 from geoip2.errors import AddressNotFoundError
 
 from colossus.apps.core.models import City, Country
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+def get_client_ip(request: HttpRequest) -> str:
+    """
+    Inspects an HTTP Request object and try to determine the client's IP
+    address.
+
+    First look for the "HTTP_X_FORWARDED_FOR" header. Note that due to
+    application server configuration this value may contain a list of IP
+    addresses. If that's the case, return the first IP address in the list.
+
+    The result may not be 100% correct in some cases. Known issues with Heroku
+    service:
+    https://stackoverflow.com/questions/18264304/
+
+    If there is no "HTTP_X_FORWARDED_FOR" header, falls back to "REMOTE_ADDR"
+
+    :param request: An HTTP Request object
+    :return: The client IP address extracted from the HTTP Request
+    """
+    x_forwarded_for: Optional[str] = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
     else:
@@ -14,13 +34,32 @@ def get_client_ip(request):
     return ip
 
 
-def ip_address_key(group, request):
+def ip_address_key(group: str, request: HttpRequest) -> str:
+    """
+    Wrapper function to be able to use the client's IP address as a key with
+    django-ratelimit decorator.
+
+    The group parameter has no effect, it is here because the ratelimit
+    decorator tries to pass a group as first parameter to a callable key.
+
+    :param group: A group of rate limits to count together.
+    :param request: A Django HTTP Request object
+    :return: The client IP address extracted from the HTTP Request
+    """
     return get_client_ip(request)
 
 
-def get_location(ip_address):
+def get_location(ip_address: str) -> Optional[City]:
+    """
+    Searches for the country and city of a given IP address using Django's
+    GeoIP2 library.
+
+    :param ip_address: An IP address in string format
+    :return: A City instance representing the location of the IP address, or
+             None if not found.
+    """
     geoip2 = GeoIP2()
-    city = None
+    city: City = None
     try:
         geodata = geoip2.city(ip_address)
         if 'country_code' in geodata:
