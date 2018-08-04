@@ -305,6 +305,7 @@ class SubscriberImportPreviewView(MailingListMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs['import_types'] = ImportTypes
+        kwargs['default_template'] = SubscriberImport.DEFAULT_IMPORT_TEMPLATE
         return super().get_context_data(**kwargs)
 
 

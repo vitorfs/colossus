@@ -4,6 +4,15 @@
 
 {% block title %}{% trans 'Preview' %}{% endblock %}
 
+{% block stylesheet %}
+  <style>
+    #tablePreview td,
+    #tablePreview th {
+      white-space: nowrap;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -27,13 +36,13 @@
         {{ subscriber_import.size }} rows
       </p>
       {% if subscriber_import.import_type == import_types.BASIC %}
-        <p>Colossus will import the data from the CSV file using the following format:</p>
+        <p>{% trans 'Colossus will import the data from the CSV file using the following format:' %}</p>
         <pre><code>email<sup>1</sup>, name, optin_ip_address, optin_date<sup>2</sup>, confirm_ip_address, confirm_date<sup>2</sup></code></pre>
         <p class="mb-0">
-          <small class="text-muted"><sup>1</sup> Email field is mandatory</small>
+          <small class="text-muted"><sup>1</sup> {% trans 'Email field is mandatory' %}</small>
         </p>
         <p>
-          <small class="text-muted"><sup>2</sup> Date format: 2001-12-31 23:59:59</small>
+          <small class="text-muted"><sup>2</sup> {% trans 'Date format:' %} 2001-12-31 23:59:59</small>
         </p>
       {% endif %}
       <div class="card mb-3">
@@ -47,7 +56,7 @@
           </a>
         </div>
         <div class="table-responsive">
-          <table class="table table-sm table-striped mb-0">
+          <table class="table table-sm table-striped table-bordered mb-0" id="tablePreview">
             <thead>
             <tr>
               {% for header in subscriber_import.get_headings %}
@@ -70,7 +79,7 @@
           <div class="card-footer">
             <p class="card-text text-muted">
               <small>
-                Showing first 10 entries. Total entries in the file: {{ subscriber_import.size }}.
+                {% trans 'Showing first 10 entries. Total entries in the file:' %} {{ subscriber_import.size }}.
               </small>
             </p>
           </div>

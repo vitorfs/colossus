@@ -48,10 +48,10 @@ class PasteImportSubscribersForm(forms.Form):
         Normalize the email addresses inside a loop and call the email validator
         for each email.
         Emails are added to a dictionary so to remove the duplicates and at the
-        same time preserve the case informed. The dictionary key is the lower case
-        of the email, and the value is its original form.
-        After the code iterates through all the emails, return only the values of
-        the dictionary.
+        same time preserve the case informed. The dictionary key is the lower
+        case of the email, and the value is its original form.
+        After the code iterates through all the emails, return only the values
+        of the dictionary.
         """
         cleaned_data = super().clean()
         emails = self.cleaned_data.get('emails', '')

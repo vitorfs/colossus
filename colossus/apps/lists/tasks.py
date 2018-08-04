@@ -1,4 +1,5 @@
 import csv
+from typing import Union
 
 from django.db import transaction
 from django.utils import timezone
@@ -31,7 +32,7 @@ IMPORT_PARSERS = (
 
 @shared_task
 @transaction.atomic
-def import_subscribers(subscriber_import_id):
+def import_subscribers(subscriber_import_id: Union[str, int]):
     try:
         subscriber_import = SubscriberImport.objects.get(pk=subscriber_import_id)
         if subscriber_import.status == ImportStatus.QUEUED:

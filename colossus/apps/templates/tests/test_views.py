@@ -1,5 +1,9 @@
+from typing import List
+
 from django.urls import reverse
 
+from colossus.apps.accounts.models import User
+from colossus.apps.templates.models import EmailTemplate
 from colossus.apps.templates.tests.factories import EmailTemplateFactory
 from colossus.test.factories import UserFactory
 from colossus.test.testcases import TestCase
@@ -7,8 +11,8 @@ from colossus.test.testcases import TestCase
 
 class EmailTemplateTestCase(TestCase):
     def setUp(self):
-        self.templates = EmailTemplateFactory.create_batch(5)
-        self.user = UserFactory(username='alex')
+        self.templates: List[EmailTemplate] = EmailTemplateFactory.create_batch(5)
+        self.user: User = UserFactory(username='alex')
         self.client.login(username='alex', password='123')
 
 
