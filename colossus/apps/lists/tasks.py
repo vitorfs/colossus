@@ -32,7 +32,13 @@ IMPORT_PARSERS = (
 
 @shared_task
 @transaction.atomic
-def import_subscribers(subscriber_import_id: Union[str, int]):
+def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
+    """
+    Parse the data from a SubscriberImport CSV file and import to the database.
+
+    :param subscriber_import_id: SubscriberImport instance ID
+    :return: Message with the status of the import process
+    """
     try:
         subscriber_import = SubscriberImport.objects.get(pk=subscriber_import_id)
         if subscriber_import.status == ImportStatus.QUEUED:

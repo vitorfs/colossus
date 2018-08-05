@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% trans 'Your campaign has been sent!' %}{% endblock %}
+
+{% block content %}
+  <div class="jumbotron text-center">
+    <i data-feather="check-circle" class="text-success" width="64px" height="64px" stroke-width="1"></i>
+    <h1 class="">{% trans 'Your campaign has been sent!' %}</h1>
+    <a class="btn btn-link" href="{% url 'campaigns:campaign_detail' campaign.pk %}" role="button">{% trans 'Go to reports →' %}</a>
+  </div>
+{% endblock %}

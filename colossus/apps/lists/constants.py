@@ -1,18 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
 
-class ImportTypes:
-    BASIC = 1
-    ADVANCED = 2
-
-    LABELS = {
-        BASIC: _('Basic'),
-        ADVANCED: _('Advanced'),
-    }
-
-    CHOICES = tuple(LABELS.items())
-
-
 class ImportStatus:
     PENDING = 1
     QUEUED = 2

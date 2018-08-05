@@ -2,7 +2,7 @@
 
 {% load colossus crispy_forms_tags i18n %}
 
-{% block title %}{% trans 'Preview' %}{% endblock %}
+{% block title %}{% trans 'Confirm import' %}{% endblock %}
 
 {% block stylesheet %}
   <style>
@@ -13,6 +13,35 @@
   </style>
 {% endblock %}
 
+{% block javascript %}
+  <script>
+    $(function () {
+
+      var updateTableColumns = function (index) {
+        if ($(this).val() === "") {
+          $("#tablePreview tbody tr").each(function () {
+            $("td", this).eq(index).addClass("table-danger");
+          });
+        }
+        else {
+          $("#tablePreview tbody tr").each(function () {
+            $("td", this).eq(index).removeClass("table-danger");
+          });
+        }
+      };
+
+      var $columns = $("select[name^='__column_']");
+
+      $columns.each(updateTableColumns);
+      $columns.change(function () {
+        $("option[value='" + $(this).val() + "']:selected").closest("select").not(this).val("");
+        $columns.each(updateTableColumns);
+      });
+
+    });
+  </script>
+{% endblock %}
+
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -21,12 +50,12 @@
       <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:import_subscribers' mailing_list.pk %}">{% trans 'Import Subscribers' %}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:csv_import_subscribers' mailing_list.pk %}">{% trans 'Import CSV File' %}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{% trans 'Preview' %}</li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Confirm import' %}</li>
     </ol>
   </nav>
   <div class="card mb-3">
     <div class="card-body">
-      <h2 class="card-title">{% trans 'Preview' %}</h2>
+      <h2 class="card-title">{% trans 'Confirm import' %}</h2>
       <p class="mb-0">
         <strong>{% trans 'Filename:' %}</strong>
         {{ subscriber_import.file.name }}
@@ -35,16 +64,10 @@
         <strong>{% trans 'Size:' %}</strong>
         {{ subscriber_import.size }} rows
       </p>
-      {% if subscriber_import.import_type == import_types.BASIC %}
-        <p>{% trans 'Colossus will import the data from the CSV file using the following format:' %}</p>
-        <pre><code>email<sup>1</sup>, name, optin_ip_address, optin_date<sup>2</sup>, confirm_ip_address, confirm_date<sup>2</sup></code></pre>
-        <p class="mb-0">
-          <small class="text-muted"><sup>1</sup> {% trans 'Email field is mandatory' %}</small>
-        </p>
-        <p>
-          <small class="text-muted"><sup>2</sup> {% trans 'Date format:' %} 2001-12-31 23:59:59</small>
-        </p>
-      {% endif %}
+      <div class="alert alert-primary">
+        <span class="fa fa-info-circle mr-1"></span>
+        {% trans 'You may select a custom mapping by changing the table header select values below.' %}
+      </div>
       <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
@@ -58,25 +81,22 @@
         <div class="table-responsive">
           <table class="table table-sm table-striped table-bordered mb-0" id="tablePreview">
             <thead>
-              <tr>
-                <th>Subscriber Fields</th>
-                {% for header in subscriber_import.get_headings %}
-                  <th>{{ default_template|get:forloop.counter0|get:0 }}</th>
+              <tr class="table-secondary">
+                {% for field in form.column_mapping_fields %}
+                  <th>{{ field }}</th>
                 {% endfor %}
               </tr>
               <tr>
-                <th>CSV Import File</th>
                 {% for header in subscriber_import.get_headings %}
-                  <th{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ header }}</th>
+                  <th>{{ header }}</th>
                 {% endfor %}
               </tr>
             </thead>
             <tbody>
             {% for row in subscriber_import.get_preview %}
               <tr>
-                <td></td>
                 {% for col in row %}
-                  <td{% if forloop.counter > 6 %} class="table-danger"{% endif %}>{{ col }}</td>
+                  <td>{{ col }}</td>
                 {% endfor %}
               </tr>
             {% endfor %}
@@ -93,8 +113,21 @@
           </div>
         {% endif %}
       </div>
+      <p class="mb-0">
+        <small class="text-muted">{% trans 'Email field is mandatory' %}</small>
+      </p>
+      <p>
+        <small class="text-muted">{% trans 'Date format:' %} 2001-12-31 23:59:59</small>
+      </p>
       <form action="" method="post">
         {% csrf_token %}
+        <div class="row">
+          <div class="col-8">
+            {% for field in form.import_settings_fields %}
+              {{ field|as_crispy_field }}
+            {% endfor %}
+          </div>
+        </div>
         <button type="button" role="button" class="btn btn-success">{% trans 'Confirm import' %}</button>
         <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
         <a href="{% url 'lists:delete_subscriber_import' mailing_list.pk subscriber_import.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>

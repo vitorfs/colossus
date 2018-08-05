@@ -8,23 +8,67 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
+from colossus.apps.lists.constants import ImportStatus
+from colossus.apps.lists.tasks import import_subscribers
 from colossus.apps.subscribers.constants import ActivityTypes, Status
 from colossus.apps.subscribers.models import Subscriber
 
 from .models import MailingList, SubscriberImport
 
 
-class CSVImportSubscribersForm(forms.Form):
-    upload_file = forms.FileField(help_text=_('Supported file type: .csv'))
-    status = forms.ChoiceField(
-        label=_('Assign status to subscriber'),
-        choices=Status.CHOICES,
-        initial=Status.SUBSCRIBED,
-        widget=forms.Select(attrs={'class': 'w-50'})
-    )
+class ConfirmSubscriberImportForm(forms.ModelForm):
+    """
+    Form used to define what status will be assigned to the imported subscribers
+    and the import strategy (update or create, or create only).
 
-    def import_subscribers(self, request, mailing_list_id):
-        pass
+    After saving the form, place the csv import file in the queue to be
+    processed by a Celery task.
+    """
+    class Meta:
+        model = SubscriberImport
+        fields = ('subscriber_status', 'update_or_create')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        import_fields = list()
+        for field in SubscriberImport.DEFAULT_IMPORT_TEMPLATE:
+            import_fields.append((field[0], field[1]))
+
+        choices = (('', _('--- Ignore column ---'),),) + tuple(import_fields)
+        self.headings = self.instance.get_headings()
+        columns_mapping = self.instance.get_columns_mapping()
+        if not columns_mapping:
+            columns_mapping = list(map(lambda field: field[0], import_fields))
+        for index, heading in enumerate(self.headings):
+            self.fields[self._field_key(index)] = forms.ChoiceField(
+                label=heading,
+                required=False,
+                choices=choices
+            )
+            try:
+                self.initial[self._field_key(index)] = columns_mapping[index]
+            except (KeyError, IndexError):
+                pass
+
+    def _field_key(self, index: int):
+        return f'__column_{index}'
+
+    def column_mapping_fields(self):
+        return [field for field in self if field.name.startswith('__column_')]
+
+    def import_settings_fields(self):
+        return [field for field in self.visible_fields() if not field.name.startswith('__column_')]
+
+    def queue(self):
+        import_subscribers.delay(self.instance.pk)
+
+    def save(self, commit=True):
+        subscriber_import: SubscriberImport = super().save(commit=False)
+        subscriber_import.status = ImportStatus.QUEUED
+        if commit:
+            subscriber_import.save(update_fields=['subscriber_status', 'update_or_create', 'status'])
+            self.queue()
+        return subscriber_import
 
 
 class PasteImportSubscribersForm(forms.Form):

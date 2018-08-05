@@ -11,7 +11,6 @@ from django.views.generic import (
     UpdateView, View,
 )
 
-from colossus.apps.lists.constants import ImportTypes
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import (
     Subscriber, SubscriptionFormTemplate,
@@ -20,7 +19,7 @@ from colossus.apps.subscribers.models import (
 from .charts import SubscriptionsSummaryChart
 from .forms import (
     ColumnsMappingForm, MailingListSMTPForm, PasteImportSubscribersForm,
-)
+    ConfirmSubscriberImportForm)
 from .mixins import MailingListMixin
 from .models import MailingList, SubscriberImport
 
@@ -297,16 +296,24 @@ class SubscriberImportView(MailingListMixin, CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SubscriberImportPreviewView(MailingListMixin, DetailView):
+class SubscriberImportPreviewView(MailingListMixin, UpdateView):
     model = SubscriberImport
+    form_class = ConfirmSubscriberImportForm
     template_name = 'lists/import_preview.html'
     pk_url_kwarg = 'import_pk'
     context_object_name = 'subscriber_import'
 
     def get_context_data(self, **kwargs):
-        kwargs['import_types'] = ImportTypes
         kwargs['default_template'] = SubscriberImport.DEFAULT_IMPORT_TEMPLATE
         return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscriberImportQueuedView(MailingListMixin, DetailView):
+    model = SubscriberImport
+    template_name = 'lists/import_queued.html'
+    pk_url_kwarg = 'import_pk'
+    context_object_name = 'subscriber_import'
 
 
 @method_decorator(login_required, name='dispatch')
