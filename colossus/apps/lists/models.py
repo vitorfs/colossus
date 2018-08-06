@@ -2,7 +2,6 @@ import csv
 import json
 import uuid
 from datetime import datetime
-from time import strptime
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -104,7 +103,7 @@ class MailingList(models.Model):
 
 
 def convert_date(str_date: str) -> datetime:
-    date = strptime(str_date.strip(), '%Y-%m-%d %H:%M:%S')
+    date = datetime.strptime(str_date.strip(), '%Y-%m-%d %H:%M:%S')
     return pytz.utc.localize(date)
 
 

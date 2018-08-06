@@ -59,7 +59,7 @@ def get_location(ip_address: str) -> Optional[City]:
              None if not found.
     """
     geoip2 = GeoIP2()
-    city: City = None
+    city: City
     try:
         geodata = geoip2.city(ip_address)
         if 'country_code' in geodata:

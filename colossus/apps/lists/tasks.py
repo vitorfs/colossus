@@ -47,7 +47,7 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
             subscriber_import.status = ImportStatus.IMPORTING
             subscriber_import.save(update_fields=['status'])
 
-            import_status = ''
+            import_status: int
             output_message = ''
 
             try:

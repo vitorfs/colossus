@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union, List, Tuple
+from typing import Any
 
 from django import template
 from django.utils.safestring import mark_safe
@@ -30,7 +30,7 @@ def qs(context, **kwargs):
 
 
 @register.filter
-def get(collection: Union[Dict, List, Tuple], key: Any):
+def get(collection: Any, key: Any):
     if type(collection) == list or type(collection) == tuple:
         try:
             key = int(key)
