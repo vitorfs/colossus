@@ -308,6 +308,13 @@ class SubscriberImportPreviewView(MailingListMixin, UpdateView):
         kwargs['default_template'] = SubscriberImport.DEFAULT_IMPORT_TEMPLATE
         return super().get_context_data(**kwargs)
 
+    def get_success_url(self):
+        submit = self.request.POST.get('submit', 'save')
+        if submit == 'import':
+            return reverse('lists:import_queued', kwargs=self.kwargs)
+        else:
+            return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
+
 
 @method_decorator(login_required, name='dispatch')
 class SubscriberImportQueuedView(MailingListMixin, DetailView):

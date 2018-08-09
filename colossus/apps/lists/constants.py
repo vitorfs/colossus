@@ -19,3 +19,17 @@ class ImportStatus:
     }
 
     CHOICES = tuple(LABELS.items())
+
+
+class ImportStrategies:
+    CREATE = 1
+    UPDATE = 2
+    UPDATE_OR_CREATE = 3
+
+    LABELS = {
+        CREATE: _('Create new subscribers only'),
+        UPDATE: _('Update existing subscribers only'),
+        UPDATE_OR_CREATE: _('Update or create subscribers'),
+    }
+
+    CHOICES = tuple(LABELS.items())

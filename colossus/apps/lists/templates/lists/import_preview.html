@@ -15,6 +15,7 @@
 
 {% block javascript %}
   <script>
+    // FIXME: Move javascript code to an external .js file
     $(function () {
 
       var updateTableColumns = function (index) {
@@ -128,8 +129,8 @@
             {% endfor %}
           </div>
         </div>
-        <button type="button" role="button" class="btn btn-success">{% trans 'Confirm import' %}</button>
-        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Finish later' %}</a>
+        <button type="submit" role="button" name="submit" value="import" class="btn btn-success">{% trans 'Confirm import' %}</button>
+        <button type="submit" role="button" name="submit" value="save" class="btn btn-outline-success">{% trans 'Save & finish later' %}</button>
         <a href="{% url 'lists:delete_subscriber_import' mailing_list.pk subscriber_import.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>
       </form>
     </div>

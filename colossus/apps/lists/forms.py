@@ -24,9 +24,11 @@ class ConfirmSubscriberImportForm(forms.ModelForm):
     After saving the form, place the csv import file in the queue to be
     processed by a Celery task.
     """
+    submit = forms.CharField(widget=forms.HiddenInput())
+
     class Meta:
         model = SubscriberImport
-        fields = ('subscriber_status', 'update_or_create')
+        fields = ('subscriber_status', 'strategy', 'submit')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,10 +66,16 @@ class ConfirmSubscriberImportForm(forms.ModelForm):
 
     def save(self, commit=True):
         subscriber_import: SubscriberImport = super().save(commit=False)
-        subscriber_import.status = ImportStatus.QUEUED
+        submit = self.cleaned_data.get('submit')
+
+        if submit == 'import':
+            subscriber_import.status = ImportStatus.QUEUED
+
         if commit:
-            subscriber_import.save(update_fields=['subscriber_status', 'update_or_create', 'status'])
-            self.queue()
+            subscriber_import.save(update_fields=['subscriber_status', 'strategy', 'status'])
+            if subscriber_import.status == ImportStatus.QUEUED:
+                self.queue()
+
         return subscriber_import
 
 

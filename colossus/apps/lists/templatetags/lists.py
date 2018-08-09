@@ -10,6 +10,8 @@ register = template.Library()
 def import_status_badge(subscriber_import):
     css_classes = {
         ImportStatus.PENDING: 'badge-warning',
+        ImportStatus.QUEUED: 'badge-info',
+        ImportStatus.IMPORTING: 'badge-primary',
         ImportStatus.COMPLETED: 'badge-success',
         ImportStatus.ERRORED: 'badge-danger',
         ImportStatus.CANCELED: 'badge-secondary',

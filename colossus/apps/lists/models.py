@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 import pytz
 
-from colossus.apps.lists.constants import ImportStatus
+from colossus.apps.lists.constants import ImportStatus, ImportStrategies
 from colossus.apps.subscribers.constants import Status
 from colossus.storage import PrivateMediaStorage
 
@@ -164,11 +164,12 @@ class SubscriberImport(models.Model):
         choices=ImportStatus.CHOICES
     )
     size = models.PositiveIntegerField(_('size'), default=0)
-    update_or_create = models.BooleanField(
-        _('update or create subscriber'),
-        default=True,
-        help_text=_('If the email address is already subscribed to the list, the entry will be updated with data from '
-                    'the CSV file. If this option is left unchecked, only new email addresses will be created.')
+    strategy = models.PositiveSmallIntegerField(
+        _('import strategy'),
+        choices=ImportStrategies.CHOICES,
+        default=ImportStrategies.UPDATE_OR_CREATE,
+        help_text=_('The email address will be used as the main subscriber identifier to determine if they are '
+                    'already on the list.')
     )
 
     __cached_headings = None
