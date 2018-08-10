@@ -69,59 +69,67 @@
         <span class="fa fa-info-circle mr-1"></span>
         {% trans 'You may select a custom mapping by changing the table header select values below.' %}
       </div>
-      <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div>
-            <span class="far fa-file mr-2"></span>
-            {{ subscriber_import.file.name }}
-          </div>
-          <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">
-            <span class="fas fa-cloud-download-alt"></span>
-          </a>
-        </div>
-        <div class="table-responsive">
-          <table class="table table-sm table-striped table-bordered mb-0" id="tablePreview">
-            <thead>
-              <tr class="table-secondary">
-                {% for field in form.column_mapping_fields %}
-                  <th>{{ field }}</th>
-                {% endfor %}
-              </tr>
-              <tr>
-                {% for header in subscriber_import.get_headings %}
-                  <th>{{ header }}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            <tbody>
-            {% for row in subscriber_import.get_preview %}
-              <tr>
-                {% for col in row %}
-                  <td>{{ col }}</td>
-                {% endfor %}
-              </tr>
+      <form action="" method="post">
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              <span class="fa fa-exclamation-triangle mr-1"></span> {{ error }}
             {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        {% if subscriber_import.size > 10 %}
-          <div class="card-footer">
-            <p class="card-text text-muted">
-              <small>
-                {% trans 'Showing first 10 entries. Total entries in the file:' %} {{ subscriber_import.size }}.
-              </small>
-            </p>
           </div>
         {% endif %}
-      </div>
-      <p class="mb-0">
-        <small class="text-muted">{% trans 'Email field is mandatory' %}</small>
-      </p>
-      <p>
-        <small class="text-muted">{% trans 'Date format:' %} 2001-12-31 23:59:59</small>
-      </p>
-      <form action="" method="post">
         {% csrf_token %}
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <span class="far fa-file mr-2"></span>
+              {{ subscriber_import.file.name }}
+            </div>
+            <a href="{% url 'lists:download_subscriber_import' mailing_list.pk subscriber_import.pk %}">
+              <span class="fas fa-cloud-download-alt"></span>
+            </a>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered mb-0" id="tablePreview">
+              <thead>
+                <tr class="table-secondary">
+                  {% for field in form.column_mapping_fields %}
+                    <th>{{ field }}</th>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  {% for header in subscriber_import.get_headings %}
+                    <th>{{ header }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+              {% for row in subscriber_import.get_preview %}
+                <tr>
+                  {% for col in row %}
+                    <td>{{ col }}</td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% if subscriber_import.size > 10 %}
+            <div class="card-footer">
+              <p class="card-text text-muted">
+                <small>
+                  {% trans 'Showing first 10 entries. Total entries in the file:' %} {{ subscriber_import.size }}.
+                </small>
+              </p>
+            </div>
+          {% endif %}
+        </div>
+        <p class="mb-0">
+          <small class="text-muted">{% trans 'Email field is mandatory' %}</small>
+        </p>
+        <p>
+          <small class="text-muted">{% trans 'Date format:' %} 2001-12-31 23:59:59</small>
+        </p>
+
         <div class="row">
           <div class="col-8">
             {% for field in form.import_settings_fields %}

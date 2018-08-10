@@ -1,10 +1,12 @@
 from smtplib import SMTPAuthenticationError
+from typing import Dict, List
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.mail.backends.smtp import EmailBackend
 from django.core.validators import validate_email
 from django.db import transaction
+from django.forms import BoundField
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
@@ -30,7 +32,7 @@ class ConfirmSubscriberImportForm(forms.ModelForm):
         model = SubscriberImport
         fields = ('subscriber_status', 'strategy', 'submit')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         import_fields = list()
         for field in SubscriberImport.DEFAULT_IMPORT_TEMPLATE:
@@ -52,31 +54,102 @@ class ConfirmSubscriberImportForm(forms.ModelForm):
             except (KeyError, IndexError):
                 pass
 
-    def _field_key(self, index: int):
+    def _field_key(self, index: int) -> str:
+        """
+        Utility method to compose the dynamic mapping columns fields
+
+        :param index: Zero-based index. Number of the column in the CSV file
+        :return: Unique field name for column mapping fields.
+        """
         return f'__column_{index}'
 
-    def column_mapping_fields(self):
-        return [field for field in self if field.name.startswith('__column_')]
+    def clean(self) -> Dict:
+        """
+        Validate the form data and check if there is at least one field mapping
+        back to the email field.
 
-    def import_settings_fields(self):
-        return [field for field in self.visible_fields() if not field.name.startswith('__column_')]
+        The email field is the main subscriber identifier and is the only
+        required field that must be in the CSV file.
 
-    def queue(self):
-        import_subscribers.delay(self.instance.pk)
+        :return: Dictionary with cleaned form data
+        """
+        cleaned_data = super().clean()
 
-    def save(self, commit=True):
+        for index, heading in enumerate(self.headings):
+            column_field_name = self._field_key(index)
+            if cleaned_data.get(column_field_name, '') == 'email':
+                break
+        else:
+            email_column_required = ValidationError(
+                gettext('At least one column should map to "Email address" field.'),
+                code='email_column_required'
+            )
+            self.add_error(None, email_column_required)
+
+        return cleaned_data
+
+    def save(self, commit: bool = True) -> SubscriberImport:
+        """
+        Saves the form instance and place the imported CSV file in a queue to
+        be processed.
+
+        Please note that if the save method is called with commit = False, the
+        queue() method must be called manually after the object is finally
+        saved.
+
+        Also note that the queue() method will only have effect if the object
+        status is equal to ImportStatus.QUEUED.
+
+        :param commit: Flag to determine if the object will be saved or not.
+        :return: SubscriberImport instance saved by the form
+        """
         subscriber_import: SubscriberImport = super().save(commit=False)
-        submit = self.cleaned_data.get('submit')
 
+        mapping = dict()
+        for index, heading in enumerate(self.headings):
+            column_field_name = self._field_key(index)
+            value = self.cleaned_data.get(column_field_name, '')
+            if value:
+                mapping[index] = value
+
+        subscriber_import.set_columns_mapping(mapping)
+
+        submit = self.cleaned_data.get('submit')
         if submit == 'import':
             subscriber_import.status = ImportStatus.QUEUED
 
         if commit:
-            subscriber_import.save(update_fields=['subscriber_status', 'strategy', 'status'])
+            subscriber_import.save()
             if subscriber_import.status == ImportStatus.QUEUED:
                 self.queue()
 
         return subscriber_import
+
+    def column_mapping_fields(self) -> List[BoundField]:
+        """
+        Convenience method to be used in the front-end to render import template
+        table.
+
+        :return: List of BoundField objects that are visible and part of the
+                 columns mapping fields.
+        """
+        return [field for field in self.visible_fields() if field.name.startswith('__column_')]
+
+    def import_settings_fields(self) -> List[BoundField]:
+        """
+        Convenience method to be used in the front-end to list visible fields
+        not related to columns mapping.
+
+        :return: List of BoundField objects that are visible and not part of the
+                 columns mapping fields.
+        """
+        return [field for field in self.visible_fields() if not field.name.startswith('__column_')]
+
+    def queue(self):
+        """
+        Place the import file in a queue to be processed by a Celery task
+        """
+        import_subscribers.delay(self.instance.pk)
 
 
 class PasteImportSubscribersForm(forms.Form):
