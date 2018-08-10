@@ -290,6 +290,7 @@ class SubscriberImportView(MailingListMixin, CreateView):
     def form_valid(self, form):
         mailing_list_id = self.kwargs.get('pk')
         subscriber_import = form.save(commit=False)
+        subscriber_import.user = self.request.user
         subscriber_import.mailing_list_id = mailing_list_id
         subscriber_import.save()
         subscriber_import.set_size()
@@ -304,16 +305,12 @@ class SubscriberImportPreviewView(MailingListMixin, UpdateView):
     pk_url_kwarg = 'import_pk'
     context_object_name = 'subscriber_import'
 
-    def get_context_data(self, **kwargs):
-        kwargs['default_template'] = SubscriberImport.SUBSCRIBER_IMPORT_FIELDS
-        return super().get_context_data(**kwargs)
-
     def get_success_url(self):
         submit = self.request.POST.get('submit', 'save')
         if submit == 'import':
             return reverse('lists:import_queued', kwargs=self.kwargs)
-        else:
-            return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
+
+        return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
 @method_decorator(login_required, name='dispatch')

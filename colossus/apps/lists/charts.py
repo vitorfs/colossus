@@ -12,16 +12,16 @@ from colossus.apps.subscribers.models import Activity
 
 class Chart:
     def __init__(self, chart_type):
-        self.chart_type = chart_type
+        self._chart_type = chart_type
 
     def get_chart_type(self):
-        return self.chart_type
+        return self._chart_type
 
     def get_data(self):
-        return dict()
+        raise NotImplementedError
 
     def get_options(self):
-        return dict()
+        raise NotImplementedError
 
     def get_settings(self):
         settings = {
@@ -68,7 +68,7 @@ class SubscriptionsSummaryChart(Chart):
         # we can still show an empty bar in the bar chart for that day.
         # It's a way to keep the rendering of the bar chart consistent.
         series = OrderedDict()
-        for i in range(30):
+        for i in range(-1, 29):  # FIXME: There is an issue with current day, or something related to timezone
             date = timezone.now() - datetime.timedelta(i)
             key = date.strftime('%-d %b, %y')
             series[key] = {'sub': 0, 'unsub': 0, 'order': i}
