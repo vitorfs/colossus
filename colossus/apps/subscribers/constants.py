@@ -1,9 +1,14 @@
+"""
+This module collects constants used by subscribers' app models.
+The constants are defined in an external file (outside models module) so it's
+easier to import by other parts of the code.
+"""
 from django.utils.translation import gettext_lazy as _
 
 
-'''
-Subscriber Constants
-'''
+# ==============================================================================
+# SUBSCRIBER CONSTANTS
+# ==============================================================================
 
 
 class Status:
@@ -22,9 +27,9 @@ class Status:
     CHOICES = tuple(LABELS.items())
 
 
-'''
-Activity Constants
-'''
+# ==============================================================================
+# ACTIVITY CONSTANTS
+# ==============================================================================
 
 
 class ActivityTypes:
@@ -47,9 +52,9 @@ class ActivityTypes:
     CHOICES = tuple(LABELS.items())
 
 
-'''
-Form Template Constants
-'''
+# ==============================================================================
+# FORM TEMPLATE CONSTANTS
+# ==============================================================================
 
 
 class TemplateTypes:

@@ -1,12 +1,53 @@
 from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 
 from colossus.apps.campaigns import models
+from colossus.apps.campaigns.constants import CampaignStatus
+from colossus.apps.campaigns.models import Campaign
 from colossus.test.testcases import TestCase
 
 from . import factories
 
 
-class EmailEnableClickTrackingTests(TestCase):
+class TestCampaign(TestCase):
+    def setUp(self):
+        self.campaign = Campaign(id=1)
+
+    def test_str(self):
+        self.campaign.name = 'Test campaign'
+        self.assertEqual(str(self.campaign), 'Test campaign')
+
+    def test_get_absolute_url(self):
+        edit_url = reverse('campaigns:campaign_edit', kwargs={'pk': 1})
+        detail_url = reverse('campaigns:campaign_detail', kwargs={'pk': 1})
+        cases = (
+            (CampaignStatus.SENT, detail_url),
+            (CampaignStatus.SCHEDULED, edit_url),
+            (CampaignStatus.DRAFT, edit_url),
+            (CampaignStatus.QUEUED, detail_url),
+            (CampaignStatus.DELIVERING, detail_url),
+            (CampaignStatus.PAUSED, detail_url),
+        )
+        for case in cases:
+            self.campaign.status = case[0]
+            with self.subTest(campaign_status=self.campaign.get_status_display()):
+                self.assertEqual(self.campaign.get_absolute_url(), case[1])
+
+    def test_can_edit(self):
+        cases = (
+            (CampaignStatus.SENT, False),
+            (CampaignStatus.SCHEDULED, True),
+            (CampaignStatus.DRAFT, True),
+            (CampaignStatus.QUEUED, False),
+            (CampaignStatus.DELIVERING, False),
+            (CampaignStatus.PAUSED, False),
+        )
+        for case in cases:
+            self.campaign.status = case[0]
+            with self.subTest(campaign_status=self.campaign.get_status_display()):
+                self.assertEqual(self.campaign.can_edit, case[1])
+
+class TestEmailEnableClickTracking(TestCase):
     def setUp(self):
         self.email = factories.EmailFactory()
         self.current_site = get_current_site(request=None)

@@ -1,11 +1,12 @@
 import json
 import re
 import uuid
+from typing import Optional
 
 from django.apps import apps
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models, transaction
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils import timezone
@@ -94,7 +95,7 @@ class Campaign(models.Model):
             return True
 
     @property
-    def email(self):
+    def email(self) -> Optional['Email']:
         if not self.__cached_email and self.campaign_type == CampaignTypes.REGULAR:
             try:
                 self.__cached_email, created = Email.objects.get_or_create(campaign=self)
@@ -178,9 +179,10 @@ class Campaign(models.Model):
         self.save(update_fields=['unique_opens_count', 'total_opens_count', 'open_rate'])
         return (self.unique_opens_count, self.total_opens_count, self.open_rate)
 
-    def get_links(self):
+    def get_links(self) -> QuerySet:
         """
         A method to list campaign's links
+
         :return: All links associated with the campaign, ordered by the total number of clicks
         """
         links = Link.objects.filter(email__campaign=self).order_by('-total_clicks_count')

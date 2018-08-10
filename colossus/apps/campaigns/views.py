@@ -115,7 +115,9 @@ class CampaignReportsView(CampaignMixin, DetailView):
     extra_context = {'submenu': 'reports'}
 
     def get_context_data(self, **kwargs):
-        links = self.object.get_links().only('url', 'total_clicks_count')
+        campaign: Campaign = self.object
+
+        links = campaign.get_links().only('url', 'total_clicks_count')
 
         subscribers = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \

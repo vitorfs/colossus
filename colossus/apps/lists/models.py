@@ -1,15 +1,12 @@
 import csv
 import json
 import uuid
-from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Avg
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
-import pytz
 
 from colossus.apps.lists.constants import ImportStatus, ImportStrategies
 from colossus.apps.subscribers.constants import Status
@@ -102,35 +99,7 @@ class MailingList(models.Model):
         self.save(update_fields=['open_rate', 'click_rate'])
 
 
-def convert_date(str_date: str) -> datetime:
-    date = datetime.strptime(str_date.strip(), '%Y-%m-%d %H:%M:%S')
-    return pytz.utc.localize(date)
-
-
-def normalize_email(email: str) -> str:
-    from colossus.apps.subscribers.models import Subscriber
-    return Subscriber.objects.normalize_email(email)
-
-
-def normalize_text(text: str) -> str:
-    if text is None:
-        return ''
-    text = str(text)
-    text = ' '.join(text.split())
-    return text
-
-
 class SubscriberImport(models.Model):
-    DEFAULT_IMPORT_TEMPLATE = (
-        # Field name, Label, Convert
-        ('email', _('Email address'), normalize_email),
-        ('name', _('Name'), normalize_text),
-        ('optin_ip_address', _('Opt-in IP address'), normalize_text),
-        ('optin_date', _('Opt-in date'), convert_date),
-        ('confirm_ip_address', _('Confirm IP address'), normalize_text),
-        ('confirm_date', _('Confirm date'), convert_date),
-    )
-
     mailing_list = models.ForeignKey(
         MailingList,
         on_delete=models.CASCADE,

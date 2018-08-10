@@ -10,7 +10,7 @@ from django.forms import BoundField
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
-from colossus.apps.lists.constants import ImportStatus
+from colossus.apps.lists.constants import ImportStatus, ImportFields
 from colossus.apps.lists.tasks import import_subscribers
 from colossus.apps.subscribers.constants import ActivityTypes, Status
 from colossus.apps.subscribers.models import Subscriber
@@ -34,15 +34,11 @@ class ConfirmSubscriberImportForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        import_fields = list()
-        for field in SubscriberImport.DEFAULT_IMPORT_TEMPLATE:
-            import_fields.append((field[0], field[1]))
-
-        choices = (('', _('--- Ignore column ---'),),) + tuple(import_fields)
+        choices = (('', _('--- Ignore column ---'),),) + ImportFields.CHOICES
         self.headings = self.instance.get_headings()
         columns_mapping = self.instance.get_columns_mapping()
         if not columns_mapping:
-            columns_mapping = list(map(lambda field: field[0], import_fields))
+            columns_mapping = [choice[0] for choice in ImportFields.CHOICES]
         for index, heading in enumerate(self.headings):
             self.fields[self._field_key(index)] = forms.ChoiceField(
                 label=heading,

@@ -305,7 +305,7 @@ class SubscriberImportPreviewView(MailingListMixin, UpdateView):
     context_object_name = 'subscriber_import'
 
     def get_context_data(self, **kwargs):
-        kwargs['default_template'] = SubscriberImport.DEFAULT_IMPORT_TEMPLATE
+        kwargs['default_template'] = SubscriberImport.SUBSCRIBER_IMPORT_FIELDS
         return super().get_context_data(**kwargs)
 
     def get_success_url(self):
