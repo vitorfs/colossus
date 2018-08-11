@@ -8,6 +8,11 @@ from decouple import Csv, config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+# ==============================================================================
+# CORE SETTINGS
+# ==============================================================================
+
 SECRET_KEY = config('SECRET_KEY', default=string.ascii_letters)
 
 DEBUG = config('DEBUG', default=True, cast=bool)
@@ -35,6 +40,27 @@ INSTALLED_APPS = [
     'colossus.apps.subscribers',
 ]
 
+SITE_ID = 1
+
+ROOT_URLCONF = 'colossus.urls'
+
+WSGI_APPLICATION = 'colossus.wsgi.application'
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='sqlite:///%s' % os.path.join(BASE_DIR, 'db.sqlite3'))
+    )
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+
+# ==============================================================================
+# MIDDLEWARE SETTINGS
+# ==============================================================================
+
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -46,11 +72,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SITE_ID = 1
 
-AUTH_USER_MODEL = 'accounts.User'
-
-ROOT_URLCONF = 'colossus.urls'
+# ==============================================================================
+# TEMPLATES SETTINGS
+# ==============================================================================
 
 TEMPLATES = [
     {
@@ -71,13 +96,82 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'colossus.wsgi.application'
+# ==============================================================================
+# INTERNATIONALIZATION AND LOCALIZATION SETTINGS
+# ==============================================================================
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='sqlite:///%s' % os.path.join(BASE_DIR, 'db.sqlite3'))
-    )
-}
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
+
+TIME_ZONE = config('TIME_ZONE', default='UTC')
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+LANGUAGES = (
+    ('en-us', 'English'),
+    ('pt-br', 'Portuguese'),
+)
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'colossus/locale'),
+)
+
+
+# ==============================================================================
+# STATIC FILES SETTINGS
+# ==============================================================================
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'colossus/static'),
+]
+
+
+# ==============================================================================
+# MEDIA FILES SETTINGS
+# ==============================================================================
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/public')
+
+PRIVATE_MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/private')
+
+
+# ==============================================================================
+# EMAIL SETTINGS
+# ==============================================================================
+
+EMAIL_SUBJECT_PREFIX = '[Colossus] '
+
+SERVER_EMAIL = config('SERVER_EMAIL', default='root@localhost')
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+
+EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='root')
+
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+
+
+# ==============================================================================
+# AUTHENTICATION AND AUTHORIZATION SETTINGS
+# ==============================================================================
+
+AUTH_USER_MODEL = 'accounts.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -94,58 +188,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
-
-TIME_ZONE = config('TIME_ZONE', default='UTC')
-
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
-LANGUAGES = (
-    ('en-us', 'English'),
-    ('pt-br', 'Portuguese'),
-)
-
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'colossus/locale'),
-)
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'colossus/static'),
-]
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/public')
-
-MESSAGE_TAGS = {
-    messages_constants.DEBUG: 'alert-dark',
-    messages_constants.INFO: 'alert-primary',
-    messages_constants.SUCCESS: 'alert-success',
-    messages_constants.WARNING: 'alert-warning',
-    messages_constants.ERROR: 'alert-danger',
-}
-
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
-
-EMAIL_SUBJECT_PREFIX = '[Colossus] '
-SERVER_EMAIL = config('SERVER_EMAIL', default='root@localhost')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
-
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='root')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-
 LOGIN_REDIRECT_URL = 'campaigns:campaigns'
 
-GEOIP_PATH = os.path.join(BASE_DIR, 'bin/GeoLite2')
+
+# ==============================================================================
+# LOGGING SETTINGS
+# ==============================================================================
 
 LOGGING = {
     'version': 1,
@@ -202,9 +250,25 @@ LOGGING = {
     }
 }
 
-'''
-    Third-Party Apps Settings
-'''
+
+# ==============================================================================
+# DJANGO CONTRIB APPS SETTINGS
+# ==============================================================================
+
+MESSAGE_TAGS = {
+    messages_constants.DEBUG: 'alert-dark',
+    messages_constants.INFO: 'alert-primary',
+    messages_constants.SUCCESS: 'alert-success',
+    messages_constants.WARNING: 'alert-warning',
+    messages_constants.ERROR: 'alert-danger',
+}
+
+GEOIP_PATH = os.path.join(BASE_DIR, 'bin/GeoLite2')
+
+
+# ==============================================================================
+# THIRD-PARTY APPS SETTINGS
+# ==============================================================================
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -218,8 +282,6 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
-'''
-    First-Party Apps Settings
-'''
-
-PRIVATE_MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/private')
+# ==============================================================================
+# FIRST-PARTY APPS SETTINGS
+# ==============================================================================

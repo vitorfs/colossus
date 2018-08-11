@@ -10,7 +10,7 @@ from django.forms import BoundField
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
-from colossus.apps.lists.constants import ImportStatus, ImportFields
+from colossus.apps.lists.constants import ImportFields, ImportStatus
 from colossus.apps.lists.tasks import import_subscribers
 from colossus.apps.subscribers.constants import ActivityTypes, Status
 from colossus.apps.subscribers.models import Subscriber

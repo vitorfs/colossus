@@ -7,10 +7,11 @@ from typing import Union
 from django.db import transaction
 from django.utils import timezone
 
-import pytz
 from celery import shared_task
 
-from colossus.apps.lists.constants import ImportStatus, ImportFields, ImportStrategies
+from colossus.apps.lists.constants import (
+    ImportFields, ImportStatus, ImportStrategies,
+)
 from colossus.apps.notifications.constants import Actions
 from colossus.apps.notifications.models import Notification
 from colossus.apps.subscribers.constants import ActivityTypes
@@ -56,7 +57,7 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
 
                     with transaction.atomic():
                         for row in reader:
-                            subscriber: Subscriber = None
+                            subscriber = None
 
                             defaults = {'status': subscriber_import.subscriber_status}
                             for column_index, subscriber_field_name in columns_mapping.items():
@@ -108,7 +109,7 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
                 notification_action = Actions.IMPORT_COMPLETED
                 output_message = 'The subscriber import "%s" completed with success. %s created, %s updated, ' \
                                  '%s skipped.' % (subscriber_import_id, subscriber_created, subscriber_updated,
-                                                 subscriber_skipped)
+                                                  subscriber_skipped)
             except Exception as e:
                 import_status = ImportStatus.ERRORED
                 notification_action = Actions.IMPORT_ERRORED

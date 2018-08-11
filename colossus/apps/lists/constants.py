@@ -1,6 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 
-from colossus.apps.lists.utils import normalize_email, normalize_text, convert_date
+from colossus.apps.lists.utils import (
+    convert_date, normalize_email, normalize_text,
+)
 
 
 class ImportStatus:
@@ -64,4 +66,3 @@ class ImportFields:
     }
 
     CHOICES = tuple(LABELS.items())
-

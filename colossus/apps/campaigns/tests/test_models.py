@@ -47,6 +47,7 @@ class TestCampaign(TestCase):
             with self.subTest(campaign_status=self.campaign.get_status_display()):
                 self.assertEqual(self.campaign.can_edit, case[1])
 
+
 class TestEmailEnableClickTracking(TestCase):
     def setUp(self):
         self.email = factories.EmailFactory()
