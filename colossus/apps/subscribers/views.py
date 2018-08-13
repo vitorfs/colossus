@@ -53,11 +53,6 @@ def manage(request):
 @require_http_methods(['GET', 'POST'])
 @ratelimit(key=ip_address_key, rate='10/5m', method='POST')
 def subscribe(request, mailing_list_uuid):
-    if 'application/json' in request.META.get('HTTP_ACCEPT'):
-        pass
-    else:
-        pass
-
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
     is_limited = getattr(request, 'limited', False)
 

@@ -74,6 +74,7 @@ class Subscriber(models.Model):
         verbose_name=_('location'),
         related_name='subscribers',
     )
+    last_sent = models.DateTimeField(_('last campaign sent date'), null=True, blank=True)
     tokens = GenericRelation(Token)
 
     objects = SubscriberManager()

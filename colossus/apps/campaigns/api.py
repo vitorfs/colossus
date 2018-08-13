@@ -3,6 +3,7 @@ from smtplib import SMTPException
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 import html2text
@@ -125,6 +126,8 @@ def send_campaign(campaign):
             if sent:
                 subscriber.create_activity(ActivityTypes.SENT, email=campaign.email)
                 subscriber.update_open_and_click_rate()
+                subscriber.last_sent = timezone.now()
+                subscriber.save(update_fields=['last_sent'])
         campaign.mailing_list.update_open_and_click_rate()
         campaign.status = CampaignStatus.SENT
         campaign.save(update_fields=['status'])
