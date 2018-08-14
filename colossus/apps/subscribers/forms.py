@@ -38,6 +38,10 @@ class SubscribeForm(forms.ModelForm):
             self.add_error('email', email_validation_error)
         return cleaned_data
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        return Subscriber.objects.normalize_email(email)
+
     @transaction.atomic
     def subscribe(self, request):
         email = self.cleaned_data.get('email')
