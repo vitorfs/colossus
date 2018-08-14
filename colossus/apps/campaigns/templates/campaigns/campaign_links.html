@@ -24,7 +24,7 @@
         <tr>
           <td>{{ link.short_uuid }}</td>
           <td>
-            <a href="{{ link.url }}" rel="noopener nofollow" target="_blank">{{ link.url }}</a>
+            <a href="{{ link.url }}" rel="noopener nofollow" target="_blank" class="text-truncate">{{ link.url }}</a>
           </td>
           <td class="text-right">{{ link.index }}</td>
           <td class="text-right">{{ link.unique_clicks_count|intcomma }}</td>

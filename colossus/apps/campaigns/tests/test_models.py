@@ -4,6 +4,7 @@ from django.urls import reverse
 from colossus.apps.campaigns import models
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.campaigns.models import Campaign
+from colossus.apps.templates.tests.factories import EmailTemplateFactory
 from colossus.test.testcases import TestCase
 
 from . import factories
@@ -50,7 +51,22 @@ class TestCampaign(TestCase):
 
 class TestEmailEnableClickTracking(TestCase):
     def setUp(self):
-        self.email = factories.EmailFactory()
+        email_template_content = (
+            '<!doctype html>'
+            '<html>'
+            '<body>'
+            '{% block content %}'
+            '{% endblock %}'
+            '{% block footer %}'
+            '<div><br></div>'
+            '<div><small><a href="{{ unsub }}">Unsubscribe from this list</a>.</small></div>'
+            '{% endblock %}'
+            '</body>'
+            '</html>'
+        )
+        email_template = EmailTemplateFactory(content=email_template_content)
+        self.email = factories.EmailFactory(template=email_template)
+        self.email.set_template_content()
         self.current_site = get_current_site(request=None)
 
     def test_not_remove_unsub_markup(self):
@@ -78,7 +94,8 @@ class TestEmailEnableClickTracking(TestCase):
             ('HTTPS://WEBSITE10.COM', '<a href="%s">WEBSITE 10</a>',),  # all caps https
             ('http://127.0.0.1', '<a href="%s">IP Address</a>'),  # IP Address
             ('http://0.0.0.0:4200', '<a href="%s">IP Address with port</a>'),  # IP Address with port
-            ('https://www.amazon.com/gp/product/198302998X/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=198302998X&amp;linkCode=as2&amp;tag=vitorfs0b-20&amp;linkId=89931be04c94a3fd8c785b96746dd224', '<a href="%s">REST APIs with Django: Build powerful web APIs with Python and Django</a>')  # noqa
+            ('https://www.amazon.com/gp/product/198302998X/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=198302998X&amp;linkCode=as2&amp;tag=vitorfs0b-20&amp;linkId=89931be04c94a3fd8c785b96746dd224', '<a href="%s">REST APIs with Django: Build powerful web APIs with Python and Django</a>'),  # noqa
+            ('https://simpleisbetterthancomplex.com', '<a href="%s">https://simpleisbetterthancomplex.com</a>')
         ]
         for tag in valid_tags:
             with self.subTest(tag=tag[0]):
@@ -117,3 +134,27 @@ class TestEmailEnableClickTracking(TestCase):
         for link in created_links:
             with self.subTest(index=link.index):
                 self.assertIn(str(link.uuid), html_output)
+
+    def test_enable_click_tracking(self):
+        blocks = self.email.get_blocks()
+        content = (
+            '<div>Hello! this is a test email!</div>'
+            '<div>With links <a href="http://website.com">Website</a></div>'
+            '<div>Go to this website:&nbsp;<a href="https://simpleisbetterthancomplex.com">'
+            'https://simpleisbetterthancomplex.com</a></div>'
+            '<div>&nbsp;</div>'
+            '<div>With links <a href="http://website.com">Website</a></div>'
+            '<div>&nbsp;</div>'
+            '<div>Or maybe go to <a href="https://google.com">Google</a>.</div>'
+        )
+
+        # Duplicate the content both in content block and footer block
+        blocks['content'] = content
+        blocks['footer'] = content
+
+        self.email.set_blocks(blocks)
+        self.email.enable_click_tracking()
+        self.assertEqual(8, models.Link.objects.count())
+        self.assertEqual(4, models.Link.objects.filter(url='http://website.com').count())
+        self.assertEqual(2, models.Link.objects.filter(url='https://simpleisbetterthancomplex.com').count())
+        self.assertEqual(2, models.Link.objects.filter(url='https://google.com').count())

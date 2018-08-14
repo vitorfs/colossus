@@ -117,19 +117,19 @@ class CampaignReportsView(CampaignMixin, DetailView):
     def get_context_data(self, **kwargs):
         campaign: Campaign = self.object
 
-        links = campaign.get_links().only('url', 'total_clicks_count')
+        links = campaign.get_links().only('url', 'total_clicks_count')[:10]
 
         subscribers = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
             .values('subscriber__email') \
             .annotate(total_opens=Count('id')) \
-            .order_by('-total_opens')
+            .order_by('-total_opens')[:10]
 
         locations = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
             .values('location__country__code', 'location__country__name') \
             .annotate(total_opens=Count('id')) \
-            .order_by('-total_opens')
+            .order_by('-total_opens')[:10]
 
         kwargs.update({
             'links': links,

@@ -74,7 +74,7 @@
     <div class="card-body">
       {% for link in links %}
         <p class="card-text d-flex justify-content-between">
-          <a href="{{ link.url }}" target="_blank" rel="nofollow noopener">{{ link.url }}</a>
+          <a href="{{ link.url }}" target="_blank" rel="nofollow noopener" class="text-truncate">{{ link.url }}</a>
           <span>{{ link.total_clicks_count|intcomma }}</span>
         </p>
       {% empty %}
