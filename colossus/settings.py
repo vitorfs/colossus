@@ -272,7 +272,7 @@ GEOIP_PATH = os.path.join(BASE_DIR, 'bin/GeoLite2')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='amqp://localhost')
 
 CELERY_BEAT_SCHEDULE = {
     'send-scheduled-campaigns': {
@@ -281,6 +281,7 @@ CELERY_BEAT_SCHEDULE = {
     }
 }
 
+CELERY_TASK_ALWAYS_EAGER = config('CELERY_TASK_ALWAYS_EAGER', default=True, cast=bool)
 
 # ==============================================================================
 # FIRST-PARTY APPS SETTINGS

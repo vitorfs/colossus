@@ -22,6 +22,41 @@ Self-hosted email marketing solution
 * Track email opens and clicks
 * Reports with geolocation
 
+## Quickstart
+
+If you want to have a quick look or just run the project locally, you can get started by either forking this repository
+or just cloning it directly:
+
+```commandline
+git clone git@github.com:vitorfs/colossus.git
+```
+
+Ideally, create a [virtualenv](https://docs.python-guide.org/dev/virtualenvs/) and install the projects dependencies:
+
+```commandline
+pip install -r requirements/development.txt
+```
+
+Create a local database:
+
+```commandline
+python manage.py migrate
+```
+
+Create a user account:
+
+```commandline
+python manage.py createsuperuser
+```
+
+Start development server:
+
+```commandline
+python manage.py runserver
+```
+
+PS: Campaign scheduling will not work out-of-the-box. You need to install a message broker and [setup Celery](https://simpleisbetterthancomplex.com/tutorial/2017/08/20/how-to-use-celery-with-django.html) properly.
+
 ## Tech Specs
 
 * Python 3.6
@@ -32,7 +67,11 @@ Self-hosted email marketing solution
 * Bootstrap 4 
 * jQuery 3.3
 
-PostgreSQL and RabbitMQ are soft dependencies. Other databases (supported by Django) can easily be used as well as other message broker compatible with Celery.
+PostgreSQL and RabbitMQ are soft dependencies. Other databases (supported by Django) can easily be used as well as other 
+message broker compatible with Celery.
+
+The jQuery library is more of a Bootstrap dependency. There is very little JavaScript code in the project. For the most 
+part the code base is just plain Django and HTML templates. 
 
 Complete list of Python dependencies can be found in the requirements files.
 
