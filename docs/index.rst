@@ -5,10 +5,9 @@ Colossus's technical documentation
    :maxdepth: 2
    :caption: Contents:
 
-   install
+   quickstart
    features
    modules
-   test
 
 
 Indices and tables

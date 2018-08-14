@@ -6,14 +6,15 @@ In this page you will find an overview of features available on Colossus and a f
 Overview
 --------
 
-* Create and manage multiple mailing lists
-* Import lists from other providers (csv files or paste email addresses)
-* Create reusable email templates
-* Customize sign up pages (subscribe, unsubscribe, thank you page, etc.)
-* Default double opt-in for sign ups
-* Schedule email campaign to send on a specific date and time
-* Track email opens and clicks
-* Reports with geolocation
+* Create and manage multiple mailing lists;
+* Import lists from other providers (csv files or paste email addresses);
+* Create reusable email templates;
+* Customize sign up pages (subscribe, unsubscribe, thank you page, etc.);
+* Default double opt-in for sign ups;
+* Schedule email campaign to send on a specific date and time;
+* Track email opens and clicks;
+* Reports with geolocation;
+* Compatible with Mailgun, SendGrid, Mandrill, or any other SMTP email service.
 
 Screenshots
 -----------

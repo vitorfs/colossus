@@ -13,14 +13,15 @@ Self-hosted email marketing solution. Compatible with any SMTP email service.
 
 ## Features
 
-* Create and manage multiple mailing lists
-* Import lists from other providers (csv files or paste email addresses)
-* Create reusable email templates
-* Customize sign up pages (subscribe, unsubscribe, thank you page, etc.)
-* Default double opt-in for sign ups
-* Schedule email campaign to send on a specific date and time
-* Track email opens and clicks
-* Reports with geolocation
+* Create and manage multiple mailing lists;
+* Import lists from other providers (csv files or paste email addresses);
+* Create reusable email templates;
+* Customize sign up pages (subscribe, unsubscribe, thank you page, etc.);
+* Default double opt-in for sign ups;
+* Schedule email campaign to send on a specific date and time;
+* Track email opens and clicks;
+* Reports with geolocation;
+* Compatible with Mailgun, SendGrid, Mandrill, or any other SMTP email service.
 
 ## Quickstart
 
@@ -53,6 +54,12 @@ Start development server:
 
 ```commandline
 python manage.py runserver
+```
+
+Go to the login page on your browser:
+
+```commandline
+http://127.0.0.1:8000/accounts/login/
 ```
 
 PS: Campaign scheduling will not work out-of-the-box. You need to install a message broker and [setup Celery](https://simpleisbetterthancomplex.com/tutorial/2017/08/20/how-to-use-celery-with-django.html) properly.
