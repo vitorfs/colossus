@@ -59,14 +59,14 @@ def get_location(ip_address: str) -> Optional[City]:
              None if not found.
     """
     geoip2 = GeoIP2()
-    city: City
+    city = None
     try:
         geodata = geoip2.city(ip_address)
-        if 'country_code' in geodata:
+        if geodata.get('country_code') is not None:
             country, created = Country.objects.get_or_create(code=geodata['country_code'], defaults={
                 'name': geodata['country_name']
             })
-            if 'city' in geodata:
+            if geodata.get('city') is not None:
                 city, created = City.objects.get_or_create(name=geodata['city'], country=country)
     except AddressNotFoundError:
         pass
