@@ -1,6 +1,8 @@
+# flake8: noqa
+
 import raven
 
-from .settings import *  # noqa
+from .settings import *
 
 # ==============================================================================
 # CORE SETTINGS
