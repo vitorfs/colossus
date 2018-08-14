@@ -104,12 +104,14 @@ def send_campaign_email_test(email, recipient_list):
     site = get_current_site(request=None)
     # TODO: remove hardcoded http
     protocol = 'http'
+
     if email.campaign.mailing_list is not None:
         unsubscribe_path = reverse('subscribers:unsubscribe_manual', kwargs={
             'mailing_list_uuid': email.campaign.mailing_list.uuid
         })
     else:
         unsubscribe_path = ''
+
     unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, unsubscribe_path)
     context = get_test_email_context(unsub=unsubscribe_absolute_url)
     return send_campaign_email(email, context, recipient_list, is_test=True)
@@ -119,10 +121,13 @@ def send_campaign(campaign):
     campaign.status = CampaignStatus.DELIVERING
     campaign.save(update_fields=['status'])
     site = get_current_site(request=None)  # get site based on SITE_ID
+
     if campaign.track_clicks:
         campaign.email.enable_click_tracking()
+
     if campaign.track_opens:
         campaign.email.enable_open_tracking()
+
     with get_connection() as connection:
         for subscriber in campaign.mailing_list.get_active_subscribers():
             sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
@@ -131,6 +136,7 @@ def send_campaign(campaign):
                 subscriber.update_open_and_click_rate()
                 subscriber.last_sent = timezone.now()
                 subscriber.save(update_fields=['last_sent'])
-        campaign.mailing_list.update_open_and_click_rate()
-        campaign.status = CampaignStatus.SENT
-        campaign.save(update_fields=['status'])
+
+    campaign.mailing_list.update_open_and_click_rate()
+    campaign.status = CampaignStatus.SENT
+    campaign.save(update_fields=['status'])
