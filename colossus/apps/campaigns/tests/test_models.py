@@ -158,3 +158,8 @@ class TestEmailEnableClickTracking(TestCase):
         self.assertEqual(4, models.Link.objects.filter(url='http://website.com').count())
         self.assertEqual(2, models.Link.objects.filter(url='https://simpleisbetterthancomplex.com').count())
         self.assertEqual(2, models.Link.objects.filter(url='https://google.com').count())
+
+        # Test if the index were created correctly when there are multiple blocks
+        for index in range(8):
+            with self.subTest(index=index):
+                self.assertEqual(1, models.Link.objects.filter(index=index).count())

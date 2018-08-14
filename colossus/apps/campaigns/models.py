@@ -355,13 +355,12 @@ class Email(models.Model):
         context_dict.update({self.BASE_TEMPLATE_VAR: self.base_template})
         return self._render(self.child_template_string, context_dict)
 
-    def _enable_click_tracking(self, html, start_index=0):
+    def _enable_click_tracking(self, html, index=0):
         urls = re.findall(r'(?i)(href=["\']?)(https?://[^"\' >]+)', html)
-        index = 0
-        for index, data in enumerate(urls):
+        for data in urls:
             href = data[0]
             url = data[1]
-            link, created = Link.objects.get_or_create(email=self, url=url, index=(start_index + index))
+            link, created = Link.objects.get_or_create(email=self, url=url, index=index)
             current_site = get_current_site(request=None)
             protocol = 'http'
             domain = current_site.domain
@@ -371,7 +370,8 @@ class Email(models.Model):
             # which will be later used to replace with the subscriber's uuid.
             track_url = '%s://%s/track/click/%s/{{uuid}}/' % (protocol, domain, link.uuid)
             html = html.replace('%s%s' % (href, url), '%s%s' % (href, track_url), 1)
-        return html, (index + 1)
+            index += 1
+        return html, index
 
     def enable_click_tracking(self):
         self.template_content, index = self._enable_click_tracking(self.template_content)
