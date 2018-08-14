@@ -71,6 +71,7 @@ class Subscriber(models.Model):
         City,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         verbose_name=_('location'),
         related_name='subscribers',
     )
