@@ -12,12 +12,17 @@ BUILDDIR      = _build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile
+.PHONY: help html spelling
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  html       to make standalone HTML files"
 	@echo "  spelling   to check for typos in documentation"
 
+html:
+	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 spelling:
 	$(SPHINXBUILD) -b spelling $(SOURCEDIR) $(BUILDDIR)/spelling $(SPHINXOPTS)

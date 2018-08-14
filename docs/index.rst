@@ -6,6 +6,7 @@ Colossus's technical documentation
    :caption: Contents:
 
    install
+   features
    modules
    test
 
