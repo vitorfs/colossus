@@ -6,9 +6,11 @@ addons:
 python:
   - "3.6"
 install:
-  - pip install tox
+  - pip install tox codecov
 script:
   - tox
+after_success:
+  - codecov
 env:
   - TOXENV=test
   - TOXENV=flake8
