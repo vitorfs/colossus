@@ -1,4 +1,8 @@
 language: python
+addons:
+  apt:
+    packages:
+      - libenchant-dev
 python:
   - "3.6"
 install:
