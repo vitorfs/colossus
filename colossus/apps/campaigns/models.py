@@ -370,7 +370,7 @@ class Email(models.Model):
             # With the `{{ uuid }}` we are introducing an extra django template variable
             # which will be later used to replace with the subscriber's uuid.
             track_url = '%s://%s/track/click/%s/{{uuid}}/' % (protocol, domain, link.uuid)
-            html = re.sub(r'(?i)href=["\']?%s' % url, '%s%s' % (href, track_url), html, 1)
+            html = html.replace('%s%s' % (href, url), '%s%s' % (href, track_url), 1)
         return html, (index + 1)
 
     def enable_click_tracking(self):

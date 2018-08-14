@@ -78,6 +78,7 @@ class TestEmailEnableClickTracking(TestCase):
             ('HTTPS://WEBSITE10.COM', '<a href="%s">WEBSITE 10</a>',),  # all caps https
             ('http://127.0.0.1', '<a href="%s">IP Address</a>'),  # IP Address
             ('http://0.0.0.0:4200', '<a href="%s">IP Address with port</a>'),  # IP Address with port
+            ('https://www.amazon.com/gp/product/198302998X/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=9325&amp;creativeASIN=198302998X&amp;linkCode=as2&amp;tag=vitorfs0b-20&amp;linkId=89931be04c94a3fd8c785b96746dd224', '<a href="%s">REST APIs with Django: Build powerful web APIs with Python and Django</a>')  # noqa
         ]
         for tag in valid_tags:
             with self.subTest(tag=tag[0]):

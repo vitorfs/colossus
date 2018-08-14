@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.6"
+install:
+  - pip install tox
+script:
+  - tox
+env:
+  - TOXENV=test
+  - TOXENV=flake8
+  - TOXENV=isort
+  - TOXENV=mypy
+  - TOXENV=docs
