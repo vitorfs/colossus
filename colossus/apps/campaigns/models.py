@@ -413,7 +413,13 @@ class Email(models.Model):
 
 class Link(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    email = models.ForeignKey(Email, on_delete=models.SET_NULL, null=True, related_name='links', verbose_name=_('email'))
+    email = models.ForeignKey(
+        Email,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='links',
+        verbose_name=_('email')
+    )
     url = models.URLField(_('URL'), max_length=2048)
     unique_clicks_count = models.PositiveIntegerField(_('unique clicks count'), default=0, editable=False)
     total_clicks_count = models.PositiveIntegerField(_('total clicks count'), default=0, editable=False)
