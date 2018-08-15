@@ -413,7 +413,7 @@ class Email(models.Model):
 
 class Link(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    email = models.ForeignKey(Email, on_delete=models.CASCADE, related_name='links', verbose_name=_('email'))
+    email = models.ForeignKey(Email, on_delete=models.SET_NULL, null=True, related_name='links', verbose_name=_('email'))
     url = models.URLField(_('URL'), max_length=2048)
     unique_clicks_count = models.PositiveIntegerField(_('unique clicks count'), default=0, editable=False)
     total_clicks_count = models.PositiveIntegerField(_('total clicks count'), default=0, editable=False)
@@ -424,14 +424,51 @@ class Link(models.Model):
         verbose_name_plural = _('links')
         db_table = 'colossus_links'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.url
 
+    def delete(self, using=None, keep_parents=False):
+        """
+        Prevent links from being deleted after they are sent. Otherwise it may
+        cause broken links in the emails.
+        """
+        if self.can_delete:
+            return super().delete(using, keep_parents)
+
     @property
-    def short_uuid(self):
+    def can_delete(self) -> bool:
+        """
+        Determines if the link can be deleted or not. First check if the email
+        field is null. It should never be null unless the campaign was deleted
+        by the user and all relationship cascaded. Except for the link as it
+        should set to null. In that case, assume that the email/campaign was
+        already sent, as the links are created during the sending process.
+
+        The other case is when email is not null, so we can check the status of
+        the campaign.
+
+        :return: True if it's safe to delete the link, False otherwise.
+        """
+        if self.email is None or self.email.campaign.status != CampaignStatus.DRAFT:
+            return False
+        return True
+
+    @property
+    def short_uuid(self) -> str:
+        """
+        A short identifier to be used in the links reports.
+
+        :return: The first eight characters of the link UUID.
+        """
         return str(self.uuid)[:8]
 
     def update_clicks_count(self) -> tuple:
+        """
+        Query the database and update the link click statistics based on
+        subscribers activities.
+
+        :return: A tuple containing two values: unique clicks and total clicks
+        """
         qs = self.activities.values('subscriber_id').order_by('subscriber_id').aggregate(
             unique_count=Count('subscriber_id', distinct=True),
             total_count=Count('subscriber_id')

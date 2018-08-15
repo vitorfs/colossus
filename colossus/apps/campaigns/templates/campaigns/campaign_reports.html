@@ -69,8 +69,36 @@
 {% endblock %}
 
 {% block outercontent %}
+
+  <div class="row mb-3 text-center">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">{{ campaign.unique_opens_count|intcomma }}</h3>
+          <p class="card-text">Opened</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">{{ campaign.unique_clicks_count|intcomma }}</h3>
+          <p class="card-text">Clicked</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">{{ unsubscribed_count|intcomma }}</h3>
+          <p class="card-text">Unsubscribed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card mb-3">
-    <div class="card-header">{% trans 'Links' %}</div>
+    <div class="card-header">{% trans 'Top links clicked' %}</div>
     <div class="card-body">
       {% for link in links %}
         <p class="card-text d-flex justify-content-between">
@@ -87,7 +115,7 @@
 
   <div class="card mb-3">
     <div class="card-header">
-      {% trans 'Subscribers' %}
+      {% trans 'Subscribers with most opens' %}
     </div>
     <div class="card-body">
       {% for subscriber in subscribers %}

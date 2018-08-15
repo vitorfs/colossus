@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from django.contrib.gis.geoip2 import GeoIP2
@@ -6,6 +7,8 @@ from django.http import HttpRequest
 from geoip2.errors import AddressNotFoundError
 
 from colossus.apps.core.models import City, Country
+
+logger = logging.getLogger(__name__)
 
 
 def get_client_ip(request: HttpRequest) -> str:
@@ -69,5 +72,5 @@ def get_location(ip_address: str) -> Optional[City]:
             if geodata.get('city') is not None:
                 city, created = City.objects.get_or_create(name=geodata['city'], country=country)
     except AddressNotFoundError:
-        pass
+        logger.warning('Address not found for ip_address = "%s"' % ip_address)
     return city

@@ -1,3 +1,5 @@
+import logging
+
 from django.apps import apps
 from django.db import transaction
 
@@ -6,6 +8,8 @@ from celery import shared_task
 from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.constants import ActivityTypes
 from colossus.utils import get_location
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -21,7 +25,8 @@ def update_open_rate(subscriber_id, email_id):
             email.update_opens_count()
             email.campaign.update_opens_count_and_rate()
     except (Subscriber.DoesNotExist, Email.DoesNotExist):
-        pass  # TODO: log exceptions
+        logger.exception('An error occurred while trying to update open rates with '
+                         'subscriber_id = "%s" and email_id = "%s"' % (subscriber_id, email_id))
 
 
 @shared_task
@@ -44,7 +49,8 @@ def update_click_rate(subscriber_id, link_id):
             link.email.update_clicks_count()
             link.email.campaign.update_clicks_count_and_rate()
     except (Subscriber.DoesNotExist, Link.DoesNotExist):
-        pass  # TODO: log exceptions
+        logger.exception('An error occurred while trying to update open rates with '
+                         'subscriber_id = "%s" and link_id = "%s"' % (subscriber_id, link_id))
 
 
 @shared_task

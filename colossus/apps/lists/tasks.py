@@ -2,6 +2,7 @@
 Collection of Celery tasks for the lists app.
 """
 import csv
+import logging
 from typing import Union
 
 from django.db import transaction
@@ -18,6 +19,8 @@ from colossus.apps.subscribers.constants import ActivityTypes
 from colossus.apps.subscribers.models import Subscriber
 
 from .models import SubscriberImport
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -110,11 +113,11 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
                 output_message = 'The subscriber import "%s" completed with success. %s created, %s updated, ' \
                                  '%s skipped.' % (subscriber_import_id, subscriber_created, subscriber_updated,
                                                   subscriber_skipped)
-            except Exception as e:
+            except Exception:
                 import_status = ImportStatus.ERRORED
                 notification_action = Actions.IMPORT_ERRORED
-                output_message = 'An error occurred while importing the file "%s". ' \
-                                 'Error message: "%s"' % (subscriber_import_id, str(e))
+                output_message = 'An error occurred while importing the file "%s".' % subscriber_import_id
+                logger.exception(output_message)
             finally:
                 subscriber_import.status = import_status
                 subscriber_import.save(update_fields=['status'])

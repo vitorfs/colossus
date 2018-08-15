@@ -227,15 +227,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'django.server',
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'django.security.DisallowedHost': {
