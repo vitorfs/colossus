@@ -74,24 +74,24 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">{{ campaign.unique_opens_count|intcomma }}</h3>
-          <p class="card-text">Opened</p>
+          <h3 class="mb-1">{{ campaign.unique_opens_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Opened' %}</p>
         </div>
       </div>
     </div>
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">{{ campaign.unique_clicks_count|intcomma }}</h3>
-          <p class="card-text">Clicked</p>
+          <h3 class="mb-1">{{ campaign.unique_clicks_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Clicked' %}</p>
         </div>
       </div>
     </div>
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">{{ unsubscribed_count|intcomma }}</h3>
-          <p class="card-text">Unsubscribed</p>
+          <h3 class="mb-1">{{ unsubscribed_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Unsubscribed' %}</p>
         </div>
       </div>
     </div>

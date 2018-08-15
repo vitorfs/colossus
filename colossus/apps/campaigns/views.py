@@ -120,7 +120,7 @@ class CampaignReportsView(CampaignMixin, DetailView):
         links = campaign.get_links().only('url', 'total_clicks_count')[:10]
 
         unsubscribed_count = Activity.objects \
-            .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.UNSUBSCRIBED) \
+            .filter(campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.UNSUBSCRIBED) \
             .count()
 
         subscribers = Activity.objects \
