@@ -51,6 +51,7 @@ class TrackClickTests(TestCase):
         self.assertTrue(Activity.objects.filter(activity_type=ActivityTypes.CLICKED).exists())
 
 
+@override_settings(RATELIMIT_ENABLE=False)
 class TestPostUnsubscribeManualSuccessful(TestCase):
     def setUp(self):
         super().setUp()
@@ -84,6 +85,7 @@ class TestPostUnsubscribeManualSuccessful(TestCase):
         self.assertRedirects(self.response, url)
 
 
+@override_settings(RATELIMIT_ENABLE=False)
 class TestPostUnsubscribeManualInvalid(TestCase):
     def setUp(self):
         super().setUp()
@@ -92,7 +94,6 @@ class TestPostUnsubscribeManualInvalid(TestCase):
             'mailing_list_uuid': self.subscriber.mailing_list.uuid
         })
         self.response = self.client.post(url, data={})
-        self.subscriber.refresh_from_db()
 
     def test_status_code(self):
         self.assertEqual(self.response.status_code, 200)
@@ -105,6 +106,7 @@ class TestPostUnsubscribeManualInvalid(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
+@override_settings(RATELIMIT_ENABLE=False)
 class TestGetUnsubscribeManual(TestCase):
     def setUp(self):
         super().setUp()
@@ -130,6 +132,7 @@ class TestGetUnsubscribeManual(TestCase):
         self.assertContains(self.response, 'type="submit"', 1)
 
 
+@override_settings(RATELIMIT_ENABLE=False)
 class TestGetUnsubscribeManualCustomTemplate(TestCase):
     def setUp(self):
         super().setUp()
