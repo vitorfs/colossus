@@ -131,7 +131,8 @@ def unsubscribe_manual(request, mailing_list_uuid):
         if form.is_valid():
             form.unsubscribe(request)
             # If the unsubscribe was done manually, force send good bye email
-            # TODO: Send goodbye email
+            goodbye_email = mailing_list.get_goodbye_email_template()
+            goodbye_email.send(form.cleaned_data.get('email'))
             return redirect('subscribers:goodbye', mailing_list_uuid=mailing_list_uuid)
     else:
         form = UnsubscribeForm(mailing_list=mailing_list)

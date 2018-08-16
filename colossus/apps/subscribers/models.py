@@ -16,6 +16,9 @@ import html2text
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import City, Token
 from colossus.apps.lists.models import MailingList
+from colossus.apps.subscribers.exceptions import (
+    FormTemplateIsNotEmail, FormTemplateIsNotForm,
+)
 from colossus.apps.subscribers.tasks import (
     update_click_rate, update_open_rate,
     update_rates_after_subscriber_deletion, update_subscriber_location,
@@ -271,7 +274,7 @@ class SubscriptionFormTemplate(models.Model):
         blank=True,
         help_text=_('Instead of showing this page, redirect to URL.')
     )
-    send_email = models.BooleanField(_('send final confirmation email?'), default=True)
+    send_email = models.BooleanField(_('send final confirmation email?'), default=False)
     from_email = models.EmailField(_('from email address'))
     from_name = models.CharField(_('from name'), max_length=100, blank=True)
     subject = models.CharField(_('email subject'), max_length=150)
@@ -294,10 +297,23 @@ class SubscriptionFormTemplate(models.Model):
     def is_email(self) -> bool:
         return self.key in (TemplateKeys.CONFIRM_EMAIL, TemplateKeys.GOODBYE_EMAIL, TemplateKeys.WELCOME_EMAIL)
 
-    def reset_defaults(self):
+    @property
+    def is_form(self) -> bool:
+        return self.key in (TemplateKeys.SUBSCRIBE_FORM, TemplateKeys.UNSUBSCRIBE_FORM)
+
+    def load_defaults(self):
         self.content_html = self.get_default_content()
-        self.subject = self.get_default_subject()
-        self.save(update_fields=['content_html', 'subject'])
+        self.redirect_url = ''
+        self.send_email = False
+        if self.is_email:
+            self.subject = self.get_default_subject()
+            self.from_name = self.mailing_list.campaign_default_from_name
+            self.from_email = self.mailing_list.campaign_default_from_email
+        else:
+            self.subject = ''
+            self.from_name = ''
+            self.from_email = ''
+        self.save()
 
     def get_default_content(self):
         content_template_name = self.settings['default_content']
@@ -305,19 +321,30 @@ class SubscriptionFormTemplate(models.Model):
         return html
 
     def get_default_subject(self):
+        if not self.is_email:
+            raise FormTemplateIsNotEmail
+
         subject_template_name = self.settings['default_subject']
         subject = render_to_string(subject_template_name, {'list_name': self.mailing_list.name})
         subject = ''.join(subject.splitlines())  # remove new lines from subject
         return subject
+
+    def get_form_class(self):
+        if not self.is_form:
+            raise FormTemplateIsNotForm
+        from colossus.apps.subscribers import forms
+        form_class_name = self.settings['form']
+        form_class = getattr(forms, form_class_name)
+        return form_class
 
     def get_from_email(self):
         if self.from_name:
             return '%s <%s>' % (self.from_name, self.from_email)
         return self.from_email
 
-    def render_template(self, context: dict = None):
-        if context is None:
-            context = {}
+    def render_template(self, extra_context: dict = None, form_kwargs: dict = None):
+        if extra_context is None:
+            extra_context = dict()
 
         # TODO: remove hardcoded http
         protocol = 'http'
@@ -332,28 +359,47 @@ class SubscriptionFormTemplate(models.Model):
         })
         subscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, sub_path)
 
-        context.update({
+        context = {
             'mailing_list': self.mailing_list,
             'list_name': self.mailing_list.name,
             'content': self.content_html,
             'unsub': unsubscribe_absolute_url,
             'subscribe_link': subscribe_absolute_url,
             'contact_email': self.mailing_list.contact_email_address,
-        })
+        }
 
+        if self.is_form:
+            if form_kwargs is None:
+                form_kwargs = dict()
+
+            form_class = self.get_form_class()
+            form = form_class(mailing_list=self.mailing_list, **form_kwargs)
+            context['form'] = form
+
+        context.update(extra_context)
         content_template_name = self.settings['content_template_name']
         html = render_to_string(content_template_name, context)
         return html
 
-    def send(self, to, context: dict = None):
-        if self.is_email:
-            rich_text_message = self.render_template(context)
-            plain_text_message = html2text.html2text(rich_text_message)
-            email = EmailMultiAlternatives(
-                subject=self.subject,
-                body=plain_text_message,
-                from_email=self.get_from_email(),
-                to=to
-            )
-            email.attach_alternative(rich_text_message, 'text/html')
-            email.send()
+    def send(self, to: str, context: dict = None):
+        """
+        Send a confirm email/welcome email/goodbye email to a subscriber.
+        If the SubscriptionFormTemplate instance is not an email, it will raise
+        an FormTemplateIsNotEmail exception.
+
+        :param to: Subscriber email address
+        :param context: Extra context to be used during email rendering
+        """
+        if not self.is_email:
+            raise FormTemplateIsNotEmail
+
+        rich_text_message = self.render_template(context)
+        plain_text_message = html2text.html2text(rich_text_message)
+        email = EmailMultiAlternatives(
+            subject=self.subject,
+            body=plain_text_message,
+            from_email=self.get_from_email(),
+            to=[to]
+        )
+        email.attach_alternative(rich_text_message, 'text/html')
+        email.send()

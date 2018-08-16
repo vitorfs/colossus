@@ -2,10 +2,13 @@ from .constants import TemplateKeys, Workflows
 
 SUBSCRIPTION_FORM_TEMPLATE_SETTINGS = {
 
+    # ==========================================================================
     # SUBSCRIBE WORKFLOW
+    # ==========================================================================
 
     TemplateKeys.SUBSCRIBE_FORM: {
         'workflow': Workflows.SUBSCRIPTION,
+        'form': 'SubscribeForm',
         'icon': 'far fa-file-alt',
         'content_template_name': 'subscribers/subscribe_form.html',
         'default_content': 'subscribers/_subscribe_form_default_content.html',
@@ -42,10 +45,13 @@ SUBSCRIPTION_FORM_TEMPLATE_SETTINGS = {
         'fields': ('send_email', 'from_name', 'from_email', 'subject', 'content_html'),
     },
 
+    # ==========================================================================
     # UNSUBSCRIBE WORKFLOW
+    # ==========================================================================
 
     TemplateKeys.UNSUBSCRIBE_FORM: {
         'workflow': Workflows.UNSUBSCRIPTION,
+        'form': 'UnsubscribeForm',
         'icon': 'far fa-file-alt',
         'content_template_name': 'subscribers/unsubscribe_form.html',
         'default_content': 'subscribers/_unsubscribe_form_default_content.html',

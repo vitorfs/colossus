@@ -3,8 +3,10 @@ from django.utils import timezone
 import factory
 
 from colossus.apps.lists.tests.factories import MailingListFactory
-from colossus.apps.subscribers.constants import Status
-from colossus.apps.subscribers.models import Activity, Subscriber
+from colossus.apps.subscribers.constants import Status, TemplateKeys
+from colossus.apps.subscribers.models import (
+    Activity, Subscriber, SubscriptionFormTemplate,
+)
 
 
 class SubscriberFactory(factory.DjangoModelFactory):
@@ -25,3 +27,12 @@ class ActivityFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Activity
+
+
+class SubscriptionFormTemplateFactory(factory.DjangoModelFactory):
+    key = TemplateKeys.SUBSCRIBE_FORM
+    mailing_list = factory.SubFactory(MailingListFactory)
+
+    class Meta:
+        model = SubscriptionFormTemplate
+        django_get_or_create = ('key',)

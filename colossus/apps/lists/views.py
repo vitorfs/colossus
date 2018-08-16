@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.forms import modelform_factory
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext, gettext_lazy as _
@@ -245,42 +245,23 @@ class SubscriptionFormTemplateUpdateView(FormTemplateMixin, MailingListMixin, Up
 class ResetFormTemplateView(FormTemplateMixin, MailingListMixin, View):
     def post(self, request: HttpRequest, pk: int, form_key: str):
         form_template = self.get_object()
-        form_template.reset_defaults()
+        form_template.load_defaults()
         messages.success(request, gettext('Default template restored with success!'))
         return redirect('lists:edit_form_template', pk=pk, form_key=form_key)
 
 
 @method_decorator(login_required, name='dispatch')
 class PreviewFormTemplateView(FormTemplateMixin, MailingListMixin, View):
-    def render_to_response(self, request, content):
-        template_name = self.form_template.settings['content_template_name']
-        context = {
-            'mailing_list': self.mailing_list,
-            'list_name': self.mailing_list.name,
-            'contact_email': self.mailing_list.contact_email_address,
-            'unsub': '#',
-            'confirm_link': '#',
-            'subscribe_link': '#',
-            'preview': True,
-            'content': content
-        }
-        if self.form_template.key == TemplateKeys.SUBSCRIBE_FORM:
-            from colossus.apps.subscribers.forms import SubscribeForm
-            context['form'] = SubscribeForm(mailing_list=self.mailing_list)
-        elif self.form_template.key == TemplateKeys.UNSUBSCRIBE_FORM:
-            from colossus.apps.subscribers.forms import UnsubscribeForm
-            context['form'] = UnsubscribeForm(mailing_list=self.mailing_list)
-        return render(request, template_name, context)
-
     def post(self, request, pk, form_key):
         self.form_template = self.get_object()
         content = request.POST.get('content_html')
-        return self.render_to_response(request, content)
+        html = self.form_template.render_template({'content': content, 'preview': True})
+        return HttpResponse(html)
 
     def get(self, request, pk, form_key):
         self.form_template = self.get_object()
-        content = self.form_template.content_html
-        return self.render_to_response(request, content)
+        html = self.form_template.render_template({'preview': True})
+        return HttpResponse(html)
 
 
 @method_decorator(login_required, name='dispatch')

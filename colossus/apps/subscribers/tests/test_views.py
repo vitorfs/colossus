@@ -1,8 +1,11 @@
+from django.core import mail
 from django.test import override_settings
 from django.urls import reverse
 
 from colossus.apps.campaigns.tests.factories import EmailFactory, LinkFactory
-from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.apps.lists.tests.factories import MailingListFactory
+from colossus.apps.subscribers.constants import ActivityTypes, Status
+from colossus.apps.subscribers.forms import UnsubscribeForm
 from colossus.apps.subscribers.models import Activity
 from colossus.test.testcases import TestCase
 
@@ -46,3 +49,101 @@ class TrackClickTests(TestCase):
 
     def test_subscriber_clicked_link(self):
         self.assertTrue(Activity.objects.filter(activity_type=ActivityTypes.CLICKED).exists())
+
+
+class TestPostUnsubscribeManualSuccessful(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.subscriber = SubscriberFactory(status=Status.SUBSCRIBED)
+        self.url = reverse('subscribers:unsubscribe_manual', kwargs={
+            'mailing_list_uuid': self.subscriber.mailing_list.uuid
+        })
+        self.response = self.client.post(self.url, data={
+            'email': self.subscriber.email
+        })
+        self.subscriber.refresh_from_db()
+
+    def test_unsubscribed(self):
+        self.assertEqual(self.subscriber.status, Status.UNSUBSCRIBED)
+
+    def test_goodbye_email_sent(self):
+        """
+        Test if the goodbye email is sent.
+        The goodbye email should be sent even if it's disabled for cases where
+        the unsubscription came from the manual unsubscribe.
+        """
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual([self.subscriber.email], email.to)
+        self.assertEqual('You are now unsubscribed', email.subject)
+
+    def test_redirect(self):
+        url = reverse('subscribers:goodbye', kwargs={
+            'mailing_list_uuid': self.subscriber.mailing_list.uuid
+        })
+        self.assertRedirects(self.response, url)
+
+
+class TestPostUnsubscribeManualInvalid(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.subscriber = SubscriberFactory(status=Status.SUBSCRIBED)
+        url = reverse('subscribers:unsubscribe_manual', kwargs={
+            'mailing_list_uuid': self.subscriber.mailing_list.uuid
+        })
+        self.response = self.client.post(url, data={})
+        self.subscriber.refresh_from_db()
+
+    def test_status_code(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_form_errors(self):
+        form = self.response.context.get('form')
+        self.assertTrue(form.errors)
+
+    def test_no_email_sent(self):
+        self.assertEqual(len(mail.outbox), 0)
+
+
+class TestGetUnsubscribeManual(TestCase):
+    def setUp(self):
+        super().setUp()
+        mailing_list = MailingListFactory()
+        url = reverse('subscribers:unsubscribe_manual', kwargs={
+            'mailing_list_uuid': mailing_list.uuid
+        })
+        self.response = self.client.get(url)
+
+    def test_status_code(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_csrf(self):
+        self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, UnsubscribeForm)
+
+    def test_form_inputs(self):
+        self.assertContains(self.response, '<input', 2)
+        self.assertContains(self.response, 'type="email"', 1)
+        self.assertContains(self.response, 'type="submit"', 1)
+
+
+class TestGetUnsubscribeManualCustomTemplate(TestCase):
+    def setUp(self):
+        super().setUp()
+        mailing_list = MailingListFactory()
+        url = reverse('subscribers:unsubscribe_manual', kwargs={
+            'mailing_list_uuid': mailing_list.uuid
+        })
+        form_template = mailing_list.get_unsubscribe_form_template()
+        form_template.content_html = '__customtemplate__'
+        form_template.save()
+        self.response = self.client.get(url)
+
+    def test_status_code(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_custom_template(self):
+        self.assertContains(self.response, '__customtemplate__')
