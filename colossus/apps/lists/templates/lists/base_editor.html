@@ -25,30 +25,30 @@
           <div class="dropdown-menu" aria-labelledby="dropdownMenuFormResponsesEmails">
             <h6 class="dropdown-header">{% trans 'Subscribe' %}</h6>
             <a class="dropdown-item{% if form_template.key == template_keys.SUBSCRIBE_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.SUBSCRIBE_PAGE %}">
-              {% dict template_keys.LABELS template_keys.SUBSCRIBE_PAGE %}
+              {{ template_keys.LABELS|get:template_keys.SUBSCRIBE_PAGE }}
             </a>
             <a class="dropdown-item{% if form_template.key == template_keys.SUBSCRIBE_THANK_YOU_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.SUBSCRIBE_THANK_YOU_PAGE %}">
-              {% dict template_keys.LABELS template_keys.SUBSCRIBE_THANK_YOU_PAGE %}
+              {{ template_keys.LABELS|get:template_keys.SUBSCRIBE_THANK_YOU_PAGE }}
             </a>
             <a class="dropdown-item{% if form_template.key == template_keys.CONFIRM_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.CONFIRM_EMAIL %}">
-              {% dict template_keys.LABELS template_keys.CONFIRM_EMAIL %}
+              {{ template_keys.LABELS|get:template_keys.CONFIRM_EMAIL }}
             </a>
             <a class="dropdown-item{% if form_template.key == template_keys.CONFIRM_THANK_YOU_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.CONFIRM_THANK_YOU_PAGE %}">
-              {% dict template_keys.LABELS template_keys.CONFIRM_THANK_YOU_PAGE %}
+              {{ template_keys.LABELS|get:template_keys.CONFIRM_THANK_YOU_PAGE }}
             </a>
             <a class="dropdown-item{% if form_template.key == template_keys.WELCOME_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.WELCOME_EMAIL %}">
-              {% dict template_keys.LABELS template_keys.WELCOME_EMAIL %}
+              {{ template_keys.LABELS|get:template_keys.WELCOME_EMAIL }}
             </a>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">{% trans 'Unsubscribe' %}</h6>
             <a class="dropdown-item{% if form_template.key == template_keys.UNSUBSCRIBE_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.UNSUBSCRIBE_PAGE %}">
-              {% dict template_keys.LABELS template_keys.UNSUBSCRIBE_PAGE %}
+              {{ template_keys.LABELS|get:template_keys.UNSUBSCRIBE_PAGE }}
             </a>
             <a class="dropdown-item{% if form_template.key == template_keys.UNSUBSCRIBE_SUCCESS_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.UNSUBSCRIBE_SUCCESS_PAGE %}">
-              {% dict template_keys.LABELS template_keys.UNSUBSCRIBE_SUCCESS_PAGE %}
+              {{ template_keys.LABELS|get:template_keys.UNSUBSCRIBE_SUCCESS_PAGE }}
             </a>
             <a class="dropdown-item{% if form_template.key == template_keys.GOODBYE_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.GOODBYE_EMAIL %}">
-              {% dict template_keys.LABELS template_keys.GOODBYE_EMAIL %}
+              {{ template_keys.LABELS|get:template_keys.GOODBYE_EMAIL }}
             </a>
           </div>
         </div>

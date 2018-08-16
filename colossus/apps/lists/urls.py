@@ -17,7 +17,6 @@ urlpatterns = [
     path('<int:pk>/subscribers/import/csv/', views.SubscriberImportView.as_view(), name='csv_import_subscribers'),
     path('<int:pk>/subscribers/import/csv/<int:import_pk>/', views.SubscriberImportPreviewView.as_view(), name='import_preview'),
     path('<int:pk>/subscribers/import/csv/<int:import_pk>/queued/', views.SubscriberImportQueuedView.as_view(), name='import_queued'),
-    path('<int:pk>/subscribers/import/csv/<int:import_pk>/mapping/', views.ColumnsMappingView.as_view(), name='columns_mapping'),
     path('<int:pk>/subscribers/import/csv/<int:import_pk>/download/', views.download_subscriber_import, name='download_subscriber_import'),
     path('<int:pk>/subscribers/import/csv/<int:import_pk>/delete/', views.SubscriberImportDeleteView.as_view(), name='delete_subscriber_import'),
     path('<int:pk>/subscribers/import/paste/', views.PasteEmailsImportSubscribersView.as_view(), name='paste_import_subscribers'),

@@ -1,0 +1,21 @@
+{% load i18n %}{% autoescape off %}<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <!--[if gte mso 15]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans 'Subscription Confirmed' %}</title>
+</head>
+<body>
+  <div>{% trans 'Your subscription to our list has been confirmed.' %}</div>
+  <div><br></div>
+  <div>{% trans 'If at any time you wish to stop receiving our emails, you can unsubscribe using the link below:' %}</div>
+  <div><br></div>
+  <div>
+    <a href="{{ unsub }}">{% trans 'Unsubscribe' %}</a>
+  </div>
+  <div><br></div>
+  <div>{% blocktrans %}You may also contact us at: {{ contact_email }}{% endblocktrans %}</div>
+</body>
+</html>{% endautoescape %}

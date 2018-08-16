@@ -12,15 +12,20 @@
       $("#previewEmailContainer .card-body").css("height", editorHeight + "px");
       */
 
-      $("#div_id_content_html").hide();
-      $(".editor-container").show()
+      var $contentHtml = $("#div_id_content_html");
+      $contentHtml.hide();
+      $(".editor-container").show();
 
       var editor = ace.edit("editor");
       editor.setTheme("ace/theme/clouds");
       editor.getSession().setMode("ace/mode/html");
       editor.getSession().setUseWrapMode(true);
 
-      $("#designEmailForm").submit(function () {
+      editor.on("change", function (e) {
+        $contentHtml.val(editor.getValue());
+      });
+
+      $("#templateForm").submit(function () {
         $("#id_content").val(editor.getValue());
         return true;
       });
@@ -60,7 +65,7 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post" class="mb-3" novalidate>
+  <form method="post" id="templateForm" class="mb-3" novalidate>
     {% csrf_token %}
     <div class="row">
       <div class="col-lg-6">

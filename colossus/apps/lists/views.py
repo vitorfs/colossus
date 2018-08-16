@@ -5,7 +5,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView, View,
@@ -18,7 +18,7 @@ from colossus.apps.subscribers.models import (
 
 from .charts import SubscriptionsSummaryChart
 from .forms import (
-    ColumnsMappingForm, ConfirmSubscriberImportForm, MailingListSMTPForm,
+    ConfirmSubscriberImportForm, MailingListSMTPForm,
     PasteImportSubscribersForm,
 )
 from .mixins import MailingListMixin
@@ -219,8 +219,10 @@ class FormTemplateMixin:
 @method_decorator(login_required, name='dispatch')
 class SubscriptionFormTemplateUpdateView(FormTemplateMixin, MailingListMixin, UpdateView):
     model = SubscriptionFormTemplate
-    template_name = 'lists/edit_form_template.html'
     context_object_name = 'form_template'
+
+    def get_success_url(self):
+        return reverse('lists:edit_form_template', kwargs=self.kwargs)
 
     def get_context_data(self, **kwargs):
         kwargs['template_keys'] = TemplateKeys
@@ -250,7 +252,9 @@ class PreviewFormTemplateView(FormTemplateMixin, MailingListMixin, View):
             'mailing_list': self.mailing_list,
             'contact_email': self.mailing_list.contact_email_address,
             'unsub': '#',
-            'confirm_link': '#'
+            'confirm_link': '#',
+            'preview': True,
+            'content': form_template.content_html
         }
         if form_key == TemplateKeys.SUBSCRIBE_PAGE:
             from colossus.apps.subscribers.forms import SubscribeForm
@@ -309,7 +313,6 @@ class SubscriberImportPreviewView(MailingListMixin, UpdateView):
         submit = self.request.POST.get('submit', 'save')
         if submit == 'import':
             return reverse('lists:import_queued', kwargs=self.kwargs)
-
         return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
@@ -319,18 +322,6 @@ class SubscriberImportQueuedView(MailingListMixin, DetailView):
     template_name = 'lists/import_queued.html'
     pk_url_kwarg = 'import_pk'
     context_object_name = 'subscriber_import'
-
-
-@method_decorator(login_required, name='dispatch')
-class ColumnsMappingView(MailingListMixin, UpdateView):
-    model = SubscriberImport
-    form_class = ColumnsMappingForm
-    template_name = 'lists/columns_mapping.html'
-    pk_url_kwarg = 'import_pk'
-    context_object_name = 'subscriber_import'
-
-    def get_success_url(self):
-        return reverse('lists:columns_mapping', kwargs=self.kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -351,7 +342,8 @@ def charts_subscriptions_summary(request, pk):
         chart = SubscriptionsSummaryChart(mailing_list)
         return JsonResponse({'chart': chart.get_settings()})
     except MailingList.DoesNotExist:
-        return JsonResponse(status_code=400)  # bad request status code
+        # bad request status code
+        return JsonResponse(data={'message': gettext('Invalid mailing list id.')}, status_code=400)
 
 
 @login_required

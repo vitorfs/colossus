@@ -57,6 +57,7 @@ def subscribe(request, mailing_list_uuid):
     is_limited = getattr(request, 'limited', False)
 
     if is_limited:
+        logger.warning('IP address "%s" exceeded rate limit 10/5m.' % get_client_ip(request))
         messages.warning(request, _('Too many requests. Your IP address is blocked for 5 minutes.'))
 
     if request.method == 'POST' and not is_limited:

@@ -283,6 +283,6 @@ class SubscriptionFormTemplate(models.Model):
         return SUBSCRIPTION_FORM_TEMPLATE_SETTINGS[self.key]
 
     def get_default_content(self):
-        content_template_name = self.settings['content_template_name']
+        content_template_name = self.settings['default_content']
         html = render_to_string(content_template_name, {'mailing_list': self.mailing_list})
         return html
