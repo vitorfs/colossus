@@ -107,10 +107,7 @@ class MailingList(models.Model):
     def _get_form_template(self, form_template_key: str):
         form_template, created = self.forms_templates.get_or_create(key=form_template_key)
         if created:
-            form_template.content_html = form_template.get_default_content()
-            if form_template.is_email:
-                form_template.subject = form_template.get_default_subject()
-            form_template.save()
+            form_template.load_defaults()
         return form_template
 
     def get_subscribe_form_template(self):

@@ -57,7 +57,7 @@ def subscribe(request, mailing_list_uuid):
     is_limited = getattr(request, 'limited', False)
 
     if is_limited:
-        logger.warning('IP address "%s" exceeded rate limit 10/5m.' % get_client_ip(request))
+        logger.warning('IP address "%s" exceeded rate limit 10/5m for subscribe view.' % get_client_ip(request))
         messages.warning(request, _('Too many requests. Your IP address is blocked for 5 minutes.'))
 
     if request.method == 'POST' and not is_limited:
@@ -125,6 +125,7 @@ def unsubscribe_manual(request, mailing_list_uuid):
 
     if is_limited:
         messages.warning(request, _('Too many requests. Your IP address is blocked for 5 minutes.'))
+        logger.warning('IP address "%s" exceeded rate limit 5/5m for unsubscribe view.' % get_client_ip(request))
 
     if request.method == 'POST' and not is_limited:
         form = UnsubscribeForm(mailing_list=mailing_list, data=request.POST)
