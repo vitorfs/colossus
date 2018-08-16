@@ -4,8 +4,19 @@
 
 {% load colossus i18n %}
 
+{% block javascript %}
+  <script>
+    $(function () {
+      $(".js-save-form").click(function () {
+        $("form").submit();
+      });
+    });
+  </script>
+{% endblock %}
+
 {% block main %}
   <div class="container-fluid">
+    {% include 'includes/messages.html' %}
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
@@ -20,41 +31,25 @@
         <h6 class="mb-0 mr-3">{% trans 'Forms and response emails' %}</h6>
         <div class="dropdown">
           <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuFormResponsesEmails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="{{ subscription_forms|get:form_template.key|get:'icon' }} mr-1"></i>
             {{ form_template.get_key_display }}
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuFormResponsesEmails">
-            <h6 class="dropdown-header">{% trans 'Subscribe' %}</h6>
-            <a class="dropdown-item{% if form_template.key == template_keys.SUBSCRIBE_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.SUBSCRIBE_PAGE %}">
-              {% dict template_keys.LABELS template_keys.SUBSCRIBE_PAGE %}
-            </a>
-            <a class="dropdown-item{% if form_template.key == template_keys.SUBSCRIBE_THANK_YOU_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.SUBSCRIBE_THANK_YOU_PAGE %}">
-              {% dict template_keys.LABELS template_keys.SUBSCRIBE_THANK_YOU_PAGE %}
-            </a>
-            <a class="dropdown-item{% if form_template.key == template_keys.CONFIRM_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.CONFIRM_EMAIL %}">
-              {% dict template_keys.LABELS template_keys.CONFIRM_EMAIL %}
-            </a>
-            <a class="dropdown-item{% if form_template.key == template_keys.CONFIRM_THANK_YOU_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.CONFIRM_THANK_YOU_PAGE %}">
-              {% dict template_keys.LABELS template_keys.CONFIRM_THANK_YOU_PAGE %}
-            </a>
-            <a class="dropdown-item{% if form_template.key == template_keys.WELCOME_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.WELCOME_EMAIL %}">
-              {% dict template_keys.LABELS template_keys.WELCOME_EMAIL %}
-            </a>
-            <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">{% trans 'Unsubscribe' %}</h6>
-            <a class="dropdown-item{% if form_template.key == template_keys.UNSUBSCRIBE_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.UNSUBSCRIBE_PAGE %}">
-              {% dict template_keys.LABELS template_keys.UNSUBSCRIBE_PAGE %}
-            </a>
-            <a class="dropdown-item{% if form_template.key == template_keys.UNSUBSCRIBE_SUCCESS_PAGE %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.UNSUBSCRIBE_SUCCESS_PAGE %}">
-              {% dict template_keys.LABELS template_keys.UNSUBSCRIBE_SUCCESS_PAGE %}
-            </a>
-            <a class="dropdown-item{% if form_template.key == template_keys.GOODBYE_EMAIL %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk template_keys.GOODBYE_EMAIL %}">
-              {% dict template_keys.LABELS template_keys.GOODBYE_EMAIL %}
-            </a>
+            {% for key, options in subscription_forms.items %}
+              {% ifchanged %}<h6 class="dropdown-header">{{ workflows.LABELS|get:options.workflow }}</h6>{% endifchanged %}
+              <a class="dropdown-item{% if form_template.key == key %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk key %}">
+                <i class="{{ options.icon }}{% if form_template.key != key %} text-muted{% endif %} mr-1"></i>
+                {{ template_keys.LABELS|get:key }}
+              </a>
+            {% endfor %}
           </div>
         </div>
       </div>
       <nav>
-        <a href="" class="btn btn-link" role="button">{% trans 'Reset defaults' %}</a>
+        <form action="{% url 'lists:reset_form_template' mailing_list.pk form_template.key %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link">{% trans 'Reset defaults' %}</button>
+        </form>
         <a href="{% url 'lists:customize_design' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Customize base design' %}</a>
         <button type="button" class="btn btn-success js-save-form">{% trans 'Save changes' %}</button>
       </nav>

@@ -1,9 +1,0 @@
-{% load i18n %}{% autoescape off %}
-{% blocktrans %}Please confirm your subscription to {{ list_name }}:{% endblocktrans %}
-
-{{ confirm_link }}
-
-{% trans "If you received this email by mistake, simply delete it. You won't be subscribed if you don't click the confirmation link above." %}
-
-{% blocktrans %}For questions about this list, please contact: {{ contact_email }}{% endblocktrans %}
-{% endautoescape %}

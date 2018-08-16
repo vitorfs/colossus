@@ -1,24 +1,28 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.forms import modelform_factory
-from django.http import Http404, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, TemplateView,
     UpdateView, View,
 )
 
-from colossus.apps.subscribers.constants import Status, TemplateKeys
+from colossus.apps.subscribers.constants import Status, TemplateKeys, Workflows
 from colossus.apps.subscribers.models import (
     Subscriber, SubscriptionFormTemplate,
+)
+from colossus.apps.subscribers.subscription_settings import (
+    SUBSCRIPTION_FORM_TEMPLATE_SETTINGS,
 )
 
 from .charts import SubscriptionsSummaryChart
 from .forms import (
-    ColumnsMappingForm, ConfirmSubscriberImportForm, MailingListSMTPForm,
+    ConfirmSubscriberImportForm, MailingListSMTPForm,
     PasteImportSubscribersForm,
 )
 from .mixins import MailingListMixin
@@ -219,46 +223,45 @@ class FormTemplateMixin:
 @method_decorator(login_required, name='dispatch')
 class SubscriptionFormTemplateUpdateView(FormTemplateMixin, MailingListMixin, UpdateView):
     model = SubscriptionFormTemplate
-    template_name = 'lists/edit_form_template.html'
     context_object_name = 'form_template'
+    template_name = 'lists/form_template_form.html'
+
+    def get_success_url(self):
+        return reverse('lists:edit_form_template', kwargs=self.kwargs)
 
     def get_context_data(self, **kwargs):
         kwargs['template_keys'] = TemplateKeys
+        kwargs['workflows'] = Workflows
+        kwargs['subscription_forms'] = SUBSCRIPTION_FORM_TEMPLATE_SETTINGS
         return super().get_context_data(**kwargs)
-
-    def get_template_names(self):
-        return self.object.settings['admin_template_name']
 
     def get_form_class(self):
         fields = self.object.settings['fields']
         form_class = modelform_factory(self.model, fields=fields)
         return form_class
 
-    def get_initial(self):
-        initial = {
-            'content_html': self.object.get_default_content()
-        }
-        return initial
+
+@method_decorator(login_required, name='dispatch')
+class ResetFormTemplateView(FormTemplateMixin, MailingListMixin, View):
+    def post(self, request: HttpRequest, pk: int, form_key: str):
+        form_template = self.get_object()
+        form_template.load_defaults()
+        messages.success(request, gettext('Default template restored with success!'))
+        return redirect('lists:edit_form_template', pk=pk, form_key=form_key)
 
 
 @method_decorator(login_required, name='dispatch')
 class PreviewFormTemplateView(FormTemplateMixin, MailingListMixin, View):
+    def post(self, request, pk, form_key):
+        self.form_template = self.get_object()
+        content = request.POST.get('content_html')
+        html = self.form_template.render_template({'content': content, 'preview': True})
+        return HttpResponse(html)
+
     def get(self, request, pk, form_key):
-        form_template = self.get_object()
-        template_name = form_template.settings['content_template_name']
-        context = {
-            'mailing_list': self.mailing_list,
-            'contact_email': self.mailing_list.contact_email_address,
-            'unsub': '#',
-            'confirm_link': '#'
-        }
-        if form_key == TemplateKeys.SUBSCRIBE_PAGE:
-            from colossus.apps.subscribers.forms import SubscribeForm
-            context['form'] = SubscribeForm(mailing_list=self.mailing_list)
-        elif form_key == TemplateKeys.UNSUBSCRIBE_PAGE:
-            from colossus.apps.subscribers.forms import UnsubscribeForm
-            context['form'] = UnsubscribeForm(mailing_list=self.mailing_list)
-        return render(request, template_name, context)
+        self.form_template = self.get_object()
+        html = self.form_template.render_template({'preview': True})
+        return HttpResponse(html)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -309,7 +312,6 @@ class SubscriberImportPreviewView(MailingListMixin, UpdateView):
         submit = self.request.POST.get('submit', 'save')
         if submit == 'import':
             return reverse('lists:import_queued', kwargs=self.kwargs)
-
         return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
@@ -319,18 +321,6 @@ class SubscriberImportQueuedView(MailingListMixin, DetailView):
     template_name = 'lists/import_queued.html'
     pk_url_kwarg = 'import_pk'
     context_object_name = 'subscriber_import'
-
-
-@method_decorator(login_required, name='dispatch')
-class ColumnsMappingView(MailingListMixin, UpdateView):
-    model = SubscriberImport
-    form_class = ColumnsMappingForm
-    template_name = 'lists/columns_mapping.html'
-    pk_url_kwarg = 'import_pk'
-    context_object_name = 'subscriber_import'
-
-    def get_success_url(self):
-        return reverse('lists:columns_mapping', kwargs=self.kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -351,7 +341,8 @@ def charts_subscriptions_summary(request, pk):
         chart = SubscriptionsSummaryChart(mailing_list)
         return JsonResponse({'chart': chart.get_settings()})
     except MailingList.DoesNotExist:
-        return JsonResponse(status_code=400)  # bad request status code
+        # bad request status code
+        return JsonResponse(data={'message': gettext('Invalid mailing list id.')}, status_code=400)
 
 
 @login_required

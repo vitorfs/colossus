@@ -3,7 +3,9 @@
 {% load crispy_forms_tags i18n %}
 
 {% block content %}
-  <h5 class="card-title">{% trans 'Subscribe to our mailing list' %}</h5>
+  <div{% if preview %} class="preview-box"{% endif %}>
+    {{ content|safe }}
+  </div>
   <form method="post">
     {{ form|crispy }}
     <button type="submit" class="btn btn-dark">{% trans 'Subscribe to list' %}</button>

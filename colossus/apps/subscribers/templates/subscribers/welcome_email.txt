@@ -1,9 +1,0 @@
-{% load i18n %}{% autoescape off %}
-{% trans 'Your subscription to our list has been confirmed.' %}
-
-{% trans 'If at any time you wish to stop receiving our emails, you can unsubscribe using the link below:' %}
-
-{{ unsub }}
-
-{% blocktrans %}You may also contact us at: {{ contact_email }}{% endblocktrans %}
-{% endautoescape %}

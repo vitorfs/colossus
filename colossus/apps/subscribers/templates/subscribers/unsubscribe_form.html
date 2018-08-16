@@ -3,7 +3,9 @@
 {% load crispy_forms_tags i18n %}
 
 {% block content %}
-  <h5 class="card-title">{% trans 'Enter your email address to unsubscribe' %}</h5>
+  <div{% if preview %} class="preview-box"{% endif %}>
+    {{ content|safe }}
+  </div>
   <form method="post">
     {% csrf_token %}
     {{ form|crispy }}

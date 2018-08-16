@@ -3,7 +3,8 @@
 {% load i18n %}
 
 {% block content %}
-  <h3 class="card-title">{% trans 'Subscription Confirmed' %}</h3>
-  <p>{% trans 'Thank you for subscribing to our list!' %}</p>
+  <div{% if preview %} class="preview-box"{% endif %}>
+    {{ content|safe }}
+  </div>
   <a href="{{ mailing_list.website_url }}" class="btn btn-dark" role="button">← {% trans 'Return to our website' %}</a>
 {% endblock %}

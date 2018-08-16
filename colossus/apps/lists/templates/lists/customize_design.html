@@ -38,7 +38,7 @@
 
 
       var $customHeader = $("#id_forms_custom_header");
-      $customHeader.after("<div id='htmlEditor'>" +  $customHeader.val() + "</div>");
+      $customHeader.after("<div id='htmlEditor'>" +  $customHeader.html() + "</div>");
       $customHeader.hide();
 
       var htmlEditor = ace.edit("htmlEditor");

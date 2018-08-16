@@ -1,0 +1,106 @@
+{% extends 'lists/base_editor.html' %}
+
+{% load crispy_forms_tags static i18n %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script src="{% static 'vendor/jquery.are-you-sure.js' %}"></script>
+  <script src="{% static 'vendor/ace/1.3.3/ace.js' %}"></script>
+  <script>
+    $(function () {
+      $("#div_id_content_html").hide();
+      $(".editor-container").show();
+
+      var $contentHtml = $("#id_content_html");
+      var $form = $("#templateForm");
+      var $iframe = $("#previewIframe");
+      var updatePreview = false;
+      var processingRequest = false;
+      var editor = ace.edit("editor");
+
+      var editorHeight = $(window).height() - $form.offset()['top'] - 19;
+      if (editorHeight < 400) {
+        editorHeight = 400;
+      }
+      var cssHeight = editorHeight + "px";
+      $("#editor").css("height", cssHeight);
+      $("#previewContainer .card-body").css("height", cssHeight);
+      $iframe.css("height", cssHeight);
+
+      editor.setTheme("ace/theme/clouds");
+      editor.getSession().setMode("ace/mode/html");
+      editor.getSession().setUseWrapMode(true);
+
+      editor.on("change", function (e) {
+        $contentHtml.val(editor.getValue());
+        updatePreview = true;
+      });
+
+      setInterval(function () {
+        console.log('updatePreview = ' + updatePreview + ' | processingRequest = ' + processingRequest);
+        if (updatePreview && !processingRequest) {
+          $.ajax({
+            url: $form.attr("data-preview-url"),
+            type: $form.attr("method"),
+            data: $form.serialize(),
+            beforeSend: function () {
+              processingRequest = true;
+            },
+            success: function (data) {
+              iframeHtml = $iframe.contents().find('html').get(0);
+              iframeHtml.innerHTML = data;
+            },
+            error: function () {},
+            complete: function () {
+              updatePreview = false;
+              processingRequest = false;
+            }
+          });
+        }
+      }, 2000);  // Every two seconds
+
+      $form.submit(function () {
+        $contentHtml.val(editor.getValue());
+        return true;
+      });
+
+      $form.areYouSure({
+        message: $form.attr("data-are-you-sure-message")
+      });
+
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <form method="post"
+        id="templateForm"
+        class="mb-3"
+        novalidate
+        data-preview-url="{% url 'lists:preview_form_template' mailing_list.pk form_template.key %}"
+        data-are-you-sure-message="{% trans 'You have unsaved changes!' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-lg-6">
+        {{ form|crispy }}
+      </div>
+    </div>
+    <div class="row editor-container">
+      <div class="col-lg-6">
+        <div class="card border-primary mb-0" id="designEmailContainer">
+          <div class="card-body p-0">
+            <div id="editor" style="height:500px">{{ form.content_html.value }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-0" id="previewContainer">
+          <div class="card-body p-0">
+            <iframe src="{% url 'lists:preview_form_template' mailing_list.pk form_template.key %}" id="previewIframe" class="w-100" style="height:500px;border:0;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <noscript><button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button></noscript>
+  </form>
+{% endblock %}

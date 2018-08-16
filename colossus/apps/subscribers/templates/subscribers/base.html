@@ -9,6 +9,12 @@
     body {
       background-color: #eee;
     }
+
+    .preview-box {
+        border: 2px dashed #bbb;
+        background-color: #f9f9f9;
+    }
+
     {{ mailing_list.forms_custom_css|safe }}
   </style>
   {% block stylesheet %}
@@ -16,7 +22,11 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="text-center m-4">{% firstof mailing_list.forms_custom_header|safe mailing_list.name %}</h1>
+    {% if mailing_list.forms_custom_header %}
+      {{ mailing_list.forms_custom_header|safe }}
+    {% else %}
+      <h1 class="text-center m-4">{{ mailing_list.name }}</h1>
+    {% endif %}
     <div class="row justify-content-center">
       <div class="col-sm-10 col-md-8 col-lg-6">
         {% include 'includes/messages.html' %}
@@ -29,13 +39,5 @@
       </div>
     </div>
   </div>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-          integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-          crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
-          integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
-          crossorigin="anonymous"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from colossus.apps.lists.constants import ImportStatus, ImportStrategies
-from colossus.apps.subscribers.constants import Status
+from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.storage import PrivateMediaStorage
 
 User = get_user_model()
@@ -103,6 +103,36 @@ class MailingList(models.Model):
         self.open_rate = round(qs.get('open', 0.0), 4)
         self.click_rate = round(qs.get('click', 0.0), 4)
         self.save(update_fields=['open_rate', 'click_rate'])
+
+    def _get_form_template(self, form_template_key: str):
+        form_template, created = self.forms_templates.get_or_create(key=form_template_key)
+        if created:
+            form_template.load_defaults()
+        return form_template
+
+    def get_subscribe_form_template(self):
+        return self._get_form_template(TemplateKeys.SUBSCRIBE_FORM)
+
+    def get_subscribe_thank_you_page_template(self):
+        return self._get_form_template(TemplateKeys.SUBSCRIBE_THANK_YOU_PAGE)
+
+    def get_confirm_email_template(self):
+        return self._get_form_template(TemplateKeys.CONFIRM_EMAIL)
+
+    def get_confirm_thank_you_page_template(self):
+        return self._get_form_template(TemplateKeys.CONFIRM_THANK_YOU_PAGE)
+
+    def get_welcome_email_template(self):
+        return self._get_form_template(TemplateKeys.WELCOME_EMAIL)
+
+    def get_unsubscribe_form_template(self):
+        return self._get_form_template(TemplateKeys.UNSUBSCRIBE_FORM)
+
+    def get_unsubscribe_success_page_template(self):
+        return self._get_form_template(TemplateKeys.UNSUBSCRIBE_SUCCESS_PAGE)
+
+    def get_goodbye_email_template(self):
+        return self._get_form_template(TemplateKeys.GOODBYE_EMAIL)
 
 
 class SubscriberImport(models.Model):

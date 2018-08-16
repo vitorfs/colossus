@@ -1,12 +1,17 @@
+from django.core import mail
 from django.test import override_settings
 
 from colossus.apps.campaigns.tests.factories import EmailFactory, LinkFactory
 from colossus.apps.lists.tests.factories import MailingListFactory
-from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.apps.subscribers.constants import ActivityTypes, TemplateKeys
+from colossus.apps.subscribers.exceptions import FormTemplateIsNotEmail
 from colossus.apps.subscribers.models import Subscriber
+from colossus.apps.subscribers.subscription_settings import (
+    SUBSCRIPTION_FORM_TEMPLATE_SETTINGS,
+)
 from colossus.test.testcases import TestCase
 
-from .factories import SubscriberFactory
+from .factories import SubscriberFactory, SubscriptionFormTemplateFactory
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
@@ -361,3 +366,219 @@ class SubscriberUpdateClickRateTests(TestCase):
         self.subscriber.create_activity(ActivityTypes.SENT, email=self.email)
         self.subscriber.create_activity(ActivityTypes.CLICKED, email=self.email, link=self.link)
         self.assertEqual(0.3333, self.subscriber.update_click_rate())
+
+
+class SubscriptionFormTemplateTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        mailing_list = MailingListFactory(name='Test List')
+        self.form_template = SubscriptionFormTemplateFactory(key=TemplateKeys.SUBSCRIBE_FORM,
+                                                             mailing_list=mailing_list)
+
+    def test_str(self):
+        self.assertEqual('Subscribe form', str(self.form_template))
+
+    def test_settings(self):
+        settings = SUBSCRIPTION_FORM_TEMPLATE_SETTINGS['subscribe']
+        self.assertEqual(self.form_template.settings, settings)
+
+    def test_is_email(self):
+        self.assertFalse(self.form_template.is_email)
+
+    def test_get_default_content(self):
+        html = self.form_template.get_default_content()
+        self.assertHTMLEqual(html, '<h5 class="card-title">Subscribe to our mailing list</h5>')
+
+    def test_get_default_subject_failure(self):
+        with self.assertRaises(FormTemplateIsNotEmail):
+            self.form_template.get_default_subject()
+
+    def test_get_default_subject(self):
+        self.form_template.key = TemplateKeys.WELCOME_EMAIL
+        self.assertEqual(self.form_template.get_default_subject(), 'Subscription Confirmed')
+
+    def test_get_from_email(self):
+        self.form_template.from_email = 'john@doe.com'
+        self.assertEqual(self.form_template.get_from_email(), 'john@doe.com')
+
+    def test_get_from_email_with_name(self):
+        self.form_template.from_name = 'John Doe'
+        self.form_template.from_email = 'john@doe.com'
+        self.assertEqual(self.form_template.get_from_email(), 'John Doe <john@doe.com>')
+
+    def test_render_template_subscribe_form(self):
+        self.form_template.load_defaults()
+        html = self.form_template.render_template()
+        self.assertIn('Test List', html)
+        self.assertIn('Subscribe to our mailing list', html)
+        self.assertIn('<form', html)
+        self.assertIn('Subscribe to list', html)
+
+
+class SubscriptionFormTemplateLoadDefaultsTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.mailing_list = MailingListFactory(
+            campaign_default_from_name='Jonh Doe',
+            campaign_default_from_email='john@doe.com'
+        )
+
+    def test_load_defaults_email(self):
+        form_template = SubscriptionFormTemplateFactory(
+            key=TemplateKeys.WELCOME_EMAIL,
+            mailing_list=self.mailing_list,
+            content_html='test_content',
+            redirect_url='test_url',
+            send_email=True,
+            subject='test_subject',
+            from_name='test_name',
+            from_email='test@from_email.com',
+        )
+        form_template.load_defaults()
+        self.assertHTMLEqual(form_template.content_html,
+                             '<div>Your subscription to our list has been confirmed.</div>')
+        self.assertEqual(form_template.subject, 'Subscription Confirmed')
+        self.assertEqual(form_template.redirect_url, '')
+        self.assertFalse(form_template.send_email)
+        self.assertEqual(form_template.from_name, 'Jonh Doe')
+        self.assertEqual(form_template.from_email, 'john@doe.com')
+
+    def test_load_defaults(self):
+        form_template = SubscriptionFormTemplateFactory(
+            key=TemplateKeys.SUBSCRIBE_FORM,
+            mailing_list=self.mailing_list,
+            content_html='test_content',
+            redirect_url='test_url',
+            send_email=True,
+            subject='test_subject',
+            from_name='test_name',
+            from_email='test@from_email.com',
+        )
+        form_template.load_defaults()
+        self.assertHTMLEqual(form_template.content_html, '<h5 class="card-title">Subscribe to our mailing list</h5>')
+        self.assertEqual(form_template.subject, '')
+        self.assertEqual(form_template.redirect_url, '')
+        self.assertFalse(form_template.send_email)
+        self.assertEqual(form_template.from_name, '')
+        self.assertEqual(form_template.from_email, '')
+
+
+class SubscriptionFormTemplateConfirmEmailTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.mailing_list = MailingListFactory(
+            name='Newsletter List',
+            campaign_default_from_name='Jonh Doe',
+            campaign_default_from_email='john@doe.com'
+        )
+        form_template = SubscriptionFormTemplateFactory(
+            key=TemplateKeys.CONFIRM_EMAIL,
+            mailing_list=self.mailing_list,
+        )
+        form_template.load_defaults()
+        form_template.content_html = '__customcontent__'
+        form_template.send('test@example.com', {'confirm_link': '__confirmlink__'})
+        self.email = mail.outbox[0]
+
+    def test_email_sent(self):
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_email_subject(self):
+        self.assertEqual('Please Confirm Subscription', self.email.subject)
+
+    def test_confirm_link_in_email_body(self):
+        self.assertIn('__confirmlink__', self.email.body)
+
+    def test_list_name_in_email_body(self):
+        self.assertIn('Newsletter List', self.email.body)
+
+    def test_custom_content_in_email_body(self):
+        self.assertIn('__customcontent__', self.email.body)
+
+    def test_email_to(self):
+        self.assertEqual(['test@example.com', ], self.email.to)
+
+    def test_email_from(self):
+        self.assertEqual('Jonh Doe <john@doe.com>', self.email.from_email)
+
+
+class SubscriptionFormTemplateWelcomeEmailTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.mailing_list = MailingListFactory(
+            campaign_default_from_name='Jonh Doe',
+            campaign_default_from_email='john@doe.com',
+            contact_email_address='maria@example.com'
+        )
+        form_template = SubscriptionFormTemplateFactory(
+            key=TemplateKeys.WELCOME_EMAIL,
+            mailing_list=self.mailing_list,
+        )
+        form_template.load_defaults()
+        form_template.content_html = '__customcontent__'
+        form_template.send('test@example.com')
+        self.email = mail.outbox[0]
+
+    def test_email_sent(self):
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_email_subject(self):
+        self.assertEqual('Subscription Confirmed', self.email.subject)
+
+    def test_custom_content_in_email_body(self):
+        self.assertIn('__customcontent__', self.email.body)
+
+    def test_contact_email_in_email_body(self):
+        self.assertIn('maria@example.com', self.email.body)
+
+    def test_unsubscribe_link_in_email_body(self):
+        self.assertIn('http://example.com/unsubscribe/', self.email.body)
+
+    def test_email_to(self):
+        self.assertEqual(['test@example.com', ], self.email.to)
+
+    def test_email_from(self):
+        self.assertEqual('Jonh Doe <john@doe.com>', self.email.from_email)
+
+
+class SubscriptionFormTemplateGoodbyeEmailTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.mailing_list = MailingListFactory(
+            name='***Test List***',
+            campaign_default_from_name='Jonh Doe',
+            campaign_default_from_email='john@doe.com',
+            contact_email_address='maria@example.com'
+        )
+        form_template = SubscriptionFormTemplateFactory(
+            key=TemplateKeys.GOODBYE_EMAIL,
+            mailing_list=self.mailing_list,
+        )
+        form_template.load_defaults()
+        form_template.content_html = '__customcontent__'
+        form_template.send('test@example.com')
+        self.email = mail.outbox[0]
+
+    def test_email_sent(self):
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_email_subject(self):
+        self.assertEqual('You are now unsubscribed', self.email.subject)
+
+    def test_custom_content_in_email_body(self):
+        self.assertIn('__customcontent__', self.email.body)
+
+    def test_contact_email_in_email_body(self):
+        self.assertIn('maria@example.com', self.email.body)
+
+    def test_subscribe_link_in_email_body(self):
+        self.assertIn('http://example.com/subscribe/', self.email.body)
+
+    def test_list_name_in_email_body(self):
+        self.assertIn('***Test List***', self.email.body)
+
+    def test_email_to(self):
+        self.assertEqual(['test@example.com', ], self.email.to)
+
+    def test_email_from(self):
+        self.assertEqual('Jonh Doe <john@doe.com>', self.email.from_email)

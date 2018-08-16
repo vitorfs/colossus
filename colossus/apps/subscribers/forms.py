@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
-from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
-from django.template import loader
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -64,24 +62,10 @@ class SubscribeForm(forms.ModelForm):
         })
         confirm_link = '%s://%s%s' % (protocol, domain, path)
 
-        context = {
-            'confirm_link': confirm_link,
-            'list_name': self.mailing_list.name,
-            'contact_email': self.mailing_list.contact_email_address
-        }
-
-        subject = loader.render_to_string('subscribers/confirm_email_subject.txt', context)
-        subject = ''.join(subject.splitlines())  # Email subject *must not* contain newlines
-        plain_text_message = loader.render_to_string('subscribers/confirm_email.txt', context)
-        rich_text_message = loader.render_to_string('subscribers/confirm_email.html', context)
-
-        message = EmailMultiAlternatives(
-            subject=subject,
-            body=plain_text_message,
-            to=[subscriber.get_email()]
-        )
-        message.attach_alternative(rich_text_message, 'text/html')
-        message.send()
+        confirm_email = self.mailing_list.get_confirm_email_template()
+        confirm_email.send(subscriber.get_email(), {
+            'confirm_link': confirm_link
+        })
 
         return subscriber
 

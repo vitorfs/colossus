@@ -1,0 +1,33 @@
+{% load i18n %}{% autoescape off %}<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <!--[if gte mso 15]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans 'Unsubscribe Successful' %}</title>
+  {% if preview %}
+    <style>
+      .preview-box {
+          border: 2px dashed #bbb;
+          background-color: #f9f9f9;
+      }
+    </style>
+  {% endif %}
+</head>
+<body>
+  <div>{% blocktrans %}We have removed your email address from our list "{{ list_name }}".{% endblocktrans %}</div>
+  <div><br></div>
+  <div{% if preview %} class="preview-box"{% endif %}>
+    {{ content|safe }}
+  </div>
+  <div><br></div>
+  <div>{% trans "Was this a mistake? Did you forward one of our emails to a friend, and they clicked the unsubscribe link not realizing they were in fact unsubscribing you from this list? If this was a mistake, you can re-subscribe at:" %}</div>
+  <div><br></div>
+  <div>
+    <a href="{{ subscribe_link }}">{% trans 'Subscribe' %}</a>
+  </div>
+  <div><br></div>
+  <div>{% blocktrans %}For questions about this list, please contact: {{ contact_email }}{% endblocktrans %}</div>
+</body>
+</html>{% endautoescape %}
