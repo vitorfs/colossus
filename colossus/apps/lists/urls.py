@@ -27,6 +27,7 @@ urlpatterns = [
     path('<int:pk>/forms/editor/design/', views.CustomizeDesignView.as_view(), name='customize_design'),
     path('<int:pk>/forms/editor/<str:form_key>/', views.SubscriptionFormTemplateUpdateView.as_view(), name='edit_form_template'),
     path('<int:pk>/forms/editor/<str:form_key>/preview/', views.PreviewFormTemplateView.as_view(), name='preview_form_template'),
+    path('<int:pk>/forms/editor/<str:form_key>/reset/', views.ResetFormTemplateView.as_view(), name='reset_form_template'),
     path('<int:pk>/settings/', views.ListSettingsView.as_view(), name='settings'),
     path('<int:pk>/settings/subscription/', views.SubscriptionSettingsView.as_view(), name='subscription_settings'),
     path('<int:pk>/settings/defaults/', views.CampaignDefaultsView.as_view(), name='defaults'),

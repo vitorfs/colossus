@@ -88,24 +88,24 @@ class TemplateKeys:
     """
 
     # Subscription workflow
-    SUBSCRIBE_PAGE = 'subscribe'
+    SUBSCRIBE_FORM = 'subscribe'
     SUBSCRIBE_THANK_YOU_PAGE = 'subscribe-thank-you'
     CONFIRM_EMAIL = 'confirm-email'
     CONFIRM_THANK_YOU_PAGE = 'confirm-thank-you'
     WELCOME_EMAIL = 'welcome-email'
 
     # Unsubscription workflow
-    UNSUBSCRIBE_PAGE = 'unsubscribe'
+    UNSUBSCRIBE_FORM = 'unsubscribe'
     UNSUBSCRIBE_SUCCESS_PAGE = 'unsubscribe-success'
     GOODBYE_EMAIL = 'goodbye-email'
 
     LABELS = {
-        SUBSCRIBE_PAGE: _('Subscribe page'),
+        SUBSCRIBE_FORM: _('Subscribe form'),
         SUBSCRIBE_THANK_YOU_PAGE: _('Subscribe thank you page'),
         CONFIRM_EMAIL: _('Opt-in confirm email'),
         CONFIRM_THANK_YOU_PAGE: _('Opt-in confirm thank you page'),
         WELCOME_EMAIL: _('Final welcome email'),
-        UNSUBSCRIBE_PAGE: _('Unsubscribe page'),
+        UNSUBSCRIBE_FORM: _('Unsubscribe form'),
         UNSUBSCRIBE_SUCCESS_PAGE: _('Unsubscribe success page'),
         GOODBYE_EMAIL: _('Goodbye email'),
     }

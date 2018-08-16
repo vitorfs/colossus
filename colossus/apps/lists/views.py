@@ -1,7 +1,8 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.forms import modelform_factory
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -11,9 +12,12 @@ from django.views.generic import (
     UpdateView, View,
 )
 
-from colossus.apps.subscribers.constants import Status, TemplateKeys
+from colossus.apps.subscribers.constants import Status, TemplateKeys, Workflows
 from colossus.apps.subscribers.models import (
     Subscriber, SubscriptionFormTemplate,
+)
+from colossus.apps.subscribers.subscription_settings import (
+    SUBSCRIPTION_FORM_TEMPLATE_SETTINGS,
 )
 
 from .charts import SubscriptionsSummaryChart
@@ -220,49 +224,63 @@ class FormTemplateMixin:
 class SubscriptionFormTemplateUpdateView(FormTemplateMixin, MailingListMixin, UpdateView):
     model = SubscriptionFormTemplate
     context_object_name = 'form_template'
+    template_name = 'lists/form_template_form.html'
 
     def get_success_url(self):
         return reverse('lists:edit_form_template', kwargs=self.kwargs)
 
     def get_context_data(self, **kwargs):
         kwargs['template_keys'] = TemplateKeys
+        kwargs['workflows'] = Workflows
+        kwargs['subscription_forms'] = SUBSCRIPTION_FORM_TEMPLATE_SETTINGS
         return super().get_context_data(**kwargs)
-
-    def get_template_names(self):
-        return self.object.settings['admin_template_name']
 
     def get_form_class(self):
         fields = self.object.settings['fields']
         form_class = modelform_factory(self.model, fields=fields)
         return form_class
 
-    def get_initial(self):
-        initial = {
-            'content_html': self.object.get_default_content()
-        }
-        return initial
+
+@method_decorator(login_required, name='dispatch')
+class ResetFormTemplateView(FormTemplateMixin, MailingListMixin, View):
+    def post(self, request: HttpRequest, pk: int, form_key: str):
+        form_template = self.get_object()
+        form_template.reset_defaults()
+        messages.success(request, gettext('Default template restored with success!'))
+        return redirect('lists:edit_form_template', pk=pk, form_key=form_key)
 
 
 @method_decorator(login_required, name='dispatch')
 class PreviewFormTemplateView(FormTemplateMixin, MailingListMixin, View):
-    def get(self, request, pk, form_key):
-        form_template = self.get_object()
-        template_name = form_template.settings['content_template_name']
+    def render_to_response(self, request, content):
+        template_name = self.form_template.settings['content_template_name']
         context = {
             'mailing_list': self.mailing_list,
+            'list_name': self.mailing_list.name,
             'contact_email': self.mailing_list.contact_email_address,
             'unsub': '#',
             'confirm_link': '#',
+            'subscribe_link': '#',
             'preview': True,
-            'content': form_template.content_html
+            'content': content
         }
-        if form_key == TemplateKeys.SUBSCRIBE_PAGE:
+        if self.form_template.key == TemplateKeys.SUBSCRIBE_FORM:
             from colossus.apps.subscribers.forms import SubscribeForm
             context['form'] = SubscribeForm(mailing_list=self.mailing_list)
-        elif form_key == TemplateKeys.UNSUBSCRIBE_PAGE:
+        elif self.form_template.key == TemplateKeys.UNSUBSCRIBE_FORM:
             from colossus.apps.subscribers.forms import UnsubscribeForm
             context['form'] = UnsubscribeForm(mailing_list=self.mailing_list)
         return render(request, template_name, context)
+
+    def post(self, request, pk, form_key):
+        self.form_template = self.get_object()
+        content = request.POST.get('content_html')
+        return self.render_to_response(request, content)
+
+    def get(self, request, pk, form_key):
+        self.form_template = self.get_object()
+        content = self.form_template.content_html
+        return self.render_to_response(request, content)
 
 
 @method_decorator(login_required, name='dispatch')
