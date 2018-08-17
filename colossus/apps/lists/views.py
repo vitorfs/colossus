@@ -220,6 +220,12 @@ class SMTPCredentialsView(AbstractSettingsView):
 class FormsEditorView(MailingListMixin, TemplateView):
     template_name = 'lists/forms_editor.html'
 
+    def get_context_data(self, **kwargs):
+        kwargs['template_keys'] = TemplateKeys
+        kwargs['workflows'] = Workflows
+        kwargs['subscription_forms'] = SUBSCRIPTION_FORM_TEMPLATE_SETTINGS
+        return super().get_context_data(**kwargs)
+
 
 class FormTemplateMixin:
     def get_object(self):
@@ -231,6 +237,8 @@ class FormTemplateMixin:
             key=key,
             mailing_list_id=mailing_list_id
         )
+        if created:
+            form_template.load_defaults()
         return form_template
 
 

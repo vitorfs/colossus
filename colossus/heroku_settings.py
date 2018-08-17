@@ -1,6 +1,4 @@
 # flake8: noqa
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.functional import lazy
 
 from .production_settings import *
 
