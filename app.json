@@ -1,0 +1,6 @@
+{
+  "name": "Colossus",
+  "description": "Self-hosted email marketing solution.",
+  "repository": "https://github.com/vitorfs/colossus",
+  "keywords": ["python", "django", "email marketing", "mailing lists"]
+}
