@@ -1,6 +1,7 @@
 # flake8: noqa
 
 import raven
+from raven.exceptions import InvalidGitRepository
 
 from .settings import *
 
@@ -77,6 +78,10 @@ LOGGING = {
 # ==============================================================================
 
 RAVEN_CONFIG = {
-    'dsn': config('SENTRY_DSN'),
-    'release': raven.fetch_git_sha(BASE_DIR),
+    'dsn': config('SENTRY_DSN')
 }
+
+try:
+    RAVEN_CONFIG['release'] = raven.fetch_git_sha(BASE_DIR)
+except InvalidGitRepository:
+    pass

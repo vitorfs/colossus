@@ -6,6 +6,12 @@
 
 Self-hosted email marketing solution. Compatible with any SMTP email service.
 
+One-click deploy with Heroku:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+## Screenshots
+
 ![Colossus new campaign](https://colossus.readthedocs.io/en/latest/_images/colossus-new-campaign.png)
 
 ![Colossus campaigns](https://colossus.readthedocs.io/en/latest/_images/colossus-campaigns.png)
