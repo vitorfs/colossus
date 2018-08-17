@@ -1,12 +1,10 @@
 import uuid
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
 from django.db.models import Count, Q
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -23,7 +21,7 @@ from colossus.apps.subscribers.tasks import (
     update_click_rate, update_open_rate,
     update_rates_after_subscriber_deletion, update_subscriber_location,
 )
-from colossus.utils import get_client_ip, get_absolute_url
+from colossus.utils import get_absolute_url, get_client_ip
 
 from .activities import render_activity
 from .constants import ActivityTypes, Status, TemplateKeys
