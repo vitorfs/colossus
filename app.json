@@ -6,7 +6,9 @@
   "scripts": {
     "postdeploy": "python manage.py migrate"
   },
+  "logo": "https://colossus.simpleisbetterthancomplex.com/static/img/favicon.png",
   "addons": [
+    "heroku-postgresql:hobby-dev",
     "rabbitmq-bigwig:pipkin",
     "mailgun:starter"
   ],
