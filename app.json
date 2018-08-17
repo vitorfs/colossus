@@ -14,8 +14,8 @@
   ],
   "env": {
     "DEFAULT_FROM_EMAIL": {
-      "description": "Default email address to send emails from the application.",
-      "value": "noreply@herokuapp.com"
+      "description": "Default email address to send emails from the application. Please note that you need to do further domain validation via Mailgun App to enable email sending from this installation.",
+      "value": "noreply@example.com"
     },
     "DJANGO_SETTINGS_MODULE": {
       "value": "colossus.heroku_settings"
@@ -33,7 +33,8 @@
       "value": "True"
     },
     "CELERY_TASK_ALWAYS_EAGER": {
-      "value": "False"
+      "description": "Determine if celery tasks will be executed synchronously or will be delayed. Change this value to 'False' if you are deploying a production environment.",
+      "value": "True"
     }
   },
   "success_url": "/setup/"
