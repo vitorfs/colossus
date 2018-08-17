@@ -6,7 +6,7 @@
 
 Self-hosted email marketing solution. Compatible with any SMTP email service.
 
-One-click deploy with Heroku:
+One-click deploy to Heroku:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 

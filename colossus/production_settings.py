@@ -78,7 +78,7 @@ LOGGING = {
 # ==============================================================================
 
 RAVEN_CONFIG = {
-    'dsn': config('SENTRY_DSN')
+    'dsn': config('SENTRY_DSN', default='')
 }
 
 try:
