@@ -1,0 +1,12 @@
+{% extends 'core/setup.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <p class="lead">{% trans 'Create an admin account to manage Colossus:' %}</p>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">{% trans 'Create admin account' %}</button>
+  </form>
+{% endblock %}

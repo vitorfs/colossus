@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Initial Setup' %}{% endblock %}
+
+{% block body %}
+  <h1 class="logo text-center my-4">Colossus</h1>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h4 class="card-title">{% trans 'Welcome to Colossus!' %}</h4>
+            {% block content %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

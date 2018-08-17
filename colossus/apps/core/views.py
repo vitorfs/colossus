@@ -1,12 +1,18 @@
+from django.conf import settings as django_settings
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
-from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views.generic import UpdateView
 
+from colossus.apps.accounts.forms import AdminUserCreationForm
 from colossus.apps.lists.models import MailingList
+
+User = get_user_model()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -17,7 +23,7 @@ class SiteUpdateView(UpdateView):
     success_url = reverse_lazy('settings')
 
     def get_object(self, queryset=None):
-        return get_current_site(self.request)
+        return Site.objects.get(pk=django_settings.SITE_ID)
 
 
 @login_required
@@ -28,6 +34,32 @@ def dashboard(request):
 @login_required
 def settings(request):
     return render(request, 'core/settings.html', {'menu': 'settings'})
+
+
+def setup(request):
+    if User.objects.exists():
+        return redirect('dashboard')
+    site = Site.objects.get(pk=django_settings.SITE_ID)
+    if site.domain == 'example.com':
+        site.name = 'Colossus'
+        site.domain = request.META.get('HTTP_HOST')
+        site.save()
+    return redirect('setup_account')
+
+
+def setup_account(request):
+    if User.objects.exists():
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = AdminUserCreationForm(data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, _('Account created with success! Go ahead and create your first mailing list.'))
+            return redirect('lists:new_list')
+    else:
+        form = AdminUserCreationForm()
+    return render(request, 'core/setup_account.html', {'form': form})
 
 
 def subscribe_shortcut(request, mailing_list_slug):
