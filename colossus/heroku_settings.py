@@ -11,10 +11,17 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CELERY_BROKER_READ_URL = config('RABBITMQ_BIGWIG_RX_URL')
 CELERY_BROKER_WRITE_URL = config('RABBITMQ_BIGWIG_TX_URL')
 
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = config('MAILGUN_SMTP_SERVER')
 EMAIL_PORT = config('MAILGUN_SMTP_PORT', cast=int)
 EMAIL_HOST_USER = config('MAILGUN_SMTP_LOGIN')
 EMAIL_HOST_PASSWORD = config('MAILGUN_SMTP_PASSWORD')
+
+RAVEN_CONFIG = {
+    'dsn': config('SENTRY_DSN')
+}
+
+CELERY_TASK_ALWAYS_EAGER = False
+
+COLOSSUS_HTTPS_ONLY = True

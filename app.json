@@ -25,15 +25,6 @@
     },
     "ALLOWED_HOSTS": {
       "value": ".herokuapp.com"
-    },
-    "COLOSSUS_HTTPS_ONLY": {
-      "value": "True"
-    },
-    "CELERY_TASK_ALWAYS_EAGER": {
-      "value": "False"
-    },
-    "EMAIL_BACKEND": {
-      "value": "django.core.mail.backends.smtp.EmailBackend"
     }
   },
   "success_url": "/accounts/login/"
