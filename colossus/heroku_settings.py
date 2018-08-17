@@ -77,10 +77,19 @@ LOGGING = {
         }
     },
     'loggers': {
-        'testlogger': {
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        'colossus': {
             'handlers': ['console'],
             'level': 'INFO',
-        }
+            'propagate': False,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
     }
 }
 
