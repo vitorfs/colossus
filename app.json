@@ -10,8 +10,7 @@
   "addons": [
     "heroku-postgresql:hobby-dev",
     "rabbitmq-bigwig:pipkin",
-    "mailgun:starter",
-    "sentry:f1"
+    "mailgun:starter"
   ],
   "env": {
     "DJANGO_SETTINGS_MODULE": {
@@ -31,9 +30,6 @@
     },
     "CELERY_TASK_ALWAYS_EAGER": {
       "value": "False"
-    },
-    "EMAIL_BACKEND": {
-      "value": "django.core.mail.backends.smtp.EmailBackend"
     }
   },
   "success_url": "/accounts/login/"
