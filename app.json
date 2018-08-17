@@ -10,7 +10,8 @@
   "addons": [
     "heroku-postgresql:hobby-dev",
     "rabbitmq-bigwig:pipkin",
-    "mailgun:starter"
+    "mailgun:starter",
+    "sentry:f1"
   ],
   "env": {
     "DJANGO_SETTINGS_MODULE": {

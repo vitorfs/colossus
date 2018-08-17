@@ -77,6 +77,6 @@ LOGGING = {
 # ==============================================================================
 
 RAVEN_CONFIG = {
-    'dsn': config('RAVEN_CONFIG_DSN'),
+    'dsn': config('SENTRY_DSN'),
     'release': raven.fetch_git_sha(BASE_DIR),
 }
