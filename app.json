@@ -2,5 +2,36 @@
   "name": "Colossus",
   "description": "Self-hosted email marketing solution.",
   "repository": "https://github.com/vitorfs/colossus",
-  "keywords": ["python", "django", "email marketing", "mailing lists"]
+  "keywords": ["python", "django", "email marketing", "mailing lists"],
+  "scripts": {
+    "postdeploy": "python manage.py migrate"
+  },
+  "addons": [
+    "rabbitmq-bigwig:pipkin",
+    "mailgun:starter"
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": {
+      "value": "colossus.heroku_settings"
+    },
+    "DEBUG": {
+      "value": "False"
+    },
+    "SECRET_KEY": {
+      "generator": "secret"
+    },
+    "ALLOWED_HOSTS": {
+      "value": ".herokuapp.com"
+    },
+    "COLOSSUS_HTTPS_ONLY": {
+      "value": "True"
+    },
+    "CELERY_TASK_ALWAYS_EAGER": {
+      "value": "False"
+    },
+    "EMAIL_BACKEND": {
+      "value": "django.core.mail.backends.smtp.EmailBackend"
+    }
+  },
+  "success_url": "/accounts/login/"
 }
