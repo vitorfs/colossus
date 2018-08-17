@@ -1,1 +1,3 @@
 -r requirements/production.txt
+
+whitenoise==4.0
