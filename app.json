@@ -13,6 +13,10 @@
     "mailgun:starter"
   ],
   "env": {
+    "DEFAULT_FROM_EMAIL": {
+      "description": "Default email address to send emails from the application.",
+      "value": "noreply@herokuapp.com"
+    },
     "DJANGO_SETTINGS_MODULE": {
       "value": "colossus.heroku_settings"
     },

@@ -27,15 +27,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # EMAIL SETTINGS
 # ==============================================================================
 
-def heroku_default_email():
-    site = get_current_site(request=None)
-    from_email = 'noreply@%s' % site.domain
-    return from_email
-
-heroku_default_email_lazy = lazy(heroku_default_email)
-
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=heroku_default_email_lazy())
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = config('MAILGUN_SMTP_SERVER')
