@@ -1,8 +1,12 @@
 import logging
+import uuid
 from typing import Optional
 
+from django.conf import settings
 from django.contrib.gis.geoip2 import GeoIP2
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpRequest
+from django.urls import reverse
 
 from geoip2.errors import AddressNotFoundError
 
@@ -74,3 +78,27 @@ def get_location(ip_address: str) -> Optional[City]:
     except AddressNotFoundError:
         logger.warning('Address not found for ip_address = "%s"' % ip_address)
     return city
+
+
+def is_uuid(uuid_value: str) -> bool:
+    try:
+        uuid.UUID(uuid_value)
+        return True
+    except ValueError:
+        return False
+
+
+def get_absolute_url(urlname: str, kwargs: dict = None) -> str:
+    """
+    Build an absolute URL for a given urlname. Used when URLs will be exposed
+    to the external world (e.g. unsubscribe link in an email).
+
+    :param urlname: Name of the URL pattern
+    :param kwargs: Dictionary of necessary arguments to reverse the urlname
+    :return: The absolute URL to a given internal URL
+    """
+    protocol = 'https' if settings.COLOSSUS_HTTPS_ONLY else 'http'
+    site = get_current_site(request=None)
+    path = reverse(urlname, kwargs=kwargs)
+    absolute_url = '%s://%s%s' % (protocol, site.domain, path)
+    return absolute_url

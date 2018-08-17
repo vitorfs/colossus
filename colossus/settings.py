@@ -223,6 +223,9 @@ CELERY_BEAT_SCHEDULE = {
 
 CELERY_TASK_ALWAYS_EAGER = config('CELERY_TASK_ALWAYS_EAGER', default=True, cast=bool)
 
+
 # ==============================================================================
 # FIRST-PARTY APPS SETTINGS
 # ==============================================================================
+
+COLOSSUS_HTTPS_ONLY = config('COLOSSUS_HTTPS_ONLY', default=False, cast=bool)

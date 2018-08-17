@@ -1,8 +1,8 @@
+import logging
 from smtplib import SMTPException
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives, get_connection
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -10,6 +10,9 @@ import html2text
 
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.utils import get_absolute_url
+
+logger = logging.getLogger(__name__)
 
 
 def get_test_email_context(**kwargs):
@@ -69,27 +72,20 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
     try:
         message.send(fail_silently=False)
         return True
-    except SMTPException as err:
-        # TODO: log error message
+    except SMTPException:
+        logger.exception('Could not send email "%s" due to SMTP error.' % email.uuid)
         return False
 
 
 def send_campaign_email_subscriber(email, subscriber, site, connection=None):
-    # TODO: remove hardcoded http
-    protocol = 'http'
-
-    unsub_path = reverse('subscribers:unsubscribe', kwargs={
+    unsubscribe_absolute_url = get_absolute_url('subscribers:unsubscribe', kwargs={
         'mailing_list_uuid': email.campaign.mailing_list.uuid,
         'subscriber_uuid': subscriber.uuid,
         'campaign_uuid': email.campaign.uuid
     })
-    unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, unsub_path)
-
-    sub_path = reverse('subscribers:subscribe', kwargs={
+    subscribe_absolute_url = get_absolute_url('subscribers:subscribe', kwargs={
         'mailing_list_uuid': email.campaign.mailing_list.uuid
     })
-    subscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, sub_path)
-
     context = {
         'domain': site.domain,
         'uuid': subscriber.uuid,
@@ -101,18 +97,12 @@ def send_campaign_email_subscriber(email, subscriber, site, connection=None):
 
 
 def send_campaign_email_test(email, recipient_list):
-    site = get_current_site(request=None)
-    # TODO: remove hardcoded http
-    protocol = 'http'
-
     if email.campaign.mailing_list is not None:
-        unsubscribe_path = reverse('subscribers:unsubscribe_manual', kwargs={
+        unsubscribe_absolute_url = get_absolute_url('subscribers:unsubscribe_manual', kwargs={
             'mailing_list_uuid': email.campaign.mailing_list.uuid
         })
     else:
-        unsubscribe_path = ''
-
-    unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, unsubscribe_path)
+        unsubscribe_absolute_url = '#'
     context = get_test_email_context(unsub=unsubscribe_absolute_url)
     return send_campaign_email(email, context, recipient_list, is_test=True)
 

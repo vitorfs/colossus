@@ -19,6 +19,7 @@ from colossus.apps.subscribers.models import (
 from colossus.apps.subscribers.subscription_settings import (
     SUBSCRIPTION_FORM_TEMPLATE_SETTINGS,
 )
+from colossus.utils import get_absolute_url, is_uuid
 
 from .charts import SubscriptionsSummaryChart
 from .forms import (
@@ -77,13 +78,20 @@ class SubscriberListView(MailingListMixin, ListView):
 
     def get_queryset(self):
         queryset = self.model.objects.filter(mailing_list_id=self.kwargs.get('pk'))
+
         if self.request.GET.get('q', ''):
-            query = self.request.GET.get('q')
-            queryset = queryset.filter(Q(email__icontains=query) | Q(name__icontains=query))
+            query = self.request.GET.get('q').strip()
+
+            if is_uuid(query):
+                queryset = queryset.filter(uuid=query)
+            else:
+                queryset = queryset.filter(Q(email__icontains=query) | Q(name__icontains=query))
+
             self.extra_context = {
                 'is_filtered': True,
                 'query': query
             }
+
         return queryset.order_by('optin_date')
 
 
@@ -154,6 +162,12 @@ class SubscriptionFormsView(MailingListMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         kwargs['submenu'] = 'forms'
+        kwargs['sub'] = get_absolute_url('subscribers:subscribe', {'mailing_list_uuid': self.mailing_list.uuid})
+        kwargs['sub_short'] = get_absolute_url('subscribe_shortcut', {'mailing_list_slug': self.mailing_list.slug})
+        kwargs['unsub'] = get_absolute_url('subscribers:unsubscribe_manual', {
+            'mailing_list_uuid': self.mailing_list.uuid
+        })
+        kwargs['unsub_short'] = get_absolute_url('unsubscribe_shortcut', {'mailing_list_slug': self.mailing_list.slug})
         return super().get_context_data(**kwargs)
 
 

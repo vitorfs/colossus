@@ -23,7 +23,7 @@ from colossus.apps.subscribers.tasks import (
     update_click_rate, update_open_rate,
     update_rates_after_subscriber_deletion, update_subscriber_location,
 )
-from colossus.utils import get_client_ip
+from colossus.utils import get_client_ip, get_absolute_url
 
 from .activities import render_activity
 from .constants import ActivityTypes, Status, TemplateKeys
@@ -346,18 +346,13 @@ class SubscriptionFormTemplate(models.Model):
         if extra_context is None:
             extra_context = dict()
 
-        # TODO: remove hardcoded http
-        protocol = 'http'
-        site = get_current_site(request=None)
-        unsub_path = reverse('subscribers:unsubscribe_manual', kwargs={
+        unsubscribe_absolute_url = get_absolute_url('subscribers:unsubscribe_manual', kwargs={
             'mailing_list_uuid': self.mailing_list.uuid,
         })
-        unsubscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, unsub_path)
 
-        sub_path = reverse('subscribers:subscribe', kwargs={
+        subscribe_absolute_url = get_absolute_url('subscribers:subscribe', kwargs={
             'mailing_list_uuid': self.mailing_list.uuid,
         })
-        subscribe_absolute_url = '%s://%s%s' % (protocol, site.domain, sub_path)
 
         context = {
             'mailing_list': self.mailing_list,

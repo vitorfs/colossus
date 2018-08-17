@@ -35,3 +35,46 @@
     </li>
   </ul>
 {% endblock %}
+
+{% block outercontent %}
+  <div class="card mb-3">
+    <h4 class="card-header">
+      {% trans 'List Forms' %}
+    </h4>
+    <div class="card-body">
+      <h5>
+        <a href="{{ sub }}" target="_blank">{% trans 'Subscribe Form' %} <i class="fas fa-external-link-alt align-text-top" style="font-size:60%"></i></a>
+      </h5>
+      <div class="form-group">
+        <label for="subscribe-permalink">
+          {% trans 'Permalink' %}
+        </label>
+        <input type="text" id="subscribe-permalink" class="form-control" value="{{ sub }}" readonly>
+      </div>
+      <div class="form-group">
+        <label for="subscribe-short-url">
+          {% trans 'Short URL' %}
+        </label>
+        <input type="text" id="subscribe-short-url" class="form-control" value="{{ sub_short }}" readonly>
+      </div>
+
+      <hr class="my-4">
+
+      <h5>
+        <a href="{{ unsub }}" target="_blank">{% trans 'Unsubscribe Form' %} <i class="fas fa-external-link-alt align-text-top" style="font-size:60%"></i></a>
+      </h5>
+      <div class="form-group">
+        <label for="unsubscribe-permalink">
+          {% trans 'Permalink' %}
+        </label>
+        <input type="text" id="unsubscribe-permalink" class="form-control" value="{{ unsub }}" readonly>
+      </div>
+      <div class="form-group mb-0">
+        <label for="unsubscribe-short-url">
+          {% trans 'Short URL' %}
+        </label>
+        <input type="text" id="unsubscribe-short-url" class="form-control" value="{{ unsub_short }}" readonly>
+      </div>
+    </div>
+  </div>
+{% endblock %}

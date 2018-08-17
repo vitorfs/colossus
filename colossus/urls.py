@@ -12,6 +12,8 @@ urlpatterns = [
     path('notifications/', include('colossus.apps.notifications.urls', namespace='notifications')),
     path('templates/', include('colossus.apps.templates.urls', namespace='templates')),
     path('campaigns/', include('colossus.apps.campaigns.urls', namespace='campaigns')),
+    path('<slug:mailing_list_slug>/', core_views.subscribe_shortcut, name='subscribe_shortcut'),
+    path('<slug:mailing_list_slug>/unsubscribe/', core_views.unsubscribe_shortcut, name='unsubscribe_shortcut'),
 ]
 
 
