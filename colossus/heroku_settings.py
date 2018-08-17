@@ -6,8 +6,6 @@ from .production_settings import *
 security_middleware_index = MIDDLEWARE.index('django.middleware.security.SecurityMiddleware')
 MIDDLEWARE.insert(security_middleware_index + 1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
-STATICFILES_STORAGE = 'whitenoise.storage.GzipManifestStaticFilesStorage'
-
 CELERY_BROKER_READ_URL = config('RABBITMQ_BIGWIG_RX_URL')
 CELERY_BROKER_WRITE_URL = config('RABBITMQ_BIGWIG_TX_URL')
 
