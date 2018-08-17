@@ -24,6 +24,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # ==============================================================================
+# MEDIA FILES SETTINGS
+# ==============================================================================
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/public')
+
+PRIVATE_MEDIA_ROOT = os.path.join(BASE_DIR, 'media/private')
+
+
+# ==============================================================================
 # EMAIL SETTINGS
 # ==============================================================================
 
