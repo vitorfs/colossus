@@ -387,7 +387,7 @@ class SubscriptionFormTemplate(models.Model):
             raise FormTemplateIsNotEmail
 
         rich_text_message = self.render_template(context)
-        plain_text_message = html2text.html2text(rich_text_message)
+        plain_text_message = html2text.html2text(rich_text_message, bodywidth=2000)
         email = EmailMultiAlternatives(
             subject=self.subject,
             body=plain_text_message,
