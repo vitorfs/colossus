@@ -1,6 +1,8 @@
 from django.core import mail
 
-from colossus.apps.campaigns.api import get_test_email_context, send_campaign, send_campaign_email_test
+from colossus.apps.campaigns.api import (
+    get_test_email_context, send_campaign, send_campaign_email_test,
+)
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.campaigns.tests.factories import (
     CampaignFactory, EmailFactory,
