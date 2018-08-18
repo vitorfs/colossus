@@ -12,7 +12,7 @@ script:
 after_success:
   - codecov
 env:
-  - TOXENV=test
+  - TOXENV=py3
   - TOXENV=flake8
   - TOXENV=isort
   - TOXENV=mypy
