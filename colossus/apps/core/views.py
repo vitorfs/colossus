@@ -10,6 +10,8 @@ from django.utils.translation import gettext as _
 from django.views.generic import UpdateView
 
 from colossus.apps.accounts.forms import AdminUserCreationForm
+from colossus.apps.campaigns.constants import CampaignStatus
+from colossus.apps.campaigns.models import Campaign
 from colossus.apps.lists.models import MailingList
 
 User = get_user_model()
@@ -28,7 +30,11 @@ class SiteUpdateView(UpdateView):
 
 @login_required
 def dashboard(request):
-    return render(request, 'core/dashboard.html', {'menu': 'dashboard'})
+    campaigns = Campaign.objects.filter(status=CampaignStatus.DRAFT)
+    return render(request, 'core/dashboard.html', {
+        'menu': 'dashboard',
+        'drafts': campaigns
+    })
 
 
 @login_required
@@ -37,8 +43,9 @@ def settings(request):
 
 
 def setup(request):
-    if User.objects.exists():
+    if User.objects.exists() or MailingList.objects.exists():
         return redirect('dashboard')
+
     site = Site.objects.get(pk=django_settings.SITE_ID)
     if site.domain == 'example.com':
         site.name = 'Colossus'
@@ -48,8 +55,9 @@ def setup(request):
 
 
 def setup_account(request):
-    if User.objects.exists():
+    if User.objects.exists() or MailingList.objects.exists():
         return redirect('dashboard')
+
     if request.method == 'POST':
         form = AdminUserCreationForm(data=request.POST)
         if form.is_valid():
