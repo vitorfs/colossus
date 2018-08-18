@@ -203,6 +203,11 @@ MESSAGE_TAGS = {
     messages_constants.ERROR: 'alert-danger',
 }
 
+if DEBUG:
+    MESSAGE_LEVEL = messages_constants.DEBUG
+else:
+    MESSAGE_LEVEL = messages_constants.INFO
+
 GEOIP_PATH = os.path.join(BASE_DIR, 'bin/GeoLite2')
 
 

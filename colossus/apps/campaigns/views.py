@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count
@@ -72,6 +73,11 @@ class CampaignEditView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
     template_name = 'campaigns/campaign_edit.html'
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        messages.debug(request, '[debug] campaign uuid: %s' % self.object.uuid)
+        return response
 
     def get_context_data(self, **kwargs):
         kwargs['test_email_form'] = CampaignTestEmailForm()

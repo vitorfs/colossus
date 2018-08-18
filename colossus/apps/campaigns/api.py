@@ -1,4 +1,5 @@
 import logging
+import re
 from smtplib import SMTPException
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -36,7 +37,10 @@ def send_campaign_email(email, context, to, connection=None, is_test=False):
         subject = '[%s] %s' % (_('Test'), subject)
 
     rich_text_message = email.render(context)
-    plain_text_message = html2text.html2text(rich_text_message)
+    plain_text_message = html2text.html2text(rich_text_message, bodywidth=2000)
+
+    # Remove track open from plain text version
+    plain_text_message = re.sub(r'(!\[\]\(https?://.*/track/open/.*/\)\n\n)', '', plain_text_message, 1)
 
     headers = dict()
     if not is_test:

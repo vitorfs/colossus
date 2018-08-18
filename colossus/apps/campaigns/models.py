@@ -103,17 +103,17 @@ class Campaign(models.Model):
                 self.__cached_email = self.emails.order_by('id').first()
         return self.__cached_email
 
-    @transaction.atomic
     def send(self):
-        self.recipients_count = self.mailing_list.get_active_subscribers().count()
-        self.send_date = timezone.now()
-        self.status = CampaignStatus.QUEUED
-        for email in self.emails.select_related('template').all():
-            if email.template is not None:
-                email.template.last_used_date = timezone.now()
-                email.template.last_used_campaign_id = self.pk
-                email.template.save()
-        self.save()
+        with transaction.atomic():
+            self.recipients_count = self.mailing_list.get_active_subscribers().count()
+            self.send_date = timezone.now()
+            self.status = CampaignStatus.QUEUED
+            for email in self.emails.select_related('template').all():
+                if email.template is not None:
+                    email.template.last_used_date = timezone.now()
+                    email.template.last_used_campaign_id = self.pk
+                    email.template.save()
+            self.save()
         send_campaign_task.delay(self.pk)
 
     @transaction.atomic
@@ -296,8 +296,7 @@ class Email(models.Model):
             'from': False,
             'subject': False,
             'content': False,
-            'unsub': False,
-            'plaintext': False
+            'unsub': False
         }
 
         if self.campaign.mailing_list is not None and self.campaign.mailing_list.get_active_subscribers().exists():
@@ -321,7 +320,6 @@ class Email(models.Model):
             rendered_template = self.render({'unsub': token})
             _checklist['unsub'] = token in rendered_template
 
-            _checklist['plaintext'] = (self.content_text != '')
         return _checklist
 
     @property
