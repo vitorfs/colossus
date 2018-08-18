@@ -163,3 +163,58 @@ class TestEmailEnableClickTracking(TestCase):
         for index in range(8):
             with self.subTest(index=index):
                 self.assertEqual(1, models.Link.objects.filter(index=index).count())
+
+
+class TestEnableOpenTracking(TestCase):
+    def test_valid_html_structure(self):
+        email = factories.EmailFactory(template_content=(
+            '<!doctype html>'
+            '<html>'
+            '<body>'
+            '</body>'
+            '</html>'
+        ))
+        email.enable_open_tracking()
+        self.assertIn('<img', email.template_content)
+        self.assertIn('/track/open/', email.template_content)
+
+    def test_valid_html_structure_with_django_template_tags(self):
+        email = factories.EmailFactory(template_content=(
+            '<!doctype html>'
+            '<html>'
+            '<body>'
+            '{% block content %}'
+            '{% endblock %}'
+            '{% block footer %}'
+            '<div><br></div>'
+            '<div><small><a href="{{ unsub }}">Unsubscribe from this list</a>.</small></div>'
+            '{% endblock %}'
+            '</body>'
+            '</html>'
+        ))
+        email.enable_open_tracking()
+        self.assertIn('<img', email.template_content, 1)
+        self.assertIn('/track/open/', email.template_content)
+        self.assertIn("{% endblock %}<img ", email.template_content)
+        self.assertIn('"/></body>', email.template_content)
+
+    def test_invalid_html_structure(self):
+        email = factories.EmailFactory(template_content='')
+        email.enable_open_tracking()
+        self.assertIn('<img', email.template_content)
+        self.assertIn('/track/open/', email.template_content)
+
+    def test_invalid_html_structure_django_template_tags(self):
+        email = factories.EmailFactory(template_content=(
+            'Free text header'
+            '{% block content %}'
+            '{% endblock %}'
+            'Some text'
+            '{% block footer %}'
+            '<div><br></div>'
+            '<div><small><a href="{{ unsub }}">Unsubscribe from this list</a>.</small></div>'
+            '{% endblock %}'
+        ))
+        email.enable_open_tracking()
+        self.assertIn('<img', email.template_content)
+        self.assertIn('/track/open/', email.template_content)

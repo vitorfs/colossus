@@ -383,10 +383,14 @@ class Email(models.Model):
         protocol = 'http'
         domain = current_site.domain
         track_url = '%s://%s/track/open/%s/{{uuid}}/' % (protocol, domain, self.uuid)
-        soup = BeautifulSoup(self.template_content, 'html5lib')
+        soup = BeautifulSoup(self.template_content, 'html.parser')
         img_tag = soup.new_tag('img', src=track_url, height='1', width='1')
-        soup.find('body').append(img_tag)
-        self.template_content = str(soup)
+        body = soup.find('body')
+        if body is not None:
+            body.append(img_tag)
+            self.template_content = str(soup)
+        else:
+            self.template_content = '%s %s' % (self.template_content, img_tag)
 
     def update_clicks_count(self) -> tuple:
         qs = self.activities.filter(activity_type=ActivityTypes.CLICKED) \
