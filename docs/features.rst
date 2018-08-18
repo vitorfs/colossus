@@ -43,7 +43,7 @@ View reports how your campaign is performing:
    :alt: Colossus campaign reports
 
 
-Import subscribers from other services like MailChimp or Sendgrid. With Colossus you can import emails in any format
+Import subscribers from other services like MailChimp or SendGrid. With Colossus you can import emails in any format
 by defining to which field each column should be save:
 
 .. figure:: images/colossus-import.png

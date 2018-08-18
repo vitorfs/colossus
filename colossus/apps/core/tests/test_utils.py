@@ -9,6 +9,8 @@ from colossus.utils import get_absolute_url
 
 class TestGetAbsoluteURL(TestCase):
     def setUp(self):
+        Site.objects.update(domain='example.com')
+        Site.objects.clear_cache()
         self.uuid = str(uuid.uuid4())
 
     def test_get_aboluste_url_http(self):
@@ -25,8 +27,7 @@ class TestGetAbsoluteURL(TestCase):
         self.assertEqual(url, 'https://example.com/subscribe/%s/' % self.uuid)
 
     def test_get_aboluste_url_site_domain(self):
-        site = Site.objects.first()
-        site.domain = 'mysite.com'
-        site.save()
+        Site.objects.update(domain='mysite.com')
+        Site.objects.clear_cache()
         url = get_absolute_url('login')
         self.assertEqual(url, 'http://mysite.com/accounts/login/')

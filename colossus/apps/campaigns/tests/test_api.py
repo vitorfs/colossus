@@ -1,7 +1,6 @@
 from django.core import mail
-from django.test import override_settings
 
-from colossus.apps.campaigns.api import get_test_email_context
+from colossus.apps.campaigns.api import get_test_email_context, send_campaign
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.campaigns.tests.factories import (
     CampaignFactory, EmailFactory,
@@ -63,10 +62,8 @@ class GetTestEmailContextTests(TestCase):
         self.assertDictEqual(actual, expected)
 
 
-@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class SendCampaignTests(TestCase):
     def setUp(self):
-        super().setUp()
         self.mailing_list = MailingListFactory()
         self.subscribers = SubscriberFactory.create_batch(10, mailing_list=self.mailing_list)
         self.campaign = CampaignFactory(mailing_list=self.mailing_list, track_clicks=True, track_opens=True)
@@ -82,13 +79,14 @@ class SendCampaignTests(TestCase):
         }
         self.email.set_blocks(email_content)
         self.email.save()
-        self.campaign.send()
+        send_campaign(self.campaign)
 
     def test_setup(self):
         self.assertEqual(MailingList.objects.count(), 1)
         self.assertEqual(self.mailing_list.subscribers.count(), 10)
         self.assertEqual(self.mailing_list.campaigns.count(), 1)
         self.assertEqual(self.campaign.emails.count(), 1)
+        self.assertTrue(self.campaign.can_send)
 
     def test_campaign_status(self):
         self.campaign.refresh_from_db()

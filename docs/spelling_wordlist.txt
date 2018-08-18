@@ -351,6 +351,7 @@ Mako
 manouche
 Marczewski
 Marino
+Mailgun
 MBR
 memcache
 memcached
@@ -571,6 +572,7 @@ screencast
 screencasts
 screenshot
 screenshots
+SendGrid
 semimajor
 semiminor
 serializability
@@ -741,6 +743,7 @@ Unreviewed
 unsanitized
 unselected
 unsets
+unsubscribe
 unsquashed
 untar
 untrusted
