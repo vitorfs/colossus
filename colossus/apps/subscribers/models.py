@@ -243,6 +243,14 @@ class Activity(models.Model):
         db_table = 'colossus_activities'
 
     @property
+    def is_subscribed(self):
+        return self.activity_type == ActivityTypes.SUBSCRIBED
+
+    @property
+    def is_unsubscribed(self):
+        return self.activity_type == ActivityTypes.UNSUBSCRIBED
+
+    @property
     def as_html(self):
         if not self.__cached_html:
             self.__cached_html = self.render()

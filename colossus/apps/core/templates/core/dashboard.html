@@ -24,5 +24,45 @@
     </div>
   </div>
 
+  <h3>{% trans 'Activity' %}</h3>
+  <hr class="mt-2">
+  {% for activity in activities %}
+    {% ifchanged %}
+      <h6 class="mb-2{% if not forloop.first %} mt-4{% endif %}">{{ activity.date|date:'j M, Y' }}</h6>
+    {% endifchanged %}
+    <div class="card mb-2">
+      <div class="card-body align-middle">
+        {% if activity.is_subscribed %}
+          <span class="fas fa-user-plus text-primary mr-2"></span>
+          <small class="text-muted mr-2">{{ activity.date|date:'P' }}</small>
+          <span>
+            <a href="{% url 'lists:edit_subscriber' activity.subscriber.mailing_list_id activity.subscriber_id %}">
+              {{ activity.subscriber.email }}
+            </a>
+            subscribed to
+            <a href="{{ activity.subscriber.mailing_list.get_absolute_url }}">
+              {{ activity.subscriber.mailing_list.name }}
+            </a>
+          </span>
+        {% elif activity.is_unsubscribed %}
+          <span class="fas fa-user-minus text-danger mr-2"></span>
+          <small class="text-muted mr-2">{{ activity.date|date:'P' }}</small>
+          <span>
+            <a href="{% url 'lists:edit_subscriber' activity.subscriber.mailing_list_id activity.subscriber_id %}">
+              {{ activity.subscriber.email }}
+            </a>
+            unsubscribed from
+            <a href="{{ activity.subscriber.mailing_list.get_absolute_url }}">
+              {{ activity.subscriber.mailing_list.name }}
+            </a>
+            {% if activity.campaign %}
+              via <a href="{{ activity.campaign.get_absolute_url }}">{{ activity.campaign.name }}</a>
+            {% endif %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+
 
 {% endblock %}

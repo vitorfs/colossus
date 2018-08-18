@@ -13,6 +13,8 @@ from colossus.apps.accounts.forms import AdminUserCreationForm
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.campaigns.models import Campaign
 from colossus.apps.lists.models import MailingList
+from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.apps.subscribers.models import Activity
 
 User = get_user_model()
 
@@ -31,8 +33,13 @@ class SiteUpdateView(UpdateView):
 @login_required
 def dashboard(request):
     campaigns = Campaign.objects.filter(status=CampaignStatus.DRAFT)
+    activities = Activity.objects \
+        .select_related('subscriber__mailing_list') \
+        .filter(activity_type__in={ActivityTypes.SUBSCRIBED, ActivityTypes.UNSUBSCRIBED}) \
+        .order_by('-date')[:50]
     return render(request, 'core/dashboard.html', {
         'menu': 'dashboard',
+        'activities': activities,
         'drafts': campaigns
     })
 
