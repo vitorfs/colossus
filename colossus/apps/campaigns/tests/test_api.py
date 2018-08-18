@@ -1,6 +1,6 @@
 from django.core import mail
 
-from colossus.apps.campaigns.api import get_test_email_context, send_campaign
+from colossus.apps.campaigns.api import get_test_email_context, send_campaign, send_campaign_email_test
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.campaigns.tests.factories import (
     CampaignFactory, EmailFactory,
@@ -64,6 +64,7 @@ class GetTestEmailContextTests(TestCase):
 
 class SendCampaignTests(TestCase):
     def setUp(self):
+        super().setUp()
         self.mailing_list = MailingListFactory()
         self.subscribers = SubscriberFactory.create_batch(10, mailing_list=self.mailing_list)
         self.campaign = CampaignFactory(mailing_list=self.mailing_list, track_clicks=True, track_opens=True)
@@ -123,3 +124,66 @@ class SendCampaignTests(TestCase):
                 self.assertIn(unsubscribe_url, html_body, 'Email HTML body must contain unsubscribe link.')
                 self.assertIn('/track/click/', html_body, 'Email HTML body must contain track click links.')
                 self.assertIn('/track/open/', html_body, 'Email HTML body must contain track open pixel.')
+
+
+class SendCampaignEmailTestTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.email = EmailFactory(
+            from_email='john@doe.com',
+            from_name='John Doe',
+            subject='My email subject',
+            template_content='Hi {{ name }}!'
+        )
+        send_campaign_email_test(self.email, ['test@example.com'])
+        self.email_message = mail.outbox[0]
+
+    def test_emails_sent_count(self):
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_subject(self):
+        self.assertEqual('[Test] My email subject', self.email_message.subject)
+
+    def test_recipient(self):
+        self.assertEqual(['test@example.com'], self.email_message.to)
+
+    def test_email_contents(self):
+        """
+        Test if the emails were rendered properly.
+        Actually the expected output is "Hi << Test Name >>!" in the HTML
+        output but Django will escape the < and > characters while rendering
+        the template.
+        """
+        text_body = self.email_message.body
+        html_body, mimetype = self.email_message.alternatives[0]
+        self.assertIn('Hi << Test Name >>!', text_body)
+        self.assertIn('Hi &lt;&lt; Test Name &gt;&gt;!', html_body)
+
+
+class SendCampaignEmailTestMailingListTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.email = EmailFactory(
+            from_email='john@doe.com',
+            from_name='John Doe',
+            subject='My email subject',
+        )
+        self.email.campaign.mailing_list = MailingListFactory()
+        self.email.campaign.save()
+        self.email.set_template_content()
+        email_content = {
+            'content': '<p>Hi there!</p><p>Test email body.</p><a href="https://google.com">google</a>'
+        }
+        self.email.set_blocks(email_content)
+        self.email.save()
+        send_campaign_email_test(self.email, ['test@example.com'])
+        self.email_message = mail.outbox[0]
+
+    def test_email_contents_unsub_link(self):
+        unsubscribe_url = get_absolute_url('subscribers:unsubscribe_manual', {
+            'mailing_list_uuid': self.email.campaign.mailing_list.uuid,
+        })
+        text_body = self.email_message.body
+        html_body, mimetype = self.email_message.alternatives[0]
+        self.assertIn(unsubscribe_url, text_body, 'Email plain text body must contain unsubscribe link.')
+        self.assertIn(unsubscribe_url, html_body, 'Email HTML body must contain unsubscribe link.')
