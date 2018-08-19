@@ -8,7 +8,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def qs(context, **kwargs):
-    '''
+    """
     Returns the URL-encoded querystring for the current page,
     updating the params with the key/value pairs passed to the tag.
 
@@ -21,7 +21,7 @@ def qs(context, **kwargs):
 
     Original source by benbacardi
     https://gist.github.com/benbacardi/d6cd0fb8c85e1547c3c60f95f5b2d5e1
-    '''
+    """
     query = context['request'].GET.copy()
     for key, value in kwargs.items():
         if value:
