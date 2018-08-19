@@ -18,10 +18,14 @@
   <div class="row">
     <div class="col-3">
       <div class="list-group">
-        <a href="?" class="list-group-item list-group-item-action{% if not status %} active{% endif %}">{% trans 'Recent' %}</a>
-        {% for key, label in campaign_status.LABELS.items %}
+        <a href="?" class="list-group-item list-group-item-action{% if not status %} active{% endif %}">
+          <span class="far fa-clock mr-2"></span>
+          {% trans 'Recent' %}
+        </a>
+        {% for key in campaign_status.FILTERS %}
           <a href="?{% qs status=key %}" class="list-group-item list-group-item-action{% if status == key %} active{% endif %}">
-            {{ label }}
+            <span class="{{ campaign_status.ICONS|get:key }} mr-2"></span>
+            {{ campaign_status.LABELS|get:key }}
           </a>
         {% endfor %}
       </div>

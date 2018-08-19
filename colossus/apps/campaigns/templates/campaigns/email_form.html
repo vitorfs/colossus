@@ -85,7 +85,6 @@
       <div class="mb-3 d-flex align-items-center justify-content-between">
         <h3 class="m-0">{% trans 'Design Email' %}</h3>
         <nav>
-          <button type="button" class="btn btn-link">{% trans 'Send test email' %}</button>
           <a href="{% url 'campaigns:campaign_edit_template' campaign.pk %}" class="btn btn-link">{% trans 'Change template' %}</a>
           <button type="submit" name="action" value="save_changes" class="btn btn-outline-success" role="button">{% trans 'Save changes' %}</button>
           <button type="submit" name="action" value="save_and_close" class="btn btn-success" role="button">{% trans 'Save and close' %}</button>

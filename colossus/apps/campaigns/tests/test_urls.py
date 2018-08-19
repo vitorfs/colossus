@@ -21,7 +21,6 @@ class CampaignsLoginRequiredTests(TestCase):
             ('campaign_edit_subject', {'pk': 1}),
             ('campaign_edit_content', {'pk': 1}),
             ('campaign_edit_template', {'pk': 1}),
-            ('campaign_edit_plain_text_content', {'pk': 1}),
             ('campaign_test_email', {'pk': 1}),
             ('campaign_preview_email', {'pk': 1}),
             ('send_campaign', {'pk': 1}),

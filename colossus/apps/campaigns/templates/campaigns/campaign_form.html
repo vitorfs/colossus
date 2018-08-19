@@ -60,7 +60,7 @@
         {{ form|crispy }}
         {% if campaign %}
           <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
-          <a href="{% url 'campaigns:campaign_edit' campaign.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+          <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
         {% else %}
           <button type="submit" class="btn btn-success" role="button">{% trans 'Create campaign' %}</button>
           <a href="{% url 'campaigns:campaigns' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>

@@ -9,16 +9,18 @@
 {% endblock %}
 
 {% block innercontent %}
-  <form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="id_uuid">ID</label>
-      <input type="text" class="form-control" value="{{ link.uuid }}" readonly>
-    </div>
-    {{ form|crispy }}
-    <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
-    <a href="{% url 'campaigns:campaign_links' campaign.pk %}" class="btn btn-outline-secondary" role="button">
-      {% trans 'Never mind' %}
-    </a>
-  </form>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_uuid">ID</label>
+        <input type="text" class="form-control" value="{{ link.uuid }}" readonly>
+      </div>
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+      <a href="{% url 'campaigns:campaign_links' campaign.pk %}" class="btn btn-outline-secondary" role="button">
+        {% trans 'Never mind' %}
+      </a>
+    </form>
+  </div>
 {% endblock %}

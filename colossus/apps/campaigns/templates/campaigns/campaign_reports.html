@@ -12,58 +12,60 @@
 {% endblock %}
 
 {% block innercontent %}
-  <div class="row">
-    <div class="col">
-      <div class="d-flex justify-content-between">
-        <h5>Open rate</h5>
-        <span>{{ campaign.open_rate|percentage }}%</span>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div class="d-flex justify-content-between">
+          <h5>Open rate</h5>
+          <span>{{ campaign.open_rate|percentage }}%</span>
+        </div>
+        <div class="progress mb-2">
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ campaign.open_rate|percentage|unlocalize }}%"
+               aria-valuenow="{{ campaign.open_rate|percentage|unlocalize }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+        <small class="d-flex justify-content-between text-muted">
+          <span>List average</span>
+          <span>{{ campaign.mailing_list.open_rate|percentage }}%</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>Unique opens</span>
+          <span>{{ campaign.unique_opens_count|intcomma }}</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>Total opens</span>
+          <span>{{ campaign.total_opens_count|intcomma }}</span>
+        </small>
       </div>
-      <div class="progress mb-2">
-        <div class="progress-bar"
-             role="progressbar"
-             style="width: {{ campaign.open_rate|percentage|unlocalize }}%"
-             aria-valuenow="{{ campaign.open_rate|percentage|unlocalize }}"
-             aria-valuemin="0"
-             aria-valuemax="100"></div>
+      <div class="col">
+        <div class="d-flex justify-content-between">
+          <h5>Click rate</h5>
+          <span>{{ campaign.click_rate|percentage }}%</span>
+        </div>
+        <div class="progress mb-2">
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ campaign.click_rate|percentage|unlocalize }}%"
+               aria-valuenow="{{ campaign.click_rate|percentage|unlocalize }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+        <small class="d-flex justify-content-between text-muted">
+          <span>List average</span>
+          <span>{{ campaign.mailing_list.click_rate|percentage }}%</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>Unique clicks</span>
+          <span>{{ campaign.unique_clicks_count|intcomma }}</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>Total clicks</span>
+          <span>{{ campaign.total_clicks_count|intcomma }}</span>
+        </small>
       </div>
-      <small class="d-flex justify-content-between text-muted">
-        <span>List average</span>
-        <span>{{ campaign.mailing_list.open_rate|percentage }}%</span>
-      </small>
-      <small class="d-flex justify-content-between text-muted">
-        <span>Unique opens</span>
-        <span>{{ campaign.unique_opens_count|intcomma }}</span>
-      </small>
-      <small class="d-flex justify-content-between text-muted">
-        <span>Total opens</span>
-        <span>{{ campaign.total_opens_count|intcomma }}</span>
-      </small>
-    </div>
-    <div class="col">
-      <div class="d-flex justify-content-between">
-        <h5>Click rate</h5>
-        <span>{{ campaign.click_rate|percentage }}%</span>
-      </div>
-      <div class="progress mb-2">
-        <div class="progress-bar"
-             role="progressbar"
-             style="width: {{ campaign.click_rate|percentage|unlocalize }}%"
-             aria-valuenow="{{ campaign.click_rate|percentage|unlocalize }}"
-             aria-valuemin="0"
-             aria-valuemax="100"></div>
-      </div>
-      <small class="d-flex justify-content-between text-muted">
-        <span>List average</span>
-        <span>{{ campaign.mailing_list.click_rate|percentage }}%</span>
-      </small>
-      <small class="d-flex justify-content-between text-muted">
-        <span>Unique clicks</span>
-        <span>{{ campaign.unique_clicks_count|intcomma }}</span>
-      </small>
-      <small class="d-flex justify-content-between text-muted">
-        <span>Total clicks</span>
-        <span>{{ campaign.total_clicks_count|intcomma }}</span>
-      </small>
     </div>
   </div>
 {% endblock %}
@@ -129,7 +131,7 @@
 
   <div class="card mb-3">
     <div class="card-header">
-      {% trans 'Locations' %}
+      {% trans 'Top locations' %}
     </div>
     <div class="card-body">
       {% for location in locations %}

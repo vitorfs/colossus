@@ -1,28 +1,11 @@
 {% extends 'campaigns/base.html' %}
 
-{% load i18n %}
-
 {% block breadcrumb %}
   <li class="breadcrumb-item active" aria-current="page">{{ campaign.name }}</li>
 {% endblock %}
 
 {% block innercontent %}
-  <dl class="row mb-0">
-    <dt class="col-sm-3">Date and time</dt>
-    <dd class="col-sm-9">{{ campaign.send_date }}</dd>
-
-    <dt class="col-sm-3">From</dt>
-    <dd class="col-sm-9">{{ campaign.email.get_from }}</dd>
-
-    <dt class="col-sm-3">Subject</dt>
-    <dd class="col-sm-9">{{ campaign.email.subject }}</dd>
-
-    {% if campaign.email.preview %}
-      <dt class="col-sm-3">Preview text</dt>
-      <dd class="col-sm-9">{{ campaign.email.preview }}</dd>
-    {% endif %}
-
-    <dt class="col-sm-3">Recipients</dt>
-    <dd class="col-sm-9">{{ campaign.recipients_count }} subscribers from {{ campaign.mailing_list.name }}</dd>
-  </dl>
+  <div class="card-body">
+    {% include 'campaigns/_campaign_detail.html' %}
+  </div>
 {% endblock %}

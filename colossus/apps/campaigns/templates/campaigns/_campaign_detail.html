@@ -1,0 +1,32 @@
+{% load i18n humanize %}
+
+<dl class="row mb-0">
+  <dt class="col-sm-3">{% trans 'Date and time' %}</dt>
+  <dd class="col-sm-9 d-flex align-items-center">
+    {{ campaign.send_date }} <small class="text-muted mx-3">({{ campaign.send_date|naturaltime }})</small>
+    {% if campaign.is_scheduled %}
+      <small>
+        <a href="{% url 'campaigns:schedule_campaign' campaign.pk %}">
+          <span class="fa fa-pencil-alt"></span>
+          {% trans 'Change date and time' %}
+        </a>
+      </small>
+    {% endif %}
+  </dd>
+
+  <dt class="col-sm-3">{% trans 'From' %}</dt>
+  <dd class="col-sm-9">{{ campaign.email.get_from }}</dd>
+
+  <dt class="col-sm-3">{% trans 'Subject' %}</dt>
+  <dd class="col-sm-9">{{ campaign.email.subject }}</dd>
+
+  {% if campaign.email.preview %}
+    <dt class="col-sm-3">{% trans 'Preview text' %}</dt>
+    <dd class="col-sm-9">{{ campaign.email.preview }}</dd>
+  {% endif %}
+
+  <dt class="col-sm-3">{% trans 'Recipients' %}</dt>
+  <dd class="col-sm-9">
+    {% if campaign.is_scheduled %}{{ campaign.mailing_list.get_active_subscribers.count }}{% else %}{{ campaign.recipients_count }}{% endif %} subscribers from {{ campaign.mailing_list.name }}
+  </dd>
+</dl>

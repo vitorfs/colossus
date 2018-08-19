@@ -8,5 +8,7 @@
 {% endblock %}
 
 {% block innercontent %}
-  <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100" style="min-height:500px; border: 0 none;"></iframe>
+  <div class="card-body">
+    <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100" style="min-height:500px; border: 0 none;"></iframe>
+  </div>
 {% endblock %}

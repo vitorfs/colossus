@@ -72,6 +72,8 @@ class Campaign(models.Model):
     def get_absolute_url(self) -> str:
         if self.can_edit:
             return reverse('campaigns:campaign_edit', kwargs={'pk': self.pk})
+        elif self.is_scheduled:
+            return reverse('campaigns:campaign_scheduled', kwargs={'pk': self.pk})
         return reverse('campaigns:campaign_detail', kwargs={'pk': self.pk})
 
     def delete(self, using=None, keep_parents=False):
@@ -79,12 +81,12 @@ class Campaign(models.Model):
         update_rates_after_campaign_deletion.delay(self.mailing_list_id)
 
     @property
-    def is_ongoing(self) -> bool:
-        return self.status in (CampaignStatus.SCHEDULED,)
+    def is_scheduled(self) -> bool:
+        return self.status == CampaignStatus.SCHEDULED
 
     @property
     def can_edit(self) -> bool:
-        return self.status in (CampaignStatus.DRAFT, CampaignStatus.SCHEDULED)
+        return self.status == CampaignStatus.DRAFT
 
     @property
     def can_send(self) -> bool:

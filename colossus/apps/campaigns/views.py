@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
+from django.views import View
 from django.views.decorators.http import require_GET
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView,
@@ -20,7 +21,7 @@ from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (
     CampaignTestEmailForm, CreateCampaignForm, EmailEditorForm,
-    PlainTextEmailForm, ScheduleCampaignForm,
+    ScheduleCampaignForm,
 )
 from .mixins import CampaignMixin
 from .models import Campaign, Email, Link
@@ -45,11 +46,11 @@ class CampaignListView(CampaignMixin, ListView):
 
         try:
             status_filter = int(self.request.GET.get('status'))
-            if status_filter in CampaignStatus.LABELS.keys():
+            if status_filter in CampaignStatus.FILTERS:
                 self.extra_context['status'] = status_filter
                 queryset = queryset.filter(status=status_filter)
-        except Exception:
-            status_filter = None
+        except (ValueError, TypeError):
+            pass
 
         if self.request.GET.get('q', ''):
             query = self.request.GET.get('q')
@@ -74,6 +75,9 @@ class CampaignEditView(CampaignMixin, DetailView):
     context_object_name = 'campaign'
     template_name = 'campaigns/campaign_edit.html'
 
+    def get_queryset(self):
+        return super().get_queryset().filter(status=CampaignStatus.DRAFT)
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         messages.debug(request, '[debug] campaign uuid: %s' % self.object.uuid)
@@ -81,7 +85,6 @@ class CampaignEditView(CampaignMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs['test_email_form'] = CampaignTestEmailForm()
-        kwargs['plain_text_email_form'] = PlainTextEmailForm(instance=self.object.email)
         kwargs['checklist'] = self.object.email.checklist()
         return super().get_context_data(**kwargs)
 
@@ -91,6 +94,28 @@ class CampaignDetailView(CampaignMixin, DetailView):
     model = Campaign
     context_object_name = 'campaign'
     extra_context = {'submenu': 'details'}
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignScheduledView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    extra_context = {'submenu': 'details'}
+    template_name = 'campaigns/campaign_scheduled.html'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status=CampaignStatus.SCHEDULED)
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignRevertDraftView(View):
+    def post(self, request, pk):
+        campaign = get_object_or_404(Campaign, pk=pk, status=CampaignStatus.SCHEDULED)
+        campaign.status = CampaignStatus.DRAFT
+        campaign.save(update_fields=['status'])
+        messages.success(request, gettext('Campaign reverted to Draft status so you can make changes. Don\'t forget '
+                                          'to schedule your campaign again after you\'re done with your changes.'))
+        return redirect(campaign)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -202,9 +227,10 @@ class CampaignEditFromView(AbstractCampaignEmailUpdateView):
     fields = ('from_name', 'from_email',)
 
     def get_initial(self):
-        if not self.campaign.email and self.campaign.mailing_list is not None:
-            self.initial['from_name'] = self.campaign.mailing_list.campaign_default_from_name
-            self.initial['from_email'] = self.campaign.mailing_list.campaign_default_from_email
+        if self.campaign.mailing_list is not None:
+            if self.campaign.email.from_email == '':
+                self.initial['from_name'] = self.campaign.mailing_list.campaign_default_from_name
+                self.initial['from_email'] = self.campaign.mailing_list.campaign_default_from_email
         return super().get_initial()
 
 
@@ -213,11 +239,11 @@ class CampaignEditSubjectView(AbstractCampaignEmailUpdateView):
     title = _('Subject')
     fields = ('subject', 'preview',)
 
-
-@method_decorator(login_required, name='dispatch')
-class CampaignEditPlainTextContentView(AbstractCampaignEmailUpdateView):
-    title = _('Edit Plain-Text Email')
-    form_class = PlainTextEmailForm
+    def get_initial(self):
+        if self.campaign.mailing_list is not None:
+            if self.campaign.email.subject == '':
+                self.initial['subject'] = self.campaign.mailing_list.campaign_default_email_subject
+        return super().get_initial()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -245,6 +271,9 @@ class ScheduleCampaignView(CampaignMixin, UpdateView):
     model = Campaign
     context_object_name = 'campaign'
     form_class = ScheduleCampaignForm
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status__in={CampaignStatus.DRAFT, CampaignStatus.SCHEDULED})
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = _('Schedule campaign')
@@ -277,6 +306,11 @@ class LinkUpdateView(SuccessMessageMixin, CampaignMixin, UpdateView):
 @login_required
 def campaign_edit_content(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
+
+    if not campaign.email.template_content:
+        messages.info(request, gettext('First, select a template for your email'))
+        return redirect('campaigns:campaign_edit_template', pk=pk)
+
     if request.method == 'POST':
         form = EmailEditorForm(campaign.email, data=request.POST)
         if form.is_valid():
@@ -284,7 +318,6 @@ def campaign_edit_content(request, pk):
             if request.POST.get('action', 'save_changes') == 'save_changes':
                 return redirect('campaigns:campaign_edit_content', pk=pk)
             return redirect('campaigns:campaign_edit', pk=pk)
-
     else:
         form = EmailEditorForm(campaign.email)
     return render(request, 'campaigns/email_form.html', {

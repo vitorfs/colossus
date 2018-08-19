@@ -1,27 +1,17 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
 from .api import send_campaign_email_test
 from .constants import CampaignStatus
-from .models import Campaign, Email
+from .models import Campaign
 
 
 class CreateCampaignForm(forms.ModelForm):
     class Meta:
         model = Campaign
         fields = ('name',)
-
-    def save(self, commit=True):
-        campaign = super().save(commit=False)
-        if commit:
-            with transaction.atomic():
-                campaign.save()
-                campaign.email.set_template_content()
-                campaign.email.save()
-        return campaign
 
 
 class ScheduleCampaignForm(forms.ModelForm):
@@ -55,12 +45,6 @@ class ScheduleCampaignForm(forms.ModelForm):
             campaign.update_date = timezone.now()
             campaign.save()
         return campaign
-
-
-class PlainTextEmailForm(forms.ModelForm):
-    class Meta:
-        model = Email
-        fields = ('content_text',)
 
 
 class CampaignTestEmailForm(forms.Form):

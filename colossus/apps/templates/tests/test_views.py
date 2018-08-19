@@ -29,7 +29,9 @@ class EmailTemplateListViewTests(EmailTemplateTestCase):
         context = self.response.context
         self.assertIn('templates', context)
         self.assertEqual('templates', context['menu'])
-        self.assertEqual(5, context['total_count'])
+        # The count should be 6 because an initial template is always created
+        # automatically by a Signal, after the EmailTemplate table is created.
+        self.assertEqual(6, context['total_count'])
 
     def test_html_content(self):
         contents = map(lambda t: t.name, self.templates)

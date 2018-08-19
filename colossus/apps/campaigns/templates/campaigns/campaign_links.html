@@ -2,21 +2,29 @@
 
 {% load i18n humanize %}
 
+{% block javascript %}
+  <script>
+    $(function () {
+      $("[data-toggle='popover']").popover();
+    });
+  </script>
+{% endblock %}
+
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
   <li class="breadcrumb-item active" aria-current="page">{% trans 'Links' %}</li>
 {% endblock %}
 
 {% block innercontent %}
-  <table class="table table-striped table-bordered mb-0">
+  <table class="table table-striped mb-0" style="border-top:0 none;">
     <thead>
       <tr>
-        <th>{% trans 'ID' %}</th>
-        <th>{% trans 'URL' %}</th>
-        <th class="text-right">{% trans 'Index' %}</th>
-        <th class="text-right">{% trans 'Unique clicks' %}</th>
-        <th class="text-right">{% trans 'Total clicks' %}</th>
-        <th></th>
+        <th style="border-top:0 none;">{% trans 'ID' %}</th>
+        <th style="border-top:0 none;">{% trans 'URL' %}</th>
+        <th style="border-top:0 none;" class="text-right">{% trans 'Index' %}</th>
+        <th style="border-top:0 none;" class="text-right">{% trans 'Unique clicks' %}</th>
+        <th style="border-top:0 none;" class="text-right">{% trans 'Total clicks' %}</th>
+        <th style="border-top:0 none;"></th>
       </tr>
     </thead>
     <tbody>
@@ -24,7 +32,16 @@
         <tr>
           <td>{{ link.short_uuid }}</td>
           <td>
-            <a href="{{ link.url }}" rel="noopener nofollow" target="_blank" class="text-truncate">{{ link.url }}</a>
+            <a href="{{ link.url }}"
+               rel="noopener nofollow"
+               target="_blank"
+               class="d-inline-block text-truncate"
+               style="max-width:350px;"
+               data-toggle="popover"
+               data-trigger="hover"
+               data-placement="bottom"
+               data-container="body"
+               data-content="{{ link.url }}">{{ link.url }}</a>
           </td>
           <td class="text-right">{{ link.index }}</td>
           <td class="text-right">{{ link.unique_clicks_count|intcomma }}</td>

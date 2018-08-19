@@ -20,10 +20,11 @@ class TestCampaign(TestCase):
 
     def test_get_absolute_url(self):
         edit_url = reverse('campaigns:campaign_edit', kwargs={'pk': 1})
+        scheduled_url = reverse('campaigns:campaign_scheduled', kwargs={'pk': 1})
         detail_url = reverse('campaigns:campaign_detail', kwargs={'pk': 1})
         cases = (
             (CampaignStatus.SENT, detail_url),
-            (CampaignStatus.SCHEDULED, edit_url),
+            (CampaignStatus.SCHEDULED, scheduled_url),
             (CampaignStatus.DRAFT, edit_url),
             (CampaignStatus.QUEUED, detail_url),
             (CampaignStatus.DELIVERING, detail_url),
@@ -37,7 +38,7 @@ class TestCampaign(TestCase):
     def test_can_edit(self):
         cases = (
             (CampaignStatus.SENT, False),
-            (CampaignStatus.SCHEDULED, True),
+            (CampaignStatus.SCHEDULED, False),
             (CampaignStatus.DRAFT, True),
             (CampaignStatus.QUEUED, False),
             (CampaignStatus.DELIVERING, False),

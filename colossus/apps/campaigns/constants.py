@@ -23,6 +23,14 @@ class CampaignStatus:
     DELIVERING = 5
     PAUSED = 6
 
+    FILTERS = {SENT, SCHEDULED, DRAFT}
+
+    ICONS = {
+        SENT: 'fas fa-check',
+        SCHEDULED: 'far fa-calendar',
+        DRAFT: 'fas fa-pencil-alt'
+    }
+
     LABELS = {
         SENT: _('Sent'),
         SCHEDULED: _('Scheduled'),

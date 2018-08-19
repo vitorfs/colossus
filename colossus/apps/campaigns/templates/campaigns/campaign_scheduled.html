@@ -1,0 +1,32 @@
+{% extends 'campaigns/base.html' %}
+
+{% load campaigns crispy_forms_tags i18n %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active" aria-current="page">{{ campaign.name }}</li>
+{% endblock %}
+
+{% block maincontent %}
+  <div class="card mb-3">
+    <div class="card-body">
+      {% include 'campaigns/_campaign_detail.html' %}
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+      <div>
+        <a href="{% url 'campaigns:send_campaign' campaign.pk %}" class="btn btn-primary" role="button">{% trans 'Send now' %}</a>
+        <form action="{% url 'campaigns:campaign_revert_draft' campaign.pk %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-primary">{% trans 'Edit campaign' %}</button>
+        </form>
+        <a href="{% url 'campaigns:campaigns' %}" class="btn btn-outline-secondary" role="button">{% trans 'Return to campaigns' %}</a>
+      </div>
+      <a href="{% url 'campaigns:delete_campaign' campaign.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Discard' %}</a>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <h5 class="card-header">{% trans 'Campaign preview' %}</h5>
+    <div class="card-body">
+      <iframe src="{% url 'campaigns:campaign_preview_email' campaign.pk %}" class="w-100" style="min-height:500px; border: 0 none;"></iframe>
+    </div>
+  </div>
+{% endblock %}
