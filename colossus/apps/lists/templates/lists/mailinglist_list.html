@@ -52,8 +52,8 @@
           <tr>
             <td><a href="{{ mailing_list.get_absolute_url }}">{{ mailing_list.name }}</a></td>
             <td>{{ mailing_list.subscribers_count }}</td>
-            <td>{{ mailing_list.open_rate|percent }}</td>
-            <td>{{ mailing_list.click_rate|percent }}</td>
+            <td>{{ mailing_list.open_rate|percentage }}%</td>
+            <td>{{ mailing_list.click_rate|percentage }}%</td>
           </tr>
         {% endfor %}
       </tbody>

@@ -44,14 +44,15 @@ def get(collection: Any, key: Any):
 
 
 @register.filter
-def percent(value):
-    percentage = round(value * 100, 1)
-    return f'{percentage}%'
+def percentage(value):
+    return round(value * 100, 1)
 
 
 @register.filter
-def percentage(value):
-    return round(value * 100, 1)
+def calc_percentage(value, total):
+    if total > 0:
+        return percentage(value / total)
+    return 0.0
 
 
 @register.filter

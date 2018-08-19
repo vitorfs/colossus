@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.forms import modelform_factory
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -26,7 +26,7 @@ from .forms import (
     ConfirmSubscriberImportForm, MailingListSMTPForm,
     PasteImportSubscribersForm,
 )
-from .mixins import MailingListMixin
+from .mixins import FormTemplateMixin, MailingListMixin
 from .models import MailingList, SubscriberImport
 
 
@@ -59,8 +59,21 @@ class MailingListDetailView(DetailView):
     context_object_name = 'mailing_list'
 
     def get_context_data(self, **kwargs):
+        locations = self.object.get_active_subscribers() \
+            .select_related('location') \
+            .values('location__country__code', 'location__country__name') \
+            .annotate(total=Count('location__country__code')) \
+            .order_by('-total')[:10]
+
+        last_campaign = self.object.campaigns.order_by('-send_date').first()
+
         kwargs['menu'] = 'lists'
         kwargs['submenu'] = 'details'
+        kwargs['subscribed_count'] = self.object.subscribers.filter(status=Status.SUBSCRIBED).count()
+        kwargs['unsubscribed_count'] = self.object.subscribers.filter(status=Status.UNSUBSCRIBED).count()
+        kwargs['cleaned_count'] = self.object.subscribers.filter(status=Status.CLEANED).count()
+        kwargs['locations'] = locations
+        kwargs['last_campaign'] = last_campaign
         return super().get_context_data(**kwargs)
 
 
@@ -225,21 +238,6 @@ class FormsEditorView(MailingListMixin, TemplateView):
         kwargs['workflows'] = Workflows
         kwargs['subscription_forms'] = SUBSCRIPTION_FORM_TEMPLATE_SETTINGS
         return super().get_context_data(**kwargs)
-
-
-class FormTemplateMixin:
-    def get_object(self):
-        mailing_list_id = self.kwargs.get('pk')
-        key = self.kwargs.get('form_key')
-        if key not in TemplateKeys.LABELS.keys():
-            raise Http404
-        form_template, created = SubscriptionFormTemplate.objects.get_or_create(
-            key=key,
-            mailing_list_id=mailing_list_id
-        )
-        if created:
-            form_template.load_defaults()
-        return form_template
 
 
 @method_decorator(login_required, name='dispatch')

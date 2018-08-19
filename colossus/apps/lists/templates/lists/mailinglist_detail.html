@@ -1,7 +1,13 @@
 {% extends 'lists/base.html' %}
 
+{% load colossus static i18n l10n humanize %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'vendor/flag-icon/css/flag-icon.min.css' %}">
+{% endblock %}
+
 {% block javascript %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+  <script src="{% static 'vendor/Chart.js/2.7.2/Chart.bundle.min.js' %}"></script>
   <script type="text/javascript">
     $(function () {
       var $chartContainer = $("#subscriptionProgress");
@@ -10,9 +16,10 @@
         dataType: 'json',
         success: function (data) {
           var ctx = $chartContainer[0].getContext("2d");
-          var progressChart = new Chart(ctx, data.chart);
+          new Chart(ctx, data.chart);
         }
       });
+      $("[data-toggle='tooltip']").tooltip();
     });
   </script>
 {% endblock %}
@@ -20,5 +27,99 @@
 {% block innercontent %}
   <div class="card-body">
     <canvas id="subscriptionProgress" data-remote-url="{% url 'lists:charts_subscriptions_summary' mailing_list.pk %}"></canvas>
+  </div>
+{% endblock %}
+
+{% block outercontent %}
+  <div class="row mb-3 text-center">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-1">{{ subscribed_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Subscribed' %}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-1">{{ unsubscribed_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Unsubscribed' %}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-1">{{ cleaned_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Cleaned' %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <h5 class="card-header">{% trans 'List performance' %}</h5>
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div class="d-flex justify-content-between">
+            <h5>{% trans 'Open rate' %}</h5>
+            <span>{{ mailing_list.open_rate|percentage }}%</span>
+          </div>
+          <div class="progress mb-2">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: {{ mailing_list.open_rate|percentage|unlocalize }}%"
+                 aria-valuenow="{{ mailing_list.open_rate|percentage|unlocalize }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100"></div>
+          </div>
+          {% if last_campaign %}
+            <small class="d-flex justify-content-between text-muted">
+              <span>{% trans 'Last campaign' %}</span>
+              <span>{{ last_campaign.open_rate|percentage }}%</span>
+            </small>
+          {% endif %}
+        </div>
+        <div class="col">
+          <div class="d-flex justify-content-between">
+            <h5>{% trans 'Click rate' %}</h5>
+            <span>{{ mailing_list.click_rate|percentage }}%</span>
+          </div>
+          <div class="progress mb-2">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: {{ mailing_list.click_rate|percentage|unlocalize }}%"
+                 aria-valuenow="{{ mailing_list.click_rate|percentage|unlocalize }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100"></div>
+          </div>
+          {% if last_campaign %}
+            <small class="d-flex justify-content-between text-muted">
+              <span>{% trans 'Last campaign' %}</span>
+              <span>{{ last_campaign.click_rate|percentage }}%</span>
+            </small>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <h5 class="card-header">{% trans 'Top locations' %}</h5>
+    <div class="card-body">
+      {% for location in locations %}
+        <p class="card-text d-flex justify-content-between">
+          <span>
+            {{ location.location__country__code|flag }}
+            {{ location.location__country__name|default_if_none:'Unkown' }}
+          </span>
+          <span data-toggle="tooltip" data-placement="left" title="{{ location.total|intcomma }}">
+            {{ location.total|calc_percentage:mailing_list.subscribers_count }}%
+          </span>
+        </p>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}
