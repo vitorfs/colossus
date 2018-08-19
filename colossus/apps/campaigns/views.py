@@ -134,7 +134,7 @@ class CampaignLinksView(CampaignMixin, DetailView):
     extra_context = {'submenu': 'links'}
 
     def get_context_data(self, **kwargs):
-        kwargs['links'] = self.object.get_links().only('url', 'total_clicks_count')
+        kwargs['links'] = self.object.get_links().order_by('index')
         return super().get_context_data(**kwargs)
 
 
