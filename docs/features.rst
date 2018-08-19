@@ -13,6 +13,7 @@ Overview
 * Default double opt-in for sign ups;
 * Schedule email campaign to send on a specific date and time;
 * Track email opens and clicks;
+* Change link URL after email is sent;
 * Reports with geolocation;
 * Compatible with Mailgun, SendGrid, Mandrill, or any other SMTP email service.
 

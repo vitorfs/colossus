@@ -27,6 +27,7 @@ One-click deploy to Heroku:
 * Default double opt-in for sign ups;
 * Schedule email campaign to send on a specific date and time;
 * Track email opens and clicks;
+* Change link URL after email is sent;
 * Reports with geolocation;
 * Compatible with Mailgun, SendGrid, Mandrill, or any other SMTP email service.
 
@@ -51,22 +52,16 @@ Create a local database:
 python manage.py migrate
 ```
 
-Create a user account:
-
-```commandline
-python manage.py createsuperuser
-```
-
 Start development server:
 
 ```commandline
 python manage.py runserver
 ```
 
-Go to the login page on your browser:
+Open your browser and access the setup page to create an admin account:
 
 ```commandline
-http://127.0.0.1:8000/accounts/login/
+http://127.0.0.1:8000/setup/
 ```
 
 PS: Campaign scheduling will not work out-of-the-box. You need to install a message broker and [setup Celery](https://simpleisbetterthancomplex.com/tutorial/2017/08/20/how-to-use-celery-with-django.html) properly.
