@@ -28,7 +28,7 @@
   <hr class="mt-2">
   {% for activity in activities %}
     {% ifchanged %}
-      <h6 class="mb-2{% if not forloop.first %} mt-4{% endif %}">{{ activity.date|date:'j M, Y' }}</h6>
+      <h6 class="mb-2 mt-4">{{ activity.date|date:'j M, Y' }}</h6>
     {% endifchanged %}
     <div class="card mb-2">
       <div class="card-body align-middle">
