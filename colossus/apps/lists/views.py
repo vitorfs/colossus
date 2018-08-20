@@ -93,6 +93,10 @@ class SubscriberListView(MailingListMixin, ListView):
     def get_queryset(self):
         queryset = self.model.objects.filter(mailing_list_id=self.kwargs.get('pk'))
 
+        tags_filter = self.request.GET.getlist('tags__in')
+        if tags_filter:
+            queryset = queryset.filter(tags__in=tags_filter)
+
         if self.request.GET.get('q', ''):
             query = self.request.GET.get('q').strip()
 
@@ -199,6 +203,20 @@ class TagListView(TagMixin, MailingListMixin, ListView):
     context_object_name = 'tags'
     paginate_by = 100
     template_name = 'lists/tag_list.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if self.request.GET.get('q', ''):
+            query = self.request.GET.get('q').strip()
+            queryset = queryset.filter(Q(name__icontains=query) | Q(description__icontains=query))
+            self.extra_context.update({
+                'is_filtered': True,
+                'query': query
+            })
+
+        queryset = queryset.annotate(subscribers_count=Count('subscribers'))
+        return queryset.order_by('name')
 
 
 @method_decorator(login_required, name='dispatch')

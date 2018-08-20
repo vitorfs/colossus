@@ -36,7 +36,6 @@
     <thead class="thead-light">
       <tr>
         <th>{% trans 'Tag' %}</th>
-        <th>{% trans 'Description' %}</th>
         <th>{% trans 'Subscribers' %}</th>
         <th></th>
       </tr>
@@ -44,18 +43,24 @@
     <tbody>
       {% for tag in tags %}
         <tr>
-          <td class="align-middle"><a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a></td>
-          <td class="align-middle">{{ tag.description }}</td>
-          <td class="align-middle">{{ tag.subscribers.count }}</td>
+          <td class="align-middle">
+            <span class="badge badge-primary">{{ tag.name }}</span>
+            {% if tag.description %}
+              <p class="mb-0">
+                <small class="text-muted">{{ tag.description }}</small>
+              </p>
+            {% endif %}
+          </td>
+          <td class="align-middle">{{ tag.subscribers_count }}</td>
           <td class="align-middle text-right">
             <div class="btn-group">
-              <a href="{{ tag.get_absolute_url }}" class="btn btn-outline-primary">{% trans 'View' %}</a>
+              <a href="{% url 'lists:subscribers' mailing_list.pk %}?tags__in={{ tag.pk }}" class="btn btn-outline-primary">{% trans 'View' %}</a>
               <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">{% trans 'Toggle Dropdown' %}</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" href="#">{% trans 'Send' %}</a>
-                <a class="dropdown-item" href="#">{% trans 'Edit' %}</a>
+                <a class="dropdown-item" href="{% url 'lists:edit_tag' mailing_list.pk tag.pk %}">{% trans 'Edit' %}</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">{% trans 'Delete' %}</a>
               </div>
