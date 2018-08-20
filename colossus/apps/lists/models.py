@@ -67,7 +67,7 @@ class MailingList(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('mailing:list', kwargs={'pk': self.pk})
+        return reverse('mailing:subscribers', kwargs={'pk': self.pk})
 
     def get_active_subscribers(self):
         return self.subscribers.filter(status=Status.SUBSCRIBED)

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, Q
 from django.forms import modelform_factory
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
@@ -14,7 +15,7 @@ from django.views.generic import (
 
 from colossus.apps.subscribers.constants import Status, TemplateKeys, Workflows
 from colossus.apps.subscribers.models import (
-    Subscriber, SubscriptionFormTemplate,
+    Subscriber, SubscriptionFormTemplate, Tag,
 )
 from colossus.apps.subscribers.subscription_settings import (
     SUBSCRIPTION_FORM_TEMPLATE_SETTINGS,
@@ -182,6 +183,56 @@ class SubscriptionFormsView(MailingListMixin, TemplateView):
         })
         kwargs['unsub_short'] = get_absolute_url('unsubscribe_shortcut', {'mailing_list_slug': self.mailing_list.slug})
         return super().get_context_data(**kwargs)
+
+
+class TagMixin:
+    model = Tag
+    extra_context = {'submenu': 'tags'}
+    pk_url_kwarg = 'tag_pk'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(mailing_list_id=self.kwargs.get('pk'))
+
+
+@method_decorator(login_required, name='dispatch')
+class TagListView(TagMixin, MailingListMixin, ListView):
+    context_object_name = 'tags'
+    paginate_by = 100
+    template_name = 'lists/tag_list.html'
+
+
+@method_decorator(login_required, name='dispatch')
+class TagCreateView(TagMixin, MailingListMixin, CreateView):
+    fields = ('name', 'description')
+    context_object_name = 'tag'
+    template_name = 'lists/tag_form.html'
+
+    def form_valid(self, form):
+        tag = form.save(commit=False)
+        tag.mailing_list_id = self.kwargs.get('pk')
+        tag.save()
+        messages.success(self.request, _('Tag "%(name)s" created with success.') % form.cleaned_data)
+        return redirect('lists:tags', pk=self.kwargs.get('pk'))
+
+
+@method_decorator(login_required, name='dispatch')
+class TagUpdateView(SuccessMessageMixin, TagMixin, MailingListMixin, UpdateView):
+    fields = ('name', 'description')
+    context_object_name = 'tag'
+    template_name = 'lists/tag_form.html'
+    success_message = _('Tag "%(name)s" updated with success.')
+
+    def get_success_url(self):
+        return reverse('lists:tags', kwargs={'pk': self.kwargs.get('pk')})
+
+
+@method_decorator(login_required, name='dispatch')
+class TagDeleteView(TagMixin, MailingListMixin, DeleteView):
+    context_object_name = 'tag'
+    template_name = 'lists/tag_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('lists:tags', kwargs={'pk': self.kwargs.get('pk')})
 
 
 @method_decorator(login_required, name='dispatch')

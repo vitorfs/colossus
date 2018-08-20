@@ -22,6 +22,12 @@ urlpatterns = [
     path('<int:pk>/subscribers/import/paste/', views.PasteEmailsImportSubscribersView.as_view(), name='paste_import_subscribers'),
     path('<int:pk>/subscribers/<int:subscriber_pk>/edit/', views.SubscriberUpdateView.as_view(), name='edit_subscriber'),
     path('<int:pk>/subscribers/<int:subscriber_pk>/delete/', views.SubscriberDeleteView.as_view(), name='delete_subscriber'),
+
+    path('<int:pk>/tags/', views.TagListView.as_view(), name='tags'),
+    path('<int:pk>/tags/add/', views.TagCreateView.as_view(), name='new_tag'),
+    path('<int:pk>/tags/<int:tag_pk>/edit/', views.TagUpdateView.as_view(), name='edit_tag'),
+    path('<int:pk>/tags/<int:tag_pk>/delete/', views.TagDeleteView.as_view(), name='delete_tag'),
+
     path('<int:pk>/forms/', views.SubscriptionFormsView.as_view(), name='subscription_forms'),
     path('<int:pk>/forms/editor/', views.FormsEditorView.as_view(), name='forms_editor'),
     path('<int:pk>/forms/editor/design/', views.CustomizeDesignView.as_view(), name='customize_design'),

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:tags' mailing_list.pk %}">{% trans 'Tags' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
+        {% if tag %}
+          {{ tag.name }}
+        {% else %}
+          {% trans 'New tag' %}
+        {% endif %}
+      {% endspaceless %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-10 col-lg-6">
+            {{ form|crispy }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" role="button">
+          {% if tag %}
+            {% trans 'Save changes' %}
+          {% else %}
+            {% trans 'Create tag' %}
+          {% endif %}
+        </button>
+        <a href="{% url 'lists:tags' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% if object %}
+          <a href="{% url 'lists:delete_tag' mailing_list.pk tag.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Delete' %}</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+{% endblock %}

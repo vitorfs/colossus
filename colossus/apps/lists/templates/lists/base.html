@@ -31,6 +31,11 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link{% if submenu == 'tags' %} active{% endif %}" href="{% url 'lists:tags' mailing_list.pk %}">
+            {% trans 'Tags' %}
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link{% if submenu == 'forms' %} active{% endif %}" href="{% url 'lists:subscription_forms' mailing_list.pk %}">
             {% trans 'Subscription Forms' %}
           </a>
