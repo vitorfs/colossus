@@ -124,25 +124,34 @@ class Subscriber(models.Model):
             return '%s <%s>' % (self.name, self.email)
         return self.email
 
-    @transaction.atomic()
     def confirm_subscription(self, request):
         ip_address = get_client_ip(request)
-        self.status = Status.SUBSCRIBED
-        self.confirm_ip_address = ip_address
-        self.confirm_date = timezone.now()
-        self.save()
-        self.create_activity(ActivityTypes.SUBSCRIBED, ip_address=ip_address)
-        self.tokens.filter(description='confirm_subscription').delete()
+
+        with transaction.atomic():
+            self.status = Status.SUBSCRIBED
+            self.confirm_ip_address = ip_address
+            self.last_seen_ip_address = ip_address
+            self.confirm_date = timezone.now()
+            self.save()
+            activity = self.create_activity(ActivityTypes.SUBSCRIBED, ip_address=ip_address)
+            self.tokens.filter(description='confirm_subscription').delete()
+
+        update_subscriber_location.delay(ip_address, self.pk, activity.pk)
 
         welcome_email = self.mailing_list.get_welcome_email_template()
         if welcome_email.send_email:
             welcome_email.send(self.get_email())
 
-    @transaction.atomic()
     def unsubscribe(self, request, campaign=None):
-        self.status = Status.UNSUBSCRIBED
-        self.save()
-        self.create_activity(ActivityTypes.UNSUBSCRIBED, campaign=campaign, ip_address=get_client_ip(request))
+        ip_address = get_client_ip(request)
+
+        with transaction.atomic():
+            self.status = Status.UNSUBSCRIBED
+            self.last_seen_ip_address = ip_address
+            self.save()
+            activity = self.create_activity(ActivityTypes.UNSUBSCRIBED, campaign=campaign, ip_address=ip_address)
+
+        update_subscriber_location.delay(ip_address, self.pk, activity.pk)
 
         goodbye_email = self.mailing_list.get_goodbye_email_template()
         if goodbye_email.send_email:
