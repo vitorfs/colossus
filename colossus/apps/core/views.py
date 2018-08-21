@@ -34,7 +34,7 @@ class SiteUpdateView(UpdateView):
 def dashboard(request):
     campaigns = Campaign.objects.filter(status=CampaignStatus.DRAFT)
     activities = Activity.objects \
-        .select_related('subscriber__mailing_list') \
+        .select_related('campaign', 'subscriber__mailing_list') \
         .filter(activity_type__in={ActivityTypes.SUBSCRIBED, ActivityTypes.UNSUBSCRIBED}) \
         .order_by('-date')[:50]
     return render(request, 'core/dashboard.html', {

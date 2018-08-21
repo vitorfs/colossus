@@ -11,6 +11,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'vendor/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}">
   <link href="https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'notifications/css/notifications.css' %}">
   <title>{% block title %}Colossus{% endblock %}</title>
   {% block stylesheet %}
   {% endblock %}
@@ -46,15 +47,22 @@
       </div>
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="javascript:void(0);" tabindex="0" class="nav-link" id="notifications" role="button" title="{% trans 'Notifications' %}">
-            {% if notifications_count > 0 %}
+          <a href="javascript:void(0);"
+             tabindex="0"
+             class="nav-link"
+             id="notifications"
+             role="button"
+             title="{% trans 'Notifications' %}"
+             data-url="{% url 'notifications:unread' %}"
+             data-loading="{% trans 'Loading notifications...' %}">
+            <span class="has-notifications {% if notifications_count > 0 %} active{% endif %}">
               <span class="fa fa-bell text-primary"></span>
-              <small class="align-text-top">
-                <span class="badge badge-pill badge-danger">{{ notifications_count }}</span>
-              </small>
-            {% else %}
+              <span class="badge badge-pill badge-danger px-1"
+                    style="font-size:60%; position: absolute; margin-top: -25px; margin-left: 10px">{{ notifications_count }}</span>
+            </span>
+            <span class="empty-notifications {% if notifications_count == 0 %} active{% endif %}">
               <span class="far fa-bell"></span>
-            {% endif %}
+            </span>
             <span class="sr-only">{% trans 'Notifications' %}</span>
           </a>
         </li>
@@ -85,22 +93,11 @@
     </div>
   {% endblock main %}
 {% endblock body %}
-<div id="notificationsContent" style="display: none;">
-  {% for notification in notifications %}
-    <div>
-      <a href="" class="d-block">{{ notification.text }}</a>
-      <small class="text-muted">{{ notification.date|date:"D d M Y - P" }}</small>
-      {% if not forloop.last %}
-        <hr class="my-2">
-      {% endif %}
-    </div>
-  {% empty %}
-    <p class="mb-0 text-muted">All cleared up!</p>
-  {% endfor %}
-</div>
+<div id="notificationsContainer"></div>
 <script src="{% static 'vendor/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'vendor/popper.js-1.14.4/umd/popper.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap-4.1.3/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'notifications/js/notifications.js' %}"></script>
 <script src="{% static 'vendor/feather-icons-4.7.3/feather.min.js' %}"></script>
 <script src="{% static 'vendor/moment/moment.min.js' %}"></script>
 <script src="{% static 'vendor/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
@@ -122,14 +119,6 @@
     });
     $(".datetimeinput").datetimepicker({
       format: 'YYYY-MM-DD HH:mm:ss'
-    });
-    $("#notifications").popover({
-      container: 'body',
-      html: true,
-      placement: 'bottom',
-      content: function () {
-        return $("#notificationsContent").html();
-      }
     });
   });
 </script>

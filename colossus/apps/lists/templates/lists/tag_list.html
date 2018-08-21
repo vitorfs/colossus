@@ -1,0 +1,74 @@
+{% extends 'lists/base.html' %}
+
+{% load colossus i18n %}
+
+{% block title %}{% trans 'Tags' %}{% endblock %}
+
+{% block innerbreadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Tags' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <div class="row">
+      <div class="col-6">
+        <form method="get">
+          <div class="input-group">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search tags' %}" aria-label="{% trans 'Search tags' %}">
+            <div class="input-group-append">
+              {% if query %}
+                <a href="?" class="btn btn-outline-primary" role="button">
+                  {% trans 'Clear' %}
+                </a>
+              {% endif %}
+              <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-6 text-right">
+        <a href="{% url 'lists:new_tag' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add tag' %}</a>
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped mb-0">
+    <thead class="thead-light">
+      <tr>
+        <th>{% trans 'Tag' %}</th>
+        <th>{% trans 'Subscribers' %}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tag in tags %}
+        <tr>
+          <td class="align-middle">
+            <span class="badge badge-primary">{{ tag.name }}</span>
+            {% if tag.description %}
+              <p class="mb-0">
+                <small class="text-muted">{{ tag.description }}</small>
+              </p>
+            {% endif %}
+          </td>
+          <td class="align-middle">{{ tag.subscribers_count }}</td>
+          <td class="align-middle text-right">
+            <div class="btn-group">
+              <a href="{% url 'lists:subscribers' mailing_list.pk %}?tags__in={{ tag.pk }}" class="btn btn-outline-primary">{% trans 'View' %}</a>
+              <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">{% trans 'Toggle Dropdown' %}</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#">{% trans 'Send' %}</a>
+                <a class="dropdown-item" href="{% url 'lists:edit_tag' mailing_list.pk tag.pk %}">{% trans 'Edit' %}</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">{% trans 'Delete' %}</a>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include 'includes/card_footer_paginator.html' %}
+{% endblock %}

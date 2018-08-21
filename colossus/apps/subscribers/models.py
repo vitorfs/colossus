@@ -5,8 +5,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
 from django.db.models import Count, Q
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 import html2text
@@ -26,6 +28,28 @@ from colossus.utils import get_absolute_url, get_client_ip
 from .activities import render_activity
 from .constants import ActivityTypes, Status, TemplateKeys
 from .subscription_settings import SUBSCRIPTION_FORM_TEMPLATE_SETTINGS
+
+
+class Tag(models.Model):
+    name = models.SlugField()
+    description = models.TextField(blank=True)
+    mailing_list = models.ForeignKey(MailingList, on_delete=models.CASCADE, related_name='tags')
+
+    class Meta:
+        verbose_name = _('tag')
+        verbose_name_plural = _('tags')
+        unique_together = (('name', 'mailing_list'),)
+        db_table = 'colossus_tags'
+
+    def __str__(self) -> str:
+        return self.name
+
+    def get_absolute_url(self) -> str:
+        return reverse('lists:edit_tag', kwargs={'pk': self.mailing_list_id, 'tag_pk': self.pk})
+
+    def clean(self):
+        super().clean()
+        self.name = slugify(self.name)
 
 
 class SubscriberManager(models.Manager):
@@ -81,6 +105,7 @@ class Subscriber(models.Model):
         related_name='subscribers',
     )
     last_sent = models.DateTimeField(_('last campaign sent date'), null=True, blank=True)
+    tags = models.ManyToManyField(Tag, related_name='subscribers', verbose_name=_('tags'))
     tokens = GenericRelation(Token)
 
     objects = SubscriberManager()
