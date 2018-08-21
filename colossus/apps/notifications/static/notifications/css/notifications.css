@@ -1,0 +1,22 @@
+#notificationsContainer .popover-body {
+    padding: 0;
+}
+
+#notificationsContainer .popover-body .list-group-flush:last-child .list-group-item:last-child {
+    border-bottom-left-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+}
+
+#notificationsContainer .popover {
+    max-width: 100%;
+}
+
+.has-notifications,
+.empty-notifications {
+    display: none;
+}
+
+.has-notifications.active,
+.empty-notifications.active {
+    display: inline-block!important;
+}

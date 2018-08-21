@@ -1,12 +1,8 @@
 def notifications(request):
     if request.user.is_authenticated:
-        user_notifications = request.user.notifications \
-            .values('text', 'date', 'is_read') \
-            .filter(is_read=False) \
-            .order_by('-date')
+        count = request.user.notifications.filter(is_seen=False).count()
         return {
-            'notifications': user_notifications,
-            'notifications_count': user_notifications.count()
+            'notifications_count': count
         }
     else:
         return dict()

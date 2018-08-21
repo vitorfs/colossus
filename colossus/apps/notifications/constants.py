@@ -21,10 +21,4 @@ class Actions:
         }
     }
 
-    LABELS = {
-        IMPORT_COMPLETED: _('Subscribers import completed'),
-        IMPORT_ERRORED: _('Subscribers import failed'),
-        CAMPAIGN_SENT: _('Campaign sent')
-    }
-
-    CHOICES = tuple(LABELS.items())
+    CHOICES = tuple([(key, options['label']) for key, options in ITEMS.items()])

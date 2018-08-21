@@ -15,20 +15,20 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">{% trans 'Notifications' %}</h2>
         <nav>
-          <a href="" class="btn btn-outline-primary" role="button">{% trans 'Clear all' %}</a>
+          <a href="" class="btn btn-outline-danger" role="button">{% trans 'Delete all' %}</a>
           <a href="" class="btn btn-primary" role="button">{% trans 'Mark all as read' %}</a>
         </nav>
       </div>
-      <div class="card">
-        <div class="card-body">
-          {% for notification in notifications %}
-            {% ifchanged %}
-              <h6>{{ notification.date|date:'j M, Y' }}</h6>
-            {% endifchanged %}
-          {% empty %}
-          {% endfor %}
+      {% for notification in notifications %}
+        {% ifchanged %}
+          <h5>{{ notification.date|date:'j M, Y' }}</h5>
+        {% endifchanged %}
+        <div class="card mb-2">
+          <div class="card-body">
+            {{ notification.text }}
+          </div>
         </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
 {% endblock %}
