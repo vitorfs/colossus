@@ -29,6 +29,9 @@ class NotificationDetailView(DetailView):
     model = Notification
     context_object_name = 'notification'
 
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         if not self.object.is_read:
