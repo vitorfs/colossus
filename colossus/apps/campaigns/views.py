@@ -76,7 +76,10 @@ class CampaignEditView(CampaignMixin, DetailView):
     template_name = 'campaigns/campaign_edit.html'
 
     def get_queryset(self):
-        return super().get_queryset().filter(status=CampaignStatus.DRAFT)
+        return super().get_queryset() \
+            .select_related('mailing_list') \
+            .prefetch_related('emails') \
+            .filter(status=CampaignStatus.DRAFT)
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
