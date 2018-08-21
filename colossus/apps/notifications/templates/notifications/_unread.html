@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load colossus i18n %}
 
 <div class="list-group list-group-flush" style="max-width:300px;">
   {% if notifications %}
@@ -8,10 +8,13 @@
     {% for notification in notifications %}
       <a href="{% url 'notifications:notification_detail' notification.pk %}" class="list-group-item list-group-item-action{% if not notification.is_read %} list-group-item-primary{% endif %}">
         <p class="mb-0">{{ notification.text }}</p>
-        <small class="text-muted">{{ notification.date|date:"D d M Y - P" }}</small>
+        <small class="text-muted">
+          <span class="{{ Actions.ITEMS|get:notification.action|get:'icon' }} mr-1"></span>
+          {{ notification.date|date:"D d M Y - P" }}
+        </small>
       </a>
     {% endfor %}
-    <a href="{% url 'notifications:notifications' %}" class="list-group-item list-group-item-action list-group-item-dark text-center py-2">
+    <a href="{% url 'notifications:notifications' %}" class="list-group-item list-group-item-action text-primary text-center py-2">
       {% trans 'See All' %}
     </a>
   {% else %}

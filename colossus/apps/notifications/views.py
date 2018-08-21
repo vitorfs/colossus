@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView
 
+from colossus.apps.notifications.constants import Actions
 from colossus.apps.notifications.models import Notification
 
 
@@ -40,7 +41,8 @@ def unread(request):
     notifications = Notification.objects.filter(user=request.user).order_by('-date')
     notifications.update(is_seen=True)
     context = {
-        'notifications': notifications[:5]
+        'notifications': notifications[:5],
+        'Actions': Actions
     }
     html = render_to_string('notifications/_unread.html', context, request)
     return JsonResponse({'html': html})
