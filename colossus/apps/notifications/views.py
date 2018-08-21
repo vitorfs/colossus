@@ -13,6 +13,7 @@ class NotificationListView(ListView):
     model = Notification
     context_object_name = 'notifications'
     paginate_by = 100
+    ordering = '-date'
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
