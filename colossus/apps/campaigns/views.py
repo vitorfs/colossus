@@ -157,13 +157,13 @@ class CampaignReportsView(CampaignMixin, DetailView):
             .filter(campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.UNSUBSCRIBED) \
             .count()
 
-        subscribers = Activity.objects \
+        subscriber_open_activities = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
-            .values('subscriber__email') \
+            .values('subscriber__id', 'subscriber__email') \
             .annotate(total_opens=Count('id')) \
             .order_by('-total_opens')[:10]
 
-        locations = Activity.objects \
+        location_open_activities = Activity.objects \
             .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
             .values('location__country__code', 'location__country__name') \
             .annotate(total_opens=Count('id')) \
@@ -172,8 +172,8 @@ class CampaignReportsView(CampaignMixin, DetailView):
         kwargs.update({
             'links': links,
             'unsubscribed_count': unsubscribed_count,
-            'subscribers': subscribers,
-            'locations': locations,
+            'subscriber_open_activities': subscriber_open_activities,
+            'location_open_activities': location_open_activities,
         })
         return super().get_context_data(**kwargs)
 

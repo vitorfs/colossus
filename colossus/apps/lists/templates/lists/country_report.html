@@ -1,0 +1,37 @@
+{% extends 'lists/base.html' %}
+
+{% load colossus static i18n l10n humanize %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'vendor/flag-icon/css/flag-icon.min.css' %}">
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'vendor/Chart.js/2.7.2/Chart.bundle.min.js' %}"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("[data-toggle='tooltip']").tooltip();
+    });
+  </script>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <h3 class="card-title d-flex justify-content-between">
+      <span>
+        {{ country.code|flag }}
+        {{ country.name }}
+      </span>
+      <span data-toggle="tooltip" data-placement="left" title="{{ country_total_subscribers|intcomma }}">
+        {{ country_total_subscribers|calc_percentage:mailing_list.subscribers_count }}%
+      </span>
+    </h3>
+    <hr>
+      {% for city in cities %}
+        <p class="card-text d-flex justify-content-between">
+          <span>{{ city.location__name }}</span>
+          <span>{{ city.total|intcomma }}</span>
+        </p>
+      {% endfor %}
+  </div>
+{% endblock %}

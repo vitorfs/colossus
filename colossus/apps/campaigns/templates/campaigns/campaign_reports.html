@@ -28,21 +28,21 @@
                aria-valuemax="100"></div>
         </div>
         <small class="d-flex justify-content-between text-muted">
-          <span>List average</span>
+          <span>{% trans 'List average' %}</span>
           <span>{{ campaign.mailing_list.open_rate|percentage }}%</span>
         </small>
         <small class="d-flex justify-content-between text-muted">
-          <span>Unique opens</span>
+          <span>{% trans 'Unique opens' %}</span>
           <span>{{ campaign.unique_opens_count|intcomma }}</span>
         </small>
         <small class="d-flex justify-content-between text-muted">
-          <span>Total opens</span>
+          <span>{% trans 'Total opens' %}</span>
           <span>{{ campaign.total_opens_count|intcomma }}</span>
         </small>
       </div>
       <div class="col">
         <div class="d-flex justify-content-between">
-          <h5>Click rate</h5>
+          <h5>{% trans 'Click rate' %}</h5>
           <span>{{ campaign.click_rate|percentage }}%</span>
         </div>
         <div class="progress mb-2">
@@ -54,15 +54,15 @@
                aria-valuemax="100"></div>
         </div>
         <small class="d-flex justify-content-between text-muted">
-          <span>List average</span>
+          <span>{% trans 'List average' %}</span>
           <span>{{ campaign.mailing_list.click_rate|percentage }}%</span>
         </small>
         <small class="d-flex justify-content-between text-muted">
-          <span>Unique clicks</span>
+          <span>{% trans 'Unique clicks' %}</span>
           <span>{{ campaign.unique_clicks_count|intcomma }}</span>
         </small>
         <small class="d-flex justify-content-between text-muted">
-          <span>Total clicks</span>
+          <span>{% trans 'Total clicks' %}</span>
           <span>{{ campaign.total_clicks_count|intcomma }}</span>
         </small>
       </div>
@@ -120,10 +120,10 @@
       {% trans 'Subscribers with most opens' %}
     </div>
     <div class="card-body">
-      {% for subscriber in subscribers %}
+      {% for activity in subscriber_open_activities %}
         <p class="card-text d-flex justify-content-between">
-          {{ subscriber.subscriber__email }}
-          <span>{{ subscriber.total_opens|intcomma }}</span>
+          <a href="{% url 'lists:edit_subscriber' campaign.mailing_list_id activity.subscriber__id %}">{{ activity.subscriber__email }}</a>
+          <span>{{ activity.total_opens|intcomma }}</span>
         </p>
       {% endfor %}
     </div>
@@ -134,13 +134,13 @@
       {% trans 'Top locations' %}
     </div>
     <div class="card-body">
-      {% for location in locations %}
+      {% for activity in location_open_activities %}
         <p class="card-text d-flex justify-content-between">
           <span>
-            {{ location.location__country__code|flag }}
-            {{ location.location__country__name|default_if_none:'Unkown' }}
+            {{ activity.location__country__code|flag }}
+            {{ activity.location__country__name|default_if_none:'Unkown' }}
           </span>
-          <span>{{ location.total_opens|intcomma }}</span>
+          <span>{{ activity.total_opens|intcomma }}</span>
         </p>
       {% endfor %}
     </div>

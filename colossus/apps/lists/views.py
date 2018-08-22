@@ -13,6 +13,7 @@ from django.views.generic import (
     UpdateView, View,
 )
 
+from colossus.apps.core.models import Country
 from colossus.apps.subscribers.constants import Status, TemplateKeys, Workflows
 from colossus.apps.subscribers.models import (
     Subscriber, SubscriptionFormTemplate, Tag,
@@ -75,6 +76,32 @@ class MailingListDetailView(DetailView):
         kwargs['cleaned_count'] = self.object.subscribers.filter(status=Status.CLEANED).count()
         kwargs['locations'] = locations
         kwargs['last_campaign'] = last_campaign
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class MailingListCountryReportView(MailingListMixin, DetailView):
+    model = MailingList
+    context_object_name = 'mailing_list'
+    template_name = 'lists/country_report.html'
+
+    def get_context_data(self, **kwargs):
+        country_code = self.kwargs.get('country_code')
+        country = get_object_or_404(Country, code=country_code)
+        country_total_subscribers = self.object.get_active_subscribers() \
+            .filter(location__country__code=country_code) \
+            .values('location__country__code') \
+            .aggregate(total=Count('location__country__code'))
+        cities = self.object.get_active_subscribers() \
+                     .filter(location__country__code=country_code) \
+                     .select_related('location') \
+                     .values('location__name') \
+                     .annotate(total=Count('location__name')) \
+                     .order_by('-total')[:100]
+        kwargs['menu'] = 'lists'
+        kwargs['country'] = country
+        kwargs['country_total_subscribers'] = country_total_subscribers['total']
+        kwargs['cities'] = cities
         return super().get_context_data(**kwargs)
 
 

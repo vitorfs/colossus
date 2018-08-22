@@ -113,7 +113,7 @@
         <p class="card-text d-flex justify-content-between">
           <span>
             {{ location.location__country__code|flag }}
-            {{ location.location__country__name|default_if_none:'Unkown' }}
+            <a href="{% url 'lists:country_report' mailing_list.pk location.location__country__code %}">{{ location.location__country__name }}</a>
           </span>
           <span data-toggle="tooltip" data-placement="left" title="{{ location.total|intcomma }}">
             {{ location.total|calc_percentage:mailing_list.subscribers_count }}%

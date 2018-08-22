@@ -125,6 +125,9 @@ class Subscriber(models.Model):
     def __str__(self):
         return self.email
 
+    def get_absolute_url(self):
+        return reverse('lists:edit_subscriber', kwargs={'pk': self.mailing_list_id, 'subscriber_pk': self.pk})
+
     def clean(self):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
