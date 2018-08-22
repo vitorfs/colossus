@@ -130,7 +130,7 @@ class SubscriberCreateView(MailingListMixin, CreateView):
 @method_decorator(login_required, name='dispatch')
 class SubscriberUpdateView(MailingListMixin, UpdateView):
     model = Subscriber
-    fields = '__all__'
+    fields = ('email', 'name', 'status')
     pk_url_kwarg = 'subscriber_pk'
     template_name = 'lists/subscriber_form.html'
 

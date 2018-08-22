@@ -2,7 +2,6 @@ import datetime
 from collections import OrderedDict
 
 from django.db.models import Count, Q
-from django.db.models.functions import TruncDate
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -58,9 +57,9 @@ class SubscriptionsSummaryChart(Chart):
         unsubscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.UNSUBSCRIBED))
         activities = Activity.objects \
             .filter(subscriber__mailing_list=self.mailing_list, date__gte=thirty_days_ago) \
-            .values(trunc_date=TruncDate('date')) \
+            .values('date__date') \
             .annotate(subscribed=subscribed_expression, unsubscribed=unsubscribed_expression) \
-            .order_by('trunc_date')
+            .order_by('date__date')
 
         # First initialize the `series` dictionary with all last 30 days.
         # This is necessary because if the count of subscribers for a given
@@ -68,7 +67,7 @@ class SubscriptionsSummaryChart(Chart):
         # we can still show an empty bar in the bar chart for that day.
         # It's a way to keep the rendering of the bar chart consistent.
         series = OrderedDict()
-        for i in range(-1, 29):  # FIXME: There is an issue with current day, or something related to timezone
+        for i in range(30):
             date = timezone.now() - datetime.timedelta(i)
             key = date.strftime('%-d %b, %y')
             series[key] = {'sub': 0, 'unsub': 0, 'order': i}
@@ -76,7 +75,7 @@ class SubscriptionsSummaryChart(Chart):
         # Now we are replacing the existing entries with actual counts
         # comming from our queryset.
         for entry in activities:
-            key = entry['trunc_date'].strftime('%-d %b, %y')
+            key = entry['date__date'].strftime('%-d %b, %y')
             series[key]['sub'] = entry['subscribed']
             series[key]['unsub'] = entry['unsubscribed']
 
