@@ -26,7 +26,7 @@
 
 {% block innercontent %}
   <div class="card-body">
-    <h5 class="card-title">List Overview <small class="text-muted">(for Last 30 days)</small></h5>
+    <h5 class="card-title">{% trans 'List Overview' %} <small class="text-muted">{% trans '(for Last 30 days)' %}</small></h5>
     <canvas id="subscriptionProgress" data-remote-url="{% url 'lists:charts_subscriptions_summary' mailing_list.pk %}"></canvas>
   </div>
   <table class="table table-bordered mb-0" style="border: 0 none;">
