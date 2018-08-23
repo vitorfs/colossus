@@ -75,6 +75,12 @@ class MailingListDetailView(DetailView):
 
         last_campaign = self.object.campaigns.order_by('-send_date').first()
 
+        domains = self.object.get_active_subscribers() \
+            .select_related('domain') \
+            .values('domain__name') \
+            .annotate(total=Count('domain__name')) \
+            .order_by('-total')[:10]
+
         thirty_days_ago = timezone.now() - datetime.timedelta(30)
         subscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.SUBSCRIBED))
         unsubscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.UNSUBSCRIBED))
@@ -93,6 +99,7 @@ class MailingListDetailView(DetailView):
         kwargs['locations'] = locations
         kwargs['last_campaign'] = last_campaign
         kwargs['summary_last_30_days'] = summary_last_30_days
+        kwargs['domains'] = domains
         return super().get_context_data(**kwargs)
 
 

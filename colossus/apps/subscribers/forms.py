@@ -9,7 +9,7 @@ from django.utils.translation import gettext
 from colossus.utils import get_client_ip
 
 from .constants import Status
-from .models import Subscriber
+from .models import Domain, Subscriber
 
 
 class SubscribeForm(forms.ModelForm):
@@ -43,7 +43,14 @@ class SubscribeForm(forms.ModelForm):
     @transaction.atomic
     def subscribe(self, request):
         email = self.cleaned_data.get('email')
-        subscriber, created = Subscriber.objects.get_or_create(email=email, mailing_list=self.mailing_list)
+
+        email_name, domain_part = email.rsplit('@', 1)
+        domain_name = '@' + domain_part
+        email_domain, created = Domain.objects.get_or_create(name=domain_name)
+
+        subscriber, created = Subscriber.objects.get_or_create(email=email, mailing_list=self.mailing_list, defaults={
+            'domain': email_domain
+        })
         subscriber.status = Status.PENDING
         subscriber.optin_ip_address = get_client_ip(request)
         subscriber.optin_date = timezone.now()

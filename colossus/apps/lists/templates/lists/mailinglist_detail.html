@@ -141,4 +141,21 @@
       {% endfor %}
     </div>
   </div>
+
+  <div class="card mb-3">
+    <h5 class="card-header">{% trans 'Top domains' %}</h5>
+    <div class="card-body">
+      {% for domain in domains %}
+        <p class="card-text d-flex justify-content-between">
+          <span>
+            {{ domain.domain__name|domain_icon }}
+            {{ domain.domain__name }}
+          </span>
+          <span data-toggle="tooltip" data-placement="left" title="{{ domain.total|intcomma }}">
+            {{ domain.total|calc_percentage:mailing_list.subscribers_count }}%
+          </span>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
 {% endblock %}

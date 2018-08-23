@@ -95,13 +95,11 @@
                 <td class="align-middle text-right">
 
                 <div class="btn-group">
-                  <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-primary">
-                    {% if campaign.can_edit %}
-                      {% trans 'Edit' %}
-                    {% else %}
-                      {% trans 'View Report' %}
-                    {% endif %}
-                  </a>
+                  {% if campaign.can_edit %}
+                    <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-primary">{% trans 'Edit' %}</a>
+                  {% else %}
+                    <a href="{% url 'campaigns:campaign_reports' campaign.pk %}" class="btn btn-outline-primary">{% trans 'View Report' %}</a>
+                  {% endif %}
                   <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">{% trans 'Toggle Dropdown' %}</span>
                   </button>

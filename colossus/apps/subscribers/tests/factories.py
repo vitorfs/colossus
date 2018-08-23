@@ -5,12 +5,21 @@ import factory
 from colossus.apps.lists.tests.factories import MailingListFactory
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import (
-    Activity, Subscriber, SubscriptionFormTemplate,
+    Activity, Domain, Subscriber, SubscriptionFormTemplate,
 )
+
+
+class DomainFactory(factory.DjangoModelFactory):
+    name = '@colossusmail.com'
+
+    class Meta:
+        model = Domain
+        django_get_or_create = ('name',)
 
 
 class SubscriberFactory(factory.DjangoModelFactory):
     email = factory.Sequence(lambda n: f'subscriber_{n}@colossusmail.com')
+    domain = factory.SubFactory(DomainFactory)
     mailing_list = factory.SubFactory(MailingListFactory)
     status = Status.SUBSCRIBED
     last_sent = timezone.now()

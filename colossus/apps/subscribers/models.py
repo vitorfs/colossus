@@ -52,6 +52,22 @@ class Tag(models.Model):
         self.name = slugify(self.name)
 
 
+class Domain(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        verbose_name = _('domain')
+        verbose_name_plural = _('domains')
+        db_table = 'colossus_domains'
+
+    def __str__(self) -> str:
+        return self.name
+
+    def clean(self):
+        super().clean()
+        self.name = self.name.lower()
+
+
 class SubscriberManager(models.Manager):
     @classmethod
     def normalize_email(cls, email):
@@ -79,6 +95,12 @@ class SubscriberManager(models.Manager):
 class Subscriber(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     email = models.EmailField(_('email address'), max_length=255)
+    domain = models.ForeignKey(
+        Domain,
+        on_delete=models.PROTECT,
+        verbose_name=_('domain'),
+        related_name='subscribers'
+    )
     name = models.CharField(_('name'), max_length=150, blank=True)
     mailing_list = models.ForeignKey(MailingList, on_delete=models.PROTECT, related_name='subscribers')
     open_rate = models.FloatField(_('opens'), default=0.0, editable=False)
@@ -121,6 +143,7 @@ class Subscriber(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__status = self.status
+        self.__email = self.email
 
     def __str__(self):
         return self.email
@@ -132,8 +155,18 @@ class Subscriber(models.Model):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.__email != self.email:
+            email_name, domain_part = self.email.rsplit('@', 1)
+            domain_name = '@' + domain_part
+            email_domain, created = Domain.objects.get_or_create(name=domain_name)
+            self.domain = email_domain
+            if update_fields is not None and 'domain' not in update_fields:
+                update_fields.append('domain')
+            self.__email = self.email
+
+        super().save(force_insert, force_update, using, update_fields)
+
         if self.__status != self.status:
             self.mailing_list.update_subscribers_count()
             self.__status = self.status

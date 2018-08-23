@@ -62,3 +62,22 @@ def flag(country_code):
         return mark_safe(html)
     else:
         return ''
+
+
+@register.filter
+def domain_icon(domain):
+    domains = {
+        '@gmail.com': 'fab fa-google',
+        '@hotmail.com': 'fab fa-microsoft',
+        '@yahoo.com': 'fab fa-yahoo',
+        '@outlook.com': 'fab fa-microsoft',
+        '@qq.com': 'fab fa-qq',
+        '@icloud.com': 'fab fa-apple',
+        '@live.com': 'fab fa-microsoft',
+        '@yandex.ru': 'fab fa-yandex'
+    }
+    if domain in domains:
+        icon = domains[domain]
+    else:
+        icon = 'far fa-envelope'
+    return mark_safe('<span class="%s d-inline-block mr-2" style="width: 16px"></span>' % icon)
