@@ -23,6 +23,7 @@ IMPORTED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Imported</stro
 
 CLEANED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Cleaned</strong> from the List.'
 
+
 def render_unsubscribe_activity(activity):
     if activity.campaign is not None:
         return UNSUBSCRIBED_CAMPAIGN_TEMPLATE % (activity.get_formatted_date(),
