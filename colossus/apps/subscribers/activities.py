@@ -7,7 +7,7 @@ SUBSCRIBED_TEMPLATE = '''
     <p class="text-muted mb-0">on %s</p>
 </div>'''
 
-UNSUBSCRIBED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Unsubscribed</strong>.'''
+UNSUBSCRIBED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Unsubscribed</strong>.'
 
 UNSUBSCRIBED_CAMPAIGN_TEMPLATE = '''<small class="text-muted">%s</small>
                                     <strong>Unsubscribed</strong> via <a href="%s">%s</a>.'''
@@ -21,6 +21,7 @@ CLICKED_TEMPLATE = '''<small class="text-muted">%s</small> <strong>Clicked</stro
 
 IMPORTED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Imported</strong> to the List %s'
 
+CLEANED_TEMPLATE = '<small class="text-muted">%s</small> <strong>Cleaned</strong> from the List.'
 
 def render_unsubscribe_activity(activity):
     if activity.campaign is not None:
@@ -76,6 +77,7 @@ def render_activity(activity):
             a.get_formatted_date(),
             a.subscriber.mailing_list.name,
         ),
+        ActivityTypes.CLEANED: lambda a: CLEANED_TEMPLATE % a.get_formatted_date()
     }
     renderer = renderers[activity.activity_type]
     html = renderer(activity)
