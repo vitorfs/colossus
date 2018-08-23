@@ -39,5 +39,7 @@ urlpatterns = [
     path('<int:pk>/settings/subscription/', views.SubscriptionSettingsView.as_view(), name='subscription_settings'),
     path('<int:pk>/settings/defaults/', views.CampaignDefaultsView.as_view(), name='defaults'),
     path('<int:pk>/settings/smtp/', views.SMTPCredentialsView.as_view(), name='smtp'),
-    path('<int:pk>/charts/subscriptions-summary/', views.charts_subscriptions_summary, name='charts_subscriptions_summary')
+    path('<int:pk>/charts/subscriptions/', views.SubscriptionsSummaryChartView.as_view(), name='charts_subscriptions_summary'),
+    path('<int:pk>/charts/domains/', views.ListDomainsChartView.as_view(), name='charts_list_domains'),
+    path('<int:pk>/charts/locations/', views.ListLocationsChartView.as_view(), name='charts_list_locations'),
 ]

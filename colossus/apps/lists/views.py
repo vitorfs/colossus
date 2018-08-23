@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict
+from typing import Dict, Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -29,7 +29,9 @@ from colossus.apps.subscribers.subscription_settings import (
 )
 from colossus.utils import get_absolute_url, is_uuid
 
-from .charts import SubscriptionsSummaryChart
+from .charts import (
+    ListDomainsChart, ListLocationsChart, SubscriptionsSummaryChart,
+)
 from .forms import (
     ConfirmSubscriberImportForm, MailingListSMTPForm,
     PasteImportSubscribersForm,
@@ -474,15 +476,32 @@ class SubscriberImportDeleteView(MailingListMixin, DeleteView):
         return reverse('lists:csv_import_subscribers', kwargs={'pk': self.kwargs.get('pk')})
 
 
-@login_required
-def charts_subscriptions_summary(request, pk):
-    try:
-        mailing_list = MailingList.objects.get(pk=pk)
-        chart = SubscriptionsSummaryChart(mailing_list)
-        return JsonResponse({'chart': chart.get_settings()})
-    except MailingList.DoesNotExist:
-        # bad request status code
-        return JsonResponse(data={'message': gettext('Invalid mailing list id.')}, status_code=400)
+class ChartView(View):
+    chart_class: Any
+
+    def get(self, request, pk):
+        try:
+            mailing_list = MailingList.objects.get(pk=pk)
+            chart = self.chart_class(mailing_list)
+            return JsonResponse({'chart': chart.get_settings()})
+        except MailingList.DoesNotExist:
+            # bad request status code
+            return JsonResponse(data={'message': gettext('Invalid mailing list id.')}, status_code=400)
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscriptionsSummaryChartView(ChartView):
+    chart_class = SubscriptionsSummaryChart
+
+
+@method_decorator(login_required, name='dispatch')
+class ListDomainsChartView(ChartView):
+    chart_class = ListDomainsChart
+
+
+@method_decorator(login_required, name='dispatch')
+class ListLocationsChartView(ChartView):
+    chart_class = ListLocationsChart
 
 
 @login_required

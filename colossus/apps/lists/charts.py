@@ -10,6 +10,8 @@ from colossus.apps.subscribers.models import Activity
 
 
 class Chart:
+    BACKGROUND_COLOR = ['#ff5959', '#ffad5a', '#4f9da6', '#7b3c3c', '#182952', '#f0f0e4']
+
     def __init__(self, chart_type):
         self._chart_type = chart_type
 
@@ -121,3 +123,79 @@ class SubscriptionsSummaryChart(Chart):
             }
         }
         return options
+
+
+class DoughnutChart(Chart):
+    def __init__(self, mailing_list):
+        super().__init__(chart_type='doughnut')
+        self.mailing_list = mailing_list
+
+    def get_options(self):
+        options = {
+            'responsive': True,
+            'maintainAspectRatio': True,
+            'legend': {
+                'position': 'left',
+            },
+            'animation': {
+                'animateScale': True,
+                'animateRotate': True
+            }
+        }
+        return options
+
+
+class ListLocationsChart(DoughnutChart):
+    def get_data(self):
+        locations = self.mailing_list.get_active_subscribers() \
+            .select_related('location') \
+            .values('location__country__code', 'location__country__name') \
+            .annotate(total=Count('location__country__code')) \
+            .order_by('-total')[:5]
+
+        locations_data = [location['total'] for location in locations]
+        labels_data = [location['location__country__name'] for location in locations]
+
+        total = self.mailing_list.get_active_subscribers().count()
+        top_5_total = sum(locations_data)
+        others = total - top_5_total
+        if others > 0:
+            locations_data.append(others)
+            labels_data.append(_('Other locations'))
+
+        data = {
+            'datasets': [{
+                'data': locations_data,
+                'backgroundColor': self.BACKGROUND_COLOR,
+            }],
+            'labels': labels_data
+        }
+        return data
+
+
+class ListDomainsChart(DoughnutChart):
+    def get_data(self):
+        domains = self.mailing_list.get_active_subscribers() \
+            .select_related('domain') \
+            .values('domain__name') \
+            .annotate(total=Count('domain__name')) \
+            .order_by('-total')[:5]
+
+        domains_data = [domain['total'] for domain in domains]
+        domains_labels = [domain['domain__name'] for domain in domains]
+
+        total = self.mailing_list.get_active_subscribers().count()
+        top_5_total = sum(domains_data)
+        others = total - top_5_total
+        if others > 0:
+            domains_data.append(others)
+            domains_labels.append(_('Other domains'))
+
+        data = {
+            'datasets': [{
+                'data': domains_data,
+                'backgroundColor': self.BACKGROUND_COLOR,
+            }],
+            'labels': domains_labels
+        }
+        return data

@@ -9,16 +9,23 @@
 {% block javascript %}
   <script src="{% static 'vendor/Chart.js/2.7.2/Chart.bundle.min.js' %}"></script>
   <script type="text/javascript">
-    $(function () {
-      var $chartContainer = $("#subscriptionProgress");
+    function loadChart(id) {
+      var chartContainer = document.getElementById(id);
+      var url = chartContainer.getAttribute("data-remote-url")
       $.ajax({
-        url: $chartContainer.attr("data-remote-url"),
+        url: url,
         dataType: 'json',
         success: function (data) {
-          var ctx = $chartContainer[0].getContext("2d");
+          var ctx = chartContainer.getContext("2d");
           new Chart(ctx, data.chart);
         }
       });
+    }
+
+    $(function () {
+      loadChart("subscriptionProgress");
+      loadChart("listDomains");
+      loadChart("listLocations");
       $("[data-toggle='tooltip']").tooltip();
     });
   </script>
@@ -128,34 +135,48 @@
   <div class="card mb-3">
     <h5 class="card-header">{% trans 'Top locations' %}</h5>
     <div class="card-body">
-      {% for location in locations %}
-        <p class="card-text d-flex justify-content-between">
-          <span>
-            {{ location.location__country__code|flag }}
-            <a href="{% url 'lists:country_report' mailing_list.pk location.location__country__code %}">{{ location.location__country__name }}</a>
-          </span>
-          <span data-toggle="tooltip" data-placement="left" title="{{ location.total|intcomma }}">
-            {{ location.total|calc_percentage:mailing_list.subscribers_count }}%
-          </span>
-        </p>
-      {% endfor %}
+      <div class="row">
+        <div class="col">
+          {% for location in locations %}
+            <p class="card-text d-flex justify-content-between">
+              <span>
+                {{ location.location__country__code|flag }}
+                <a href="{% url 'lists:country_report' mailing_list.pk location.location__country__code %}">{{ location.location__country__name }}</a>
+              </span>
+              <span data-toggle="tooltip" data-placement="left" title="{{ location.total|intcomma }}">
+                {{ location.total|calc_percentage:mailing_list.subscribers_count }}%
+              </span>
+            </p>
+          {% endfor %}
+        </div>
+        <div class="col">
+          <canvas id="listLocations" data-remote-url="{% url 'lists:charts_list_locations' mailing_list.pk %}"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="card mb-3">
     <h5 class="card-header">{% trans 'Top domains' %}</h5>
     <div class="card-body">
-      {% for domain in domains %}
-        <p class="card-text d-flex justify-content-between">
-          <span>
-            {{ domain.domain__name|domain_icon }}
-            {{ domain.domain__name }}
-          </span>
-          <span data-toggle="tooltip" data-placement="left" title="{{ domain.total|intcomma }}">
-            {{ domain.total|calc_percentage:mailing_list.subscribers_count }}%
-          </span>
-        </p>
-      {% endfor %}
+    <div class="row">
+      <div class="col">
+        {% for domain in domains %}
+          <p class="card-text d-flex justify-content-between">
+            <span>
+              {{ domain.domain__name|domain_icon }}
+              {{ domain.domain__name }}
+            </span>
+            <span data-toggle="tooltip" data-placement="left" title="{{ domain.total|intcomma }}">
+              {{ domain.total|calc_percentage:mailing_list.subscribers_count }}%
+            </span>
+          </p>
+        {% endfor %}
+      </div>
+      <div class="col">
+        <canvas id="listDomains" data-remote-url="{% url 'lists:charts_list_domains' mailing_list.pk %}"></canvas>
+      </div>
+    </div>
     </div>
   </div>
 {% endblock %}
