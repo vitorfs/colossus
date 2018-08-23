@@ -8,48 +8,38 @@
       <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
-        {% if object %}
-          {{ object.email }}
-        {% else %}
-          {% trans 'New subscriber' %}
-        {% endif %}
-      {% endspaceless %}</li>
+      {% if object %}
+        <li class="breadcrumb-item"><a href="{% url 'lists:subscriber' mailing_list.pk object.pk %}">{{ object.email }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Edit subscriber' %}</li>
+      {% else %}
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'New subscriber' %}</li>
+      {% endif %}
     </ol>
   </nav>
   <div class="card mb-3">
     <div class="card-body">
-      {% if object %}<p>UUID: {{ object.uuid }}</p>{% endif %}
       <form method="post" novalidate>
         {% csrf_token %}
         <div class="row">
           <div class="col-md-10 col-lg-6">
+            {% if object %}
+              <div class="form-group">
+                <label for="id_uuid">UUID</label>
+                <input type="text" id="id_uuid" class="form-control" value="{{ object.uuid }}" readonly>
+              </div>
+            {% endif %}
             {{ form|crispy }}
           </div>
         </div>
-        <button type="submit" class="btn btn-success" role="button">
-          {% if object %}
-            {% trans 'Save changes' %}
-          {% else %}
-            {% trans 'Create subscriber' %}
-          {% endif %}
-        </button>
-        <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
         {% if object %}
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
+          <a href="{% url 'lists:subscriber' mailing_list.pk object.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
           <a href="{% url 'lists:delete_subscriber' mailing_list.pk object.pk %}" class="btn btn-outline-danger" role="button">{% trans 'Delete' %}</a>
+        {% else %}
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Create subscriber' %}</button>
+          <a href="{% url 'lists:subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
         {% endif %}
       </form>
     </div>
   </div>
-
-  {% if object %}
-    <div class="card mb-3">
-      <div class="card-header">{% trans 'Activities' %}</div>
-      <ul class="list-group list-group-flush">
-        {% for activity in object.get_activities %}
-          <li class="list-group-item">{{ activity.as_html }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
 {% endblock %}

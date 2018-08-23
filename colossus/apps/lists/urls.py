@@ -21,6 +21,7 @@ urlpatterns = [
     path('<int:pk>/subscribers/import/csv/<int:import_pk>/download/', views.download_subscriber_import, name='download_subscriber_import'),
     path('<int:pk>/subscribers/import/csv/<int:import_pk>/delete/', views.SubscriberImportDeleteView.as_view(), name='delete_subscriber_import'),
     path('<int:pk>/subscribers/import/paste/', views.PasteEmailsImportSubscribersView.as_view(), name='paste_import_subscribers'),
+    path('<int:pk>/subscribers/<int:subscriber_pk>/', views.SubscriberDetailView.as_view(), name='subscriber'),
     path('<int:pk>/subscribers/<int:subscriber_pk>/edit/', views.SubscriberUpdateView.as_view(), name='edit_subscriber'),
     path('<int:pk>/subscribers/<int:subscriber_pk>/delete/', views.SubscriberDeleteView.as_view(), name='delete_subscriber'),
 

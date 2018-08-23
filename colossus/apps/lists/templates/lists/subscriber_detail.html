@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n subscribers %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ subscriber.email }}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="media">
+        <img class="mr-3" src="{{ subscriber.get_gravatar_url }}" alt="{{ subscriber.email }}">
+        <div class="media-body">
+          <div class="row">
+            <div class="col-9">
+          <h5 class="mt-0">{{ subscriber.get_email }}</h5>
+          <p class="mb-2">Added to the list on {{ subscriber.confirm_date }}</p>
+          <p class="mb-0">
+            {{ subscriber|status_badge }}
+          </p>
+            </div>
+            <div class="col-3 text-right">
+              <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="actionsMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {% trans 'Actions' %}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsMenu">
+                  <a class="dropdown-item" href="{% url 'lists:edit_subscriber' mailing_list.pk subscriber.pk %}">{% trans 'Edit' %}</a>
+                  <a class="dropdown-item" href="{% url 'lists:delete_subscriber' mailing_list.pk subscriber.pk %}">{% trans 'Delete' %}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">{% trans 'Activities' %}</div>
+    <ul class="list-group list-group-flush">
+      {% for activity in object.get_activities %}
+        <li class="list-group-item">{{ activity.as_html }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

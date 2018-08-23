@@ -44,7 +44,7 @@
     <tbody>
       {% for subscriber in subscribers %}
         <tr>
-          <td><a href="{% url 'lists:edit_subscriber' mailing_list.pk subscriber.pk %}">{{ subscriber.email }}</a></td>
+          <td><a href="{% url 'lists:subscriber' mailing_list.pk subscriber.pk %}">{{ subscriber.email }}</a></td>
           <td>{{ subscriber|status_badge }}</td>
           <td>{{ subscriber.open_rate|percentage }}%</td>
           <td>{{ subscriber.click_rate|percentage }}%</td>

@@ -1,4 +1,6 @@
+import hashlib
 import uuid
+from urllib.parse import urlencode
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.mail import EmailMultiAlternatives
@@ -179,6 +181,16 @@ class Subscriber(models.Model):
                         .distinct())
         super().delete(using, keep_parents)
         update_rates_after_subscriber_deletion.delay(self.mailing_list_id, email_ids, link_ids)
+
+    def get_gravatar_url(self):
+        email = self.email.lower().encode('utf-8')
+        default = 'mm'
+        size = 128
+        url = 'https://www.gravatar.com/avatar/{md5}?{params}'.format(
+            md5=hashlib.md5(email).hexdigest(),
+            params=urlencode({'d': default, 's': str(size)})
+        )
+        return url
 
     def get_email(self):
         if self.name:

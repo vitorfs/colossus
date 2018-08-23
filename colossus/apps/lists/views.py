@@ -181,9 +181,17 @@ class SubscriberCreateView(MailingListMixin, CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class SubscriberDetailView(MailingListMixin, DetailView):
+    model = Subscriber
+    pk_url_kwarg = 'subscriber_pk'
+    template_name = 'lists/subscriber_detail.html'
+    context_object_name = 'subscriber'
+
+
+@method_decorator(login_required, name='dispatch')
 class SubscriberUpdateView(MailingListMixin, UpdateView):
     model = Subscriber
-    fields = ('email', 'name', 'status')
+    fields = '__all__'
     pk_url_kwarg = 'subscriber_pk'
     template_name = 'lists/subscriber_form.html'
 
