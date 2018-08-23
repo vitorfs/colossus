@@ -38,6 +38,7 @@ class ActivityTypes:
     OPENED = 4
     CLICKED = 5
     IMPORTED = 6
+    CLEANED = 7
 
     LABELS = {
         SUBSCRIBED: _('Subscribed'),
@@ -46,6 +47,7 @@ class ActivityTypes:
         OPENED: _('Opened'),
         CLICKED: _('Clicked'),
         IMPORTED: _('Imported'),
+        CLEANED: _('Cleaned'),
     }
 
     CHOICES = tuple(LABELS.items())

@@ -1,3 +1,6 @@
+import datetime
+from typing import Dict
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
@@ -6,6 +9,7 @@ from django.forms import modelform_factory
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import (
@@ -14,9 +18,11 @@ from django.views.generic import (
 )
 
 from colossus.apps.core.models import Country
-from colossus.apps.subscribers.constants import Status, TemplateKeys, Workflows
+from colossus.apps.subscribers.constants import (
+    ActivityTypes, Status, TemplateKeys, Workflows,
+)
 from colossus.apps.subscribers.models import (
-    Subscriber, SubscriptionFormTemplate, Tag,
+    Activity, Subscriber, SubscriptionFormTemplate, Tag,
 )
 from colossus.apps.subscribers.subscription_settings import (
     SUBSCRIPTION_FORM_TEMPLATE_SETTINGS,
@@ -60,7 +66,7 @@ class MailingListDetailView(DetailView):
     model = MailingList
     context_object_name = 'mailing_list'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict:
         locations = self.object.get_active_subscribers() \
             .select_related('location') \
             .values('location__country__code', 'location__country__name') \
@@ -69,6 +75,16 @@ class MailingListDetailView(DetailView):
 
         last_campaign = self.object.campaigns.order_by('-send_date').first()
 
+        thirty_days_ago = timezone.now() - datetime.timedelta(30)
+        subscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.SUBSCRIBED))
+        unsubscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.UNSUBSCRIBED))
+        cleaned_expression = Count('id', filter=Q(activity_type=ActivityTypes.CLEANED))
+        summary_last_30_days = Activity.objects \
+            .filter(subscriber__mailing_list=self.object, date__gte=thirty_days_ago) \
+            .aggregate(subscribed=subscribed_expression,
+                       unsubscribed=unsubscribed_expression,
+                       cleaned=cleaned_expression)
+
         kwargs['menu'] = 'lists'
         kwargs['submenu'] = 'details'
         kwargs['subscribed_count'] = self.object.subscribers.filter(status=Status.SUBSCRIBED).count()
@@ -76,6 +92,7 @@ class MailingListDetailView(DetailView):
         kwargs['cleaned_count'] = self.object.subscribers.filter(status=Status.CLEANED).count()
         kwargs['locations'] = locations
         kwargs['last_campaign'] = last_campaign
+        kwargs['summary_last_30_days'] = summary_last_30_days
         return super().get_context_data(**kwargs)
 
 

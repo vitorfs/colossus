@@ -26,8 +26,27 @@
 
 {% block innercontent %}
   <div class="card-body">
+    <h5 class="card-title">List Overview <small class="text-muted">(for Last 30 days)</small></h5>
     <canvas id="subscriptionProgress" data-remote-url="{% url 'lists:charts_subscriptions_summary' mailing_list.pk %}"></canvas>
   </div>
+  <table class="table table-bordered mb-0" style="border: 0 none;">
+  <tbody>
+  <tr>
+    <td style="width: 33.3%; border-left: 0 none; border-bottom: 0 none;">
+      <p class="mb-1">{% trans 'Subscribed' %}</p>
+      <strong>{{ summary_last_30_days.subscribed }}</strong>
+    </td>
+    <td style="width: 33.3%; border-right: 0 none; border-bottom: 0 none;">
+      <p class="mb-1">{% trans 'Unsubscribed' %}</p>
+      <strong>{{ summary_last_30_days.unsubscribed }}</strong>
+    </td>
+    <td style="width: 33.3%; border-right: 0 none; border-bottom: 0 none;">
+      <p class="mb-1">{% trans 'Cleaned' %}</p>
+      <strong>{{ summary_last_30_days.cleaned }}</strong>
+    </td>
+  </tr>
+  </tbody>
+  </table>
 {% endblock %}
 
 {% block outercontent %}
