@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
