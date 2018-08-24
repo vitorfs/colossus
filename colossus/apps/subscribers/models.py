@@ -129,7 +129,7 @@ class Subscriber(models.Model):
         related_name='subscribers',
     )
     last_sent = models.DateTimeField(_('last campaign sent date'), null=True, blank=True)
-    tags = models.ManyToManyField(Tag, related_name='subscribers', verbose_name=_('tags'))
+    tags = models.ManyToManyField(Tag, related_name='subscribers', verbose_name=_('tags'), blank=True)
     tokens = GenericRelation(Token)
 
     objects = SubscriberManager()
