@@ -2,10 +2,10 @@ from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory
 from django.urls import reverse
 
+from colossus.apps.accounts.tests.factories import UserFactory
 from colossus.apps.notifications.context_processors import notifications
 from colossus.apps.notifications.models import Notification
 from colossus.apps.notifications.tests.factories import NotificationFactory
-from colossus.test.factories import UserFactory
 from colossus.test.testcases import TestCase
 
 

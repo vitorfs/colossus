@@ -1,7 +1,7 @@
 from django.test import TestCase as DjangoTestCase
 from django.urls import reverse
 
-from colossus.test.factories import UserFactory
+from colossus.apps.accounts.tests.factories import UserFactory
 
 
 class TestCase(DjangoTestCase):

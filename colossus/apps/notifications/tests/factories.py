@@ -1,8 +1,8 @@
 import factory
 
+from colossus.apps.accounts.tests.factories import UserFactory
 from colossus.apps.notifications.constants import Actions
 from colossus.apps.notifications.models import Notification
-from colossus.test.factories import UserFactory
 
 
 class NotificationFactory(factory.DjangoModelFactory):
