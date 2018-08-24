@@ -1,10 +1,10 @@
 import os
 import string
 
-from celery.schedules import crontab
 from django.contrib.messages import constants as messages_constants
 
 import dj_database_url
+from celery.schedules import crontab
 from decouple import Csv, config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
