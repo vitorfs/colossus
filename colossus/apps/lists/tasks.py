@@ -72,6 +72,13 @@ def clean_list_task(mailing_list_id):
 
 
 @shared_task
+def clean_lists_hard_bounces_task():
+    mailing_lists_ids = MailingList.objects.values_list('id', flat=True)
+    for id in mailing_lists_ids:
+        clean_list_task.delay(id)
+
+
+@shared_task
 def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
     """
     Parse the data from a SubscriberImport CSV file and import to the database.

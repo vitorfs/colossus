@@ -1,6 +1,7 @@
 import os
 import string
 
+from celery.schedules import crontab
 from django.contrib.messages import constants as messages_constants
 
 import dj_database_url
@@ -223,6 +224,10 @@ CELERY_BEAT_SCHEDULE = {
     'send-scheduled-campaigns': {
         'task': 'colossus.apps.campaigns.tasks.send_scheduled_campaigns_task',
         'schedule': 60.0
+    },
+    'clean-lists-hard-bounces': {
+        'task': 'colossus.apps.lists.tasks.clean_lists_hard_bounces_task',
+        'schedule': crontab(hour=4, minute=0, day_of_week=7)
     }
 }
 
