@@ -5,6 +5,7 @@ class Actions:
     IMPORT_COMPLETED = 1
     IMPORT_ERRORED = 2
     CAMPAIGN_SENT = 3
+    LIST_CLEANED = 4
 
     ITEMS = {
         IMPORT_COMPLETED: {
@@ -19,6 +20,10 @@ class Actions:
         CAMPAIGN_SENT: {
             'label': _('Campaign sent'),
             'icon': 'fas fa-paper-plane'
+        },
+        LIST_CLEANED: {
+            'label': _('List cleaned'),
+            'icon': 'fas fa-broom'
         }
     }
 

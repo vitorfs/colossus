@@ -2,9 +2,12 @@
 Collection of Celery tasks for the lists app.
 """
 import csv
+import json
 import logging
 from typing import Union
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 
@@ -15,12 +18,57 @@ from colossus.apps.lists.constants import (
 )
 from colossus.apps.notifications.constants import Actions
 from colossus.apps.notifications.models import Notification
-from colossus.apps.subscribers.constants import ActivityTypes
+from colossus.apps.subscribers.constants import ActivityTypes, Status
 from colossus.apps.subscribers.models import Subscriber
 
-from .models import SubscriberImport
+from .models import MailingList, SubscriberImport
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
+
+
+@shared_task
+def clean_list_task(mailing_list_id):
+    try:
+        mailing_list = MailingList.objects.get(pk=mailing_list_id)
+        data = {
+            'mailing_list_id': mailing_list_id,
+            'cleaned': 0
+        }
+        # TODO: Find a better way to determine what email backend is in use
+        if settings.MAILGUN_API_KEY:
+            from colossus.apps.core.mailgun import Mailgun
+            client = Mailgun()
+            bounces = client.bounces()
+            if 'items' in bounces:
+                for bounce in bounces['items']:
+                    email_address = bounce['address']
+                    if mailing_list.subscribers.filter(email=email_address).exists():
+                        subscriber = mailing_list.subscribers.get(email=email_address)
+                        subscriber.status = Status.CLEANED
+                        subscriber.update_date = timezone.now()
+                        with transaction.atomic():
+                            subscriber.save(update_fields=['status', 'update_date'])
+                            subscriber.create_activity(ActivityTypes.CLEANED)
+                            if not settings.DEBUG:
+                                # If colossus is running with DEBUG=True consider it as development server
+                                # Only clean up bounces if in production.
+                                client.delete_bounce(email_address)
+                            data['cleaned'] += 1
+
+        if data['cleaned'] == 0:
+            pass
+
+        text = json.dumps(data)
+
+        # FIXME: Once there's a better user management associated to a given list, update the code below
+        for user in User.objects.filter(is_superuser=True, is_active=True):
+            Notification.objects.create(user=user, action=Actions.LIST_CLEANED, text=text)
+
+        return 'Cleaned %(cleaned)s emails from mailing list %(mailing_list_id)s' % data
+
+    except MailingList.DoesNotExist:
+        return 'Mailing list with id "%s" does not exist.' % mailing_list_id
 
 
 @shared_task

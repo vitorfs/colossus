@@ -7,7 +7,7 @@
     </div>
     {% for notification in notifications %}
       <a href="{% url 'notifications:notification_detail' notification.pk %}" class="list-group-item list-group-item-action{% if not notification.is_read %} list-group-item-primary{% endif %}">
-        <p class="mb-0">{{ notification.text }}</p>
+        <p class="mb-0">{{ notification.render }}</p>
         <small class="text-muted">
           <span class="{{ Actions.ITEMS|get:notification.action|get:'icon' }} mr-1"></span>
           {{ notification.date|date:"D d M Y - P" }}

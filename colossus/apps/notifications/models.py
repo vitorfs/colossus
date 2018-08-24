@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from colossus.apps.notifications.api import render_list_cleaned
 from colossus.apps.notifications.constants import Actions
 
 User = get_user_model()
@@ -33,3 +34,13 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.text
+
+    def render(self):
+        renderers = {
+            Actions.IMPORT_COMPLETED: lambda n: n.text,
+            Actions.IMPORT_ERRORED: lambda n: n.text,
+            Actions.CAMPAIGN_SENT: lambda n: n.text,
+            Actions.LIST_CLEANED: render_list_cleaned
+        }
+        renderer_function = renderers[self.action]
+        return renderer_function(self)
