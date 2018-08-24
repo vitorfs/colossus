@@ -1,4 +1,3 @@
-import datetime
 from collections import OrderedDict
 
 from django.db.models import Count, Q
@@ -44,7 +43,7 @@ class SubscriptionsSummaryChart(Chart):
         self.mailing_list = mailing_list
 
     def get_data(self):
-        thirty_days_ago = timezone.now() - datetime.timedelta(30)
+        thirty_days_ago = timezone.now() - timezone.timedelta(30)
 
         # Group by query returning the counts for subscribe actions and
         # unsubscribe actions. The Count queries are defined externally
@@ -70,7 +69,7 @@ class SubscriptionsSummaryChart(Chart):
         # It's a way to keep the rendering of the bar chart consistent.
         series = OrderedDict()
         for i in range(30):
-            date = timezone.now() - datetime.timedelta(i)
+            date = timezone.localdate(timezone.now()) - timezone.timedelta(i)
             key = date.strftime('%-d %b, %y')
             series[key] = {'sub': 0, 'unsub': 0, 'order': i}
 
