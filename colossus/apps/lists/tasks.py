@@ -39,11 +39,12 @@ def clean_list_task(mailing_list_id):
         if settings.MAILGUN_API_KEY:
             from colossus.apps.core.mailgun import Mailgun
             client = Mailgun()
+            # TODO: Handle pagination from Mailgun Bounces API
             bounces = client.bounces()
             if 'items' in bounces:
                 for bounce in bounces['items']:
                     email_address = bounce['address']
-                    if mailing_list.subscribers.filter(email=email_address).exists():
+                    if mailing_list.get_active_subscribers().filter(email=email_address).exists():
                         subscriber = mailing_list.subscribers.get(email=email_address)
                         subscriber.status = Status.CLEANED
                         subscriber.update_date = timezone.now()
