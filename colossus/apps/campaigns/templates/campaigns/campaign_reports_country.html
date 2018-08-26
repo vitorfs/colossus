@@ -1,0 +1,36 @@
+{% extends 'campaigns/base.html' %}
+
+{% load colossus static i18n humanize %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'vendor/flag-icon/css/flag-icon.min.css' %}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_reports' campaign.pk %}">{% trans 'Reports' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_reports_locations' campaign.pk %}">{% trans 'Top locations' %}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{{ country.name }}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <p class="card-text">
+      <a href="{% url 'campaigns:campaign_reports_locations' campaign.pk %}">← {% trans 'Return to top locations report' %}</a>
+    </p>
+    <h3 class="card-title d-flex justify-content-between">
+      <span>
+        {{ country.code|flag }}
+        {{ country.name }}
+      </span>
+      {{ country_total_opens|intcomma }}
+    </h3>
+    <hr>
+      {% for city in cities %}
+        <p class="card-text d-flex justify-content-between">
+          <span>{{ city.location__name }}</span>
+          <span>{{ city.total|intcomma }}</span>
+        </p>
+      {% endfor %}
+  </div>
+{% endblock %}

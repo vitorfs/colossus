@@ -1,0 +1,34 @@
+{% extends 'campaigns/base.html' %}
+
+{% load colossus static i18n l10n humanize %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'vendor/flag-icon/css/flag-icon.min.css' %}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_reports' campaign.pk %}">{% trans 'Reports' %}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Top locations' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <p class="card-text">
+      <a href="{% url 'campaigns:campaign_reports' campaign.pk %}">← {% trans 'Return to reports' %}</a>
+    </p>
+    {% for activity in location_open_activities %}
+      <p class="card-text d-flex justify-content-between">
+        <span>
+          {{ activity.location__country__code|flag }}
+          {% if activity.location__country__code %}
+            <a href="{% url 'campaigns:campaign_reports_country' campaign.pk activity.location__country__code %}">{{ activity.location__country__name }}</a>
+          {% else %}
+            {% trans 'Unkown' %}
+          {% endif %}
+        </span>
+        <span>{{ activity.total_opens|intcomma }}</span>
+      </p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -100,7 +100,7 @@
   </div>
 
   <div class="card mb-3">
-    <div class="card-header">{% trans 'Top links clicked' %}</div>
+    <h5 class="card-header">{% trans 'Top links clicked' %}</h5>
     <div class="card-body">
       {% for link in links %}
         <p class="card-text d-flex justify-content-between">
@@ -116,9 +116,9 @@
   </div>
 
   <div class="card mb-3">
-    <div class="card-header">
+    <h5 class="card-header">
       {% trans 'Subscribers with most opens' %}
-    </div>
+    </h5>
     <div class="card-body">
       {% for activity in subscriber_open_activities %}
         <p class="card-text d-flex justify-content-between">
@@ -130,19 +130,28 @@
   </div>
 
   <div class="card mb-3">
-    <div class="card-header">
+    <h5 class="card-header">
       {% trans 'Top locations' %}
-    </div>
+    </h5>
     <div class="card-body">
       {% for activity in location_open_activities %}
         <p class="card-text d-flex justify-content-between">
           <span>
             {{ activity.location__country__code|flag }}
-            {{ activity.location__country__name|default_if_none:'Unkown' }}
+            {% if activity.location__country__code %}
+              <a href="{% url 'campaigns:campaign_reports_country' campaign.pk activity.location__country__code %}">{{ activity.location__country__name }}</a>
+            {% else %}
+              {% trans 'Unkown' %}
+            {% endif %}
           </span>
           <span>{{ activity.total_opens|intcomma }}</span>
         </p>
       {% endfor %}
+    </div>
+    <div class="card-footer">
+      <p class="card-text">
+        <a href="{% url 'campaigns:campaign_reports_locations' campaign.pk %}">{% trans 'View more' %}</a>
+      </p>
     </div>
   </div>
 {% endblock %}

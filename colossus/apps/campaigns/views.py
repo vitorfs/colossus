@@ -14,6 +14,7 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView,
 )
 
+from colossus.apps.core.models import Country
 from colossus.apps.subscribers.constants import ActivityTypes
 from colossus.apps.subscribers.models import Activity
 
@@ -175,6 +176,60 @@ class CampaignReportsView(CampaignMixin, DetailView):
             'subscriber_open_activities': subscriber_open_activities,
             'location_open_activities': location_open_activities,
         })
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignReportsLocationsView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_reports_locations.html'
+    extra_context = {'submenu': 'reports'}
+
+    def get_context_data(self, **kwargs):
+        location_open_activities = Activity.objects \
+            .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
+            .values('location__country__code', 'location__country__name') \
+            .annotate(total_opens=Count('id')) \
+            .order_by('-total_opens')
+
+        kwargs.update({
+            'location_open_activities': location_open_activities,
+        })
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class CampaignReportsCountryView(CampaignMixin, DetailView):
+    model = Campaign
+    context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_reports_country.html'
+    extra_context = {'submenu': 'reports'}
+
+    def get_context_data(self, **kwargs):
+        country_code = self.kwargs.get('country_code')
+        country = get_object_or_404(Country, code=country_code)
+
+        country_total_opens = Activity.objects \
+            .filter(email__campaign_id=self.kwargs.get('pk'),
+                    activity_type=ActivityTypes.OPENED,
+                    location__country__code=country_code) \
+            .values('location__country__code') \
+            .aggregate(total=Count('location__country__code'))
+
+        cities = Activity.objects \
+            .filter(email__campaign_id=self.kwargs.get('pk'),
+                    activity_type=ActivityTypes.OPENED,
+                    location__country__code=country_code) \
+            .select_related('location') \
+            .values('location__name') \
+            .annotate(total=Count('location__name')) \
+            .order_by('-total')
+
+        kwargs['menu'] = 'lists'
+        kwargs['country'] = country
+        kwargs['country_total_opens'] = country_total_opens['total']
+        kwargs['cities'] = cities
         return super().get_context_data(**kwargs)
 
 
