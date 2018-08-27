@@ -124,12 +124,13 @@ def send_campaign(campaign):
 
     with get_connection() as connection:
         for subscriber in campaign.mailing_list.get_active_subscribers():
-            sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
-            if sent:
-                subscriber.create_activity(ActivityTypes.SENT, email=campaign.email)
-                subscriber.update_open_and_click_rate()
-                subscriber.last_sent = timezone.now()
-                subscriber.save(update_fields=['last_sent'])
+            if not subscriber.activities.filter(activity_type=ActivityTypes.SENT, email=campaign.email).exists():
+                sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
+                if sent:
+                    subscriber.create_activity(ActivityTypes.SENT, email=campaign.email)
+                    subscriber.update_open_and_click_rate()
+                    subscriber.last_sent = timezone.now()
+                    subscriber.save(update_fields=['last_sent'])
 
     campaign.mailing_list.update_open_and_click_rate()
     campaign.status = CampaignStatus.SENT
