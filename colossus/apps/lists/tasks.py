@@ -51,11 +51,7 @@ def clean_list_task(mailing_list_id):
                         with transaction.atomic():
                             subscriber.save(update_fields=['status', 'update_date'])
                             subscriber.create_activity(ActivityTypes.CLEANED)
-                            if not settings.DEBUG:
-                                # If colossus is running with DEBUG=True consider it as development server
-                                # Only clean up bounces if in production.
-                                client.delete_bounce(email_address)
-                            data['cleaned'] += 1
+                        data['cleaned'] += 1
 
         if data['cleaned'] == 0:
             pass
