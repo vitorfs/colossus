@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from colossus.apps.notifications.api import render_list_cleaned
@@ -34,6 +35,9 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.text
+
+    def get_absolute_url(self):
+        return reverse('notifications:notification_detail', kwargs={'pk': self.pk})
 
     def render(self):
         renderers = {

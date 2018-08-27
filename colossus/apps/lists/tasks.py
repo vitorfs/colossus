@@ -53,14 +53,11 @@ def clean_list_task(mailing_list_id):
                             subscriber.create_activity(ActivityTypes.CLEANED)
                         data['cleaned'] += 1
 
-        if data['cleaned'] == 0:
-            pass
-
-        text = json.dumps(data)
-
-        # FIXME: Once there's a better user management associated to a given list, update the code below
-        for user in User.objects.filter(is_superuser=True, is_active=True):
-            Notification.objects.create(user=user, action=Actions.LIST_CLEANED, text=text)
+        if data['cleaned'] > 0:
+            text = json.dumps(data)
+            # FIXME: Once there's a better user management associated to a given list, update the code below
+            for user in User.objects.filter(is_superuser=True, is_active=True):
+                Notification.objects.create(user=user, action=Actions.LIST_CLEANED, text=text)
 
         return 'Cleaned %(cleaned)s emails from mailing list %(mailing_list_id)s' % data
 

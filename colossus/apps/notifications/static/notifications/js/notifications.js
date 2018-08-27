@@ -1,6 +1,7 @@
 $(function () {
     // #notifications defined on base.html template
     var $notifications = $("#notifications");
+    var $body = $("body");
 
     $notifications.on("show.bs.popover", function () {
         var url = $notifications.data("url");
@@ -18,6 +19,34 @@ $(function () {
             },
             complete: function () {
 
+            }
+        });
+    });
+
+    $body.on("click", ".js-mark-all-as-read", function () {
+        var url = $(this).data("url");
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                var id = $notifications.attr("aria-describedby");
+                var $notificationBody = $("#" + id + " .popover-body");
+                $notificationBody.html(data.html);
+            }
+        });
+    });
+
+    $body.on("click", ".js-clear-all", function () {
+        var url = $(this).data("url");
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                var id = $notifications.attr("aria-describedby");
+                var $notificationBody = $("#" + id + " .popover-body");
+                $notificationBody.html(data.html);
             }
         });
     });

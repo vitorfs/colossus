@@ -1,7 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView
 
 from colossus.apps.notifications.constants import Actions
@@ -50,3 +53,29 @@ def unread(request):
     }
     html = render_to_string('notifications/_unread.html', context, request)
     return JsonResponse({'html': html})
+
+
+@login_required
+@require_POST
+@csrf_exempt
+def mark_all_as_read(request):
+    request.user.notifications.update(is_read=True, is_seen=True)
+
+    # If the request is ajax, it means it came from the small notifications widget on the top menu
+    if request.is_ajax():
+        return unread(request)
+
+    return redirect('notifications:notifications')
+
+
+@login_required
+@require_POST
+@csrf_exempt
+def clear_all(request):
+    request.user.notifications.all().delete()
+
+    # If the request is ajax, it means it came from the small notifications widget on the top menu
+    if request.is_ajax():
+        return unread(request)
+
+    return redirect('notifications:notifications')

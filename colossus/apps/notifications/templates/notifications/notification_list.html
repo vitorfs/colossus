@@ -4,6 +4,18 @@
 
 {% block title %}{% trans 'Notifications' %} — {{ block.super }}{% endblock %}
 
+{% block stylesheet %}
+  <style>
+    div.list-group + h5 {
+      margin-top: 1.5rem!important;
+    }
+
+    #notifications div.list-group:last-child {
+      margin-bottom: 1.5rem!important;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <div class="row justify-content-center">
     <div class="col-10">
@@ -16,19 +28,24 @@
         <h2 class="mb-0">{% trans 'Notifications' %}</h2>
         <nav>
           <a href="" class="btn btn-outline-danger" role="button">{% trans 'Delete all' %}</a>
-          <a href="" class="btn btn-primary" role="button">{% trans 'Mark all as read' %}</a>
+          <form action="{% url 'notifications:mark_all_as_read' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" role="button">{% trans 'Mark all as read' %}</button>
+          </form>
         </nav>
       </div>
-      {% for notification in notifications %}
-        {% ifchanged %}
-          <h5>{{ notification.date|date:'j M, Y' }}</h5>
-        {% endifchanged %}
-        <div class="card mb-2">
-          <div class="card-body">
-            {{ notification.text }}
+      <div id="notifications">
+        {% for notification in notifications %}
+          {% ifchanged %}
+            <h5>{{ notification.date|date:'j M, Y' }}</h5>
+          {% endifchanged %}
+          <div class="list-group mb-2">
+            <a href="{{ notification.get_absolute_url }}" class="py-3 list-group-item list-group-item-action{% if not notification.is_read %} list-group-item-primary{% endif %}">
+              {{ notification.render }}
+            </a>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
     </div>
   </div>
 {% endblock %}
