@@ -2,6 +2,7 @@ import logging
 
 from django.apps import apps
 from django.db import transaction
+from django.db.models import Q
 
 from celery import shared_task
 
@@ -72,10 +73,18 @@ def update_rates_after_subscriber_deletion(mailing_list_id, email_ids, link_ids)
 
 
 @shared_task
-def update_subscriber_location(ip_address, subscriber_id, activity_id):
+def update_subscriber_location(ip_address, subscriber_id):
     location = get_location(ip_address)
     if location is not None:
         Subscriber = apps.get_model('subscribers', 'Subscriber')
-        Subscriber.objects.filter(pk=subscriber_id, last_seen_ip_address=ip_address).update(location=location)
-        Activity = apps.get_model('subscribers', 'Activity')
-        Activity.objects.filter(pk=activity_id, ip_address=ip_address).update(location=location)
+
+        subscriber = Subscriber.objects.get(pk=subscriber_id)
+
+        if subscriber.last_seen_ip_address == ip_address and subscriber.location_id != location.pk:
+            subscriber.location = location
+            subscriber.save(update_fields=['location'])
+
+        subscriber.activities \
+            .filter(ip_address=ip_address) \
+            .filter(Q(location=None) | Q(activity_type=ActivityTypes.OPENED)) \
+            .update(location=location)

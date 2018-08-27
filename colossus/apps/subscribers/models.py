@@ -206,10 +206,10 @@ class Subscriber(models.Model):
             self.last_seen_ip_address = ip_address
             self.confirm_date = timezone.now()
             self.save()
-            activity = self.create_activity(ActivityTypes.SUBSCRIBED, ip_address=ip_address)
+            self.create_activity(ActivityTypes.SUBSCRIBED, ip_address=ip_address)
             self.tokens.filter(description='confirm_subscription').delete()
 
-        update_subscriber_location.delay(ip_address, self.pk, activity.pk)
+        update_subscriber_location.delay(ip_address, self.pk)
 
         welcome_email = self.mailing_list.get_welcome_email_template()
         if welcome_email.send_email:
@@ -222,9 +222,9 @@ class Subscriber(models.Model):
             self.status = Status.UNSUBSCRIBED
             self.last_seen_ip_address = ip_address
             self.save()
-            activity = self.create_activity(ActivityTypes.UNSUBSCRIBED, campaign=campaign, ip_address=ip_address)
+            self.create_activity(ActivityTypes.UNSUBSCRIBED, campaign=campaign, ip_address=ip_address)
 
-        update_subscriber_location.delay(ip_address, self.pk, activity.pk)
+        update_subscriber_location.delay(ip_address, self.pk)
 
         goodbye_email = self.mailing_list.get_goodbye_email_template()
         if goodbye_email.send_email:
@@ -245,18 +245,44 @@ class Subscriber(models.Model):
             .order_by('-date')
 
     def open(self, email, ip_address=None):
-        activity = self.create_activity(ActivityTypes.OPENED, email=email, ip_address=ip_address)
+        """
+        For the open tracking we may not consider the IP address because it is
+        not reliable under some circumstances. In many case the overwhelming
+        majority of users use gmail. The reason why the IP address is not
+        reliable is because gmail caches the 1x1 pixel used to track opens, and
+        when the user open the email, it will load the image from their servers,
+        so it will inflate the number of opens from United States/Montain View.
+
+        What we do instead is to use the subscriber's last seen location, which
+        may be the location where he/she subscribed in the first place, or the
+        place where he/she was when clicked in a link in a previous email.
+
+        If the same user clicks on a link after opening the email, we will
+        adjust the location based on the information we gather on the click
+        event.
+
+        :param email: campaigns.Email instance that the user opened
+        :param ip_address: Optional client IP address
+        """
         if ip_address is not None:
-            update_subscriber_location.delay(ip_address, self.pk, activity.pk)
+            self.create_activity(ActivityTypes.OPENED, email=email, ip_address=ip_address)
+            update_subscriber_location.delay(ip_address, self.pk)
+        else:
+            self.create_activity(ActivityTypes.OPENED, email=email, location=self.location)
         update_open_rate.delay(self.pk, email.pk)
 
     def click(self, link, ip_address=None):
-        activity = self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=ip_address)
+        self.create_activity(ActivityTypes.CLICKED, link=link, email=link.email, ip_address=ip_address)
         if ip_address is not None:
             self.last_seen_date = timezone.now()
             self.last_seen_ip_address = ip_address
             self.save(update_fields=['last_seen_date', 'last_seen_ip_address'])
-            update_subscriber_location.delay(ip_address, self.pk, activity.pk)
+
+            # Update all open activities without IP address with the click activity IP address
+            self.activities \
+                .filter(activity_type=ActivityTypes.OPENED, email=link.email, ip_address=None) \
+                .update(ip_address=ip_address)
+            update_subscriber_location.delay(ip_address, self.pk)
         update_click_rate.delay(self.pk, link.pk)
 
     def update_open_rate(self) -> float:

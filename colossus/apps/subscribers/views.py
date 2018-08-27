@@ -190,10 +190,10 @@ def track_open(request, email_uuid, subscriber_uuid):
     try:
         email = Email.objects.get(uuid=email_uuid)
         subscriber = Subscriber.objects.get(uuid=subscriber_uuid)
-        ip_address = get_client_ip(request)
-        subscriber.open(email, ip_address)
+        subscriber.open(email)
     except Exception:
-        pass  # fail silently
+        logger.exception('An error occurred while subscriber "%s" was trying to '
+                         'open the email "%s".' % (subscriber_uuid, email_uuid))
 
     pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')  # noqa
     return HttpResponse(pixel, content_type='image/png')
