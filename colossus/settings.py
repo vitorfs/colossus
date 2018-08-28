@@ -227,7 +227,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'clean-lists-hard-bounces': {
         'task': 'colossus.apps.lists.tasks.clean_lists_hard_bounces_task',
-        'schedule': crontab(hour=4, minute=0, day_of_week=0)
+        'schedule': crontab(hour=12, minute=0)
     }
 }
 
