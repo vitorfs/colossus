@@ -11,7 +11,6 @@ class Actions:
         IMPORT_COMPLETED: {
             'label': _('Subscribers import completed'),
             'icon': 'fas fa-user-check',
-            'message': _('Subscribers import completed with success!'),
         },
         IMPORT_ERRORED: {
             'label': _('Subscribers import failed'),
