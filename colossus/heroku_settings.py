@@ -96,6 +96,6 @@ LOGGING = {
 # THIRD-PARTY APPS SETTINGS
 # ==============================================================================
 
-CELERY_BROKER_READ_URL = config('RABBITMQ_BIGWIG_RX_URL')
+CELERY_BROKER_READ_URL = config('CELERY_BROKER_READ_URL', default='')
 
-CELERY_BROKER_WRITE_URL = config('RABBITMQ_BIGWIG_TX_URL')
+CELERY_BROKER_WRITE_URL = config('CELERY_BROKER_WRITE_URL', default='')
