@@ -1,7 +1,7 @@
 beautifulsoup4==4.6.3
 celery==4.2.1
 dj-database-url==0.5.0
-Django==2.1
+Django==2.1.2
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.9.1
 django-ratelimit==1.1.0
