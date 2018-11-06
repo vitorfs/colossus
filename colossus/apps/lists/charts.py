@@ -57,7 +57,7 @@ class SubscriptionsSummaryChart(Chart):
         subscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.SUBSCRIBED))
         unsubscribed_expression = Count('id', filter=Q(activity_type=ActivityTypes.UNSUBSCRIBED))
         activities = Activity.objects \
-            .filter(subscriber__mailing_list=self.mailing_list, date__gte=thirty_days_ago) \
+            .filter(subscriber__mailing_list=self.mailing_list, date__gt=thirty_days_ago) \
             .values('date__date') \
             .annotate(subscribed=subscribed_expression, unsubscribed=unsubscribed_expression) \
             .order_by('date__date')

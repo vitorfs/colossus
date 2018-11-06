@@ -1,0 +1,9 @@
+User-agent: *
+
+Allow: /
+Disallow: /manage/
+Disallow: /track/*
+Disallow: /subscribe/*
+Disallow: /unsubscribe/*
+Disallow: /accounts/*
+Disallow: /setup/*
