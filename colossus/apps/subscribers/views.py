@@ -50,7 +50,7 @@ def manage(request):
 
 
 @csrf_exempt
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 @ratelimit(key=ip_address_key, rate='10/5m', method='POST')
 def subscribe(request, mailing_list_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
@@ -169,7 +169,6 @@ def unsubscribe(request, mailing_list_uuid, subscriber_uuid, campaign_uuid):
     return redirect('subscribers:goodbye', mailing_list_uuid=mailing_list_uuid)
 
 
-@require_GET
 def goodbye(request, mailing_list_uuid):
     mailing_list = get_object_or_404(MailingList, uuid=mailing_list_uuid)
     form_template = mailing_list.get_unsubscribe_success_page_template()
