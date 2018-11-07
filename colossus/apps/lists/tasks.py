@@ -4,7 +4,7 @@ Collection of Celery tasks for the lists app.
 import csv
 import json
 import logging
-from typing import Union
+from typing import Union, Dict
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -91,7 +91,7 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
             import_status: int
             notification_action: int
             output_message = ''
-            cached_domains = dict()
+            cached_domains: Dict[str, Domain] = dict()
 
             try:
                 columns_mapping = subscriber_import.get_columns_mapping()
