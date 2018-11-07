@@ -13,7 +13,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from colossus.apps.lists.constants import ImportFields, ImportStatus
 from colossus.apps.lists.tasks import import_subscribers
 from colossus.apps.subscribers.constants import ActivityTypes, Status
-from colossus.apps.subscribers.models import Subscriber
+from colossus.apps.subscribers.models import Domain, Subscriber
 
 from .models import MailingList, SubscriberImport
 
@@ -186,15 +186,28 @@ class PasteImportSubscribersForm(forms.Form):
         return cleaned_data
 
     def import_subscribers(self, mailing_list):
+        cached_domains = dict()
         emails = self.cleaned_data.get('emails')
         status = self.cleaned_data.get('status')
+
         with transaction.atomic():
             for email in emails:
+
+                email_name, domain_part = email.rsplit('@', 1)
+                domain_name = '@' + domain_part
+
+                try:
+                    domain = cached_domains[domain_name]
+                except KeyError:
+                    domain, created = Domain.objects.get_or_create(name=domain_name)
+                    cached_domains[domain_name] = domain
+
                 subscriber, created = Subscriber.objects.get_or_create(
                     email__iexact=email,
                     mailing_list=mailing_list,
                     defaults={
                         'email': email,
+                        'domain': domain
                     }
                 )
                 if created:

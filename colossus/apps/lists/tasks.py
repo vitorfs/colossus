@@ -19,7 +19,7 @@ from colossus.apps.lists.constants import (
 from colossus.apps.notifications.constants import Actions
 from colossus.apps.notifications.models import Notification
 from colossus.apps.subscribers.constants import ActivityTypes, Status
-from colossus.apps.subscribers.models import Subscriber
+from colossus.apps.subscribers.models import Domain, Subscriber
 
 from .models import MailingList, SubscriberImport
 
@@ -91,6 +91,7 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
             import_status: int
             notification_action: int
             output_message = ''
+            cached_domains = dict()
 
             try:
                 columns_mapping = subscriber_import.get_columns_mapping()
@@ -99,9 +100,7 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
                 subscriber_skipped = 0
 
                 with open(subscriber_import.file.path, 'r') as csvfile:
-                    dialect = csv.Sniffer().sniff(csvfile.read(1024))
-                    csvfile.seek(0)
-                    reader = csv.reader(csvfile, dialect)
+                    reader = csv.reader(csvfile)
 
                     # FIXME: determine if needs to skip the first line or not
                     if True:
@@ -112,10 +111,22 @@ def import_subscribers(subscriber_import_id: Union[str, int]) -> str:
                             subscriber = None
 
                             defaults = {'status': subscriber_import.subscriber_status}
+
                             for column_index, subscriber_field_name in columns_mapping.items():
                                 field_parser = ImportFields.PARSERS[subscriber_field_name]
                                 cleaned_field_data = field_parser(row[column_index])
                                 defaults[subscriber_field_name] = cleaned_field_data
+
+                            email_name, domain_part = defaults['email'].rsplit('@', 1)
+                            domain_name = '@' + domain_part
+
+                            try:
+                                email_domain = cached_domains[domain_name]
+                            except KeyError:
+                                email_domain, created = Domain.objects.get_or_create(name=domain_name)
+                                cached_domains[domain_name] = email_domain
+
+                            defaults['domain'] = email_domain
 
                             subscriber_queryset = Subscriber.objects.filter(
                                 email__iexact=defaults['email'],
