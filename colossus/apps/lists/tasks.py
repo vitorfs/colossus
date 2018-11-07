@@ -4,7 +4,7 @@ Collection of Celery tasks for the lists app.
 import csv
 import json
 import logging
-from typing import Union, Dict
+from typing import Dict, Union
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
