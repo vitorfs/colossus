@@ -15,6 +15,7 @@ from django.views.decorators.http import (
 )
 from django.views.generic import View
 
+import requests
 from ratelimit.decorators import ratelimit
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
@@ -61,10 +62,26 @@ def subscribe(request, mailing_list_uuid):
         messages.warning(request, _('Too many requests. Your IP address is blocked for 5 minutes.'))
 
     if request.method == 'POST' and not is_limited:
+        valid_recaptcha_or_skip_recaptcha_validation = True
+        if mailing_list.enable_recaptcha:
+            # reCAPTCHA validation
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            data = {
+                'secret': mailing_list.recaptcha_secret_key,
+                'response': recaptcha_response
+            }
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            recaptcha_result = r.json()
+            valid_recaptcha_or_skip_recaptcha_validation = recaptcha_result['success']
+
         form = SubscribeForm(mailing_list=mailing_list, data=request.POST)
-        if form.is_valid():
-            form.subscribe(request)
-            return redirect('subscribers:confirm_subscription', mailing_list_uuid=mailing_list_uuid)
+
+        if valid_recaptcha_or_skip_recaptcha_validation:
+            if form.is_valid():
+                form.subscribe(request)
+                return redirect('subscribers:confirm_subscription', mailing_list_uuid=mailing_list_uuid)
+        else:
+            messages.error(request, _('Invalid reCAPTCHA. Please try again.'))
     else:
         form = SubscribeForm(mailing_list=mailing_list)
 

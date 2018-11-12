@@ -339,7 +339,7 @@ class ListSettingsView(AbstractSettingsView):
 
 
 class SubscriptionSettingsView(AbstractSettingsView):
-    fields = ('list_manager', 'enable_recaptcha',)
+    fields = ('list_manager', 'enable_recaptcha', 'recaptcha_site_key', 'recaptcha_secret_key')
     success_url_name = 'lists:subscription_settings'
     subsubmenu = 'subscription_settings'
     title = _('Subscription settings')

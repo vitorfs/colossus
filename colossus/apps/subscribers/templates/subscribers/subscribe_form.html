@@ -2,12 +2,23 @@
 
 {% load crispy_forms_tags i18n %}
 
+{% block extrahead %}
+  {% if mailing_list.enable_recaptcha %}
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   <div{% if preview %} class="preview-box"{% endif %}>
     {{ content|safe }}
   </div>
   <form method="post">
     {{ form|crispy }}
+    {% if mailing_list.enable_recaptcha %}
+      <div class="form-group">
+        <div class="g-recaptcha" data-sitekey="{{ mailing_list.recaptcha_site_key }}"></div>
+      </div>
+    {% endif %}
     <button type="submit" class="btn btn-dark">{% trans 'Subscribe to list' %}</button>
   </form>
 {% endblock %}

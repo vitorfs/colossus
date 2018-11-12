@@ -29,6 +29,8 @@ class MailingList(models.Model):
     campaign_default_from_email = models.EmailField(_('default from email address'), blank=True)
     campaign_default_email_subject = models.CharField(_('default subject'), max_length=150, blank=True)
     enable_recaptcha = models.BooleanField(_('enable reCAPTCHA'), default=False)
+    recaptcha_site_key = models.CharField(_('site key'), max_length=100, blank=True)
+    recaptcha_secret_key = models.CharField(_('secret key'), max_length=100, blank=True)
     list_manager = models.EmailField(
         _('list manager'),
         blank=True,
