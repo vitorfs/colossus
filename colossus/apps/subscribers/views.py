@@ -81,7 +81,7 @@ def subscribe(request, mailing_list_uuid):
                 form.subscribe(request)
                 return redirect('subscribers:confirm_subscription', mailing_list_uuid=mailing_list_uuid)
         else:
-            messages.error(request, _('Invalid reCAPTCHA. Please try again.'))
+            messages.info(request, _('Please check the reCAPTCHA and submit the form again.'))
     else:
         form = SubscribeForm(mailing_list=mailing_list)
 
