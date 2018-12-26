@@ -6,7 +6,7 @@ or just cloning it directly:
 
 ::
 
-   git clone git@github.com:vitorfs/colossus.git
+   git clone https://github.com/vitorfs/colossus.git
 
 
 Ideally, create a `virtualenv <https://docs.python-guide.org/dev/virtualenvs/>`_ and install the projects dependencies:
