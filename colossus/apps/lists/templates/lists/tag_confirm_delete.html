@@ -16,6 +16,7 @@
     <div class="card-body">
       <h2 class="card-title">{% trans 'Are you sure?' %}</h2>
       <p>You are about to delete the tag <strong>{{ tag.name }}</strong> from the list.</p>
+      <p>The subscribers associated with this tag <strong>won't</strong> be deleted.</p>
       <form method="post" novalidate>
         {% csrf_token %}
         <button type="submit" class="btn btn-danger" role="button">{% trans 'Confirm deletion' %}</button>

@@ -271,10 +271,10 @@ class TagListView(TagMixin, MailingListMixin, ListView):
         if self.request.GET.get('q', ''):
             query = self.request.GET.get('q').strip()
             queryset = queryset.filter(Q(name__icontains=query) | Q(description__icontains=query))
-            self.extra_context.update({
+            self.extra_context = {
                 'is_filtered': True,
                 'query': query
-            })
+            }
 
         queryset = queryset.annotate(subscribers_count=Count('subscribers'))
         return queryset.order_by('name')

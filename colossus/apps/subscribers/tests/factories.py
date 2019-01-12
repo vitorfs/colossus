@@ -5,7 +5,7 @@ import factory
 from colossus.apps.lists.tests.factories import MailingListFactory
 from colossus.apps.subscribers.constants import Status, TemplateKeys
 from colossus.apps.subscribers.models import (
-    Activity, Domain, Subscriber, SubscriptionFormTemplate,
+    Activity, Domain, Subscriber, SubscriptionFormTemplate, Tag,
 )
 
 
@@ -45,3 +45,12 @@ class SubscriptionFormTemplateFactory(factory.DjangoModelFactory):
     class Meta:
         model = SubscriptionFormTemplate
         django_get_or_create = ('key',)
+
+
+class TagFactory(factory.DjangoModelFactory):
+    name = factory.Sequence(lambda n: f'tag_{n}')
+    mailing_list = factory.SubFactory(MailingListFactory)
+
+    class Meta:
+        model = Tag
+        django_get_or_create = ('name',)

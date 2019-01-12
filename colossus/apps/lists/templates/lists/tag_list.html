@@ -18,7 +18,7 @@
             <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search tags' %}" aria-label="{% trans 'Search tags' %}">
             <div class="input-group-append">
               {% if query %}
-                <a href="?" class="btn btn-outline-primary" role="button">
+                <a href="{% url 'lists:tags' mailing_list.pk %}" class="btn btn-outline-primary" role="button">
                   {% trans 'Clear' %}
                 </a>
               {% endif %}
@@ -62,7 +62,7 @@
                 <a class="dropdown-item" href="#">{% trans 'Send' %}</a>
                 <a class="dropdown-item" href="{% url 'lists:edit_tag' mailing_list.pk tag.pk %}">{% trans 'Edit' %}</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">{% trans 'Delete' %}</a>
+                <a class="dropdown-item" href="{% url 'lists:delete_tag' mailing_list.pk tag.pk %}">{% trans 'Delete' %}</a>
               </div>
             </div>
           </td>
