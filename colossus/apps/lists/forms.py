@@ -4,7 +4,6 @@ from typing import Dict, List
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.mail.backends.smtp import EmailBackend
-from django.core.validators import validate_email
 from django.db import transaction
 from django.forms import BoundField
 from django.utils import timezone

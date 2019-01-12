@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags i18n subscribers %}
+{% load i18n subscribers %}
 
 {% block content %}
   <nav aria-label="breadcrumb">
@@ -18,11 +18,11 @@
         <div class="media-body">
           <div class="row">
             <div class="col-9">
-          <h5 class="mt-0">{{ subscriber.get_email }}</h5>
-          <p class="mb-2">Added to the list on {{ subscriber.confirm_date }}</p>
-          <p class="mb-0">
-            {{ subscriber|status_badge }}
-          </p>
+              <h5 class="mt-0">{{ subscriber.get_email }}</h5>
+              <p class="mb-2">Added to the list on {{ subscriber.confirm_date }}</p>
+              <p class="mb-2">
+                {{ subscriber|status_badge }}
+              </p>
             </div>
             <div class="col-3 text-right">
               <div class="dropdown">
@@ -36,6 +36,13 @@
               </div>
             </div>
           </div>
+          <hr>
+          <h4>Tags</h4>
+          {% for tag in subscriber.tags.all %}
+            <span class="badge badge-primary">{{ tag.name }}</span>
+          {% empty %}
+            <em class="text-muted">No tags</em>
+          {% endfor %}
         </div>
       </div>
     </div>
