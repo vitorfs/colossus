@@ -1,0 +1,4 @@
+<option value="">---------</option>
+{% for tag in tags %}
+  <option value="{{ tag.pk|stringformat:'s' }}">{{ tag.name }}</option>
+{% endfor %}

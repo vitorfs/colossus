@@ -123,7 +123,7 @@ def send_campaign(campaign):
         campaign.email.enable_open_tracking()
 
     with get_connection() as connection:
-        for subscriber in campaign.mailing_list.get_active_subscribers():
+        for subscriber in campaign.get_recipients():
             if not subscriber.activities.filter(activity_type=ActivityTypes.SENT, email=campaign.email).exists():
                 sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
                 if sent:

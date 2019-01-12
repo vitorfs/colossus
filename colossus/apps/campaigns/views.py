@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
@@ -15,14 +16,15 @@ from django.views.generic import (
 )
 
 from colossus.apps.core.models import Country
+from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.constants import ActivityTypes
 from colossus.apps.subscribers.models import Activity
 
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (
-    CampaignTestEmailForm, CreateCampaignForm, EmailEditorForm,
-    ScheduleCampaignForm,
+    CampaignRecipientsForm, CampaignTestEmailForm, CreateCampaignForm,
+    EmailEditorForm, ScheduleCampaignForm,
 )
 from .mixins import CampaignMixin
 from .models import Campaign, Email, Link
@@ -236,12 +238,26 @@ class CampaignReportsCountryView(CampaignMixin, DetailView):
 @method_decorator(login_required, name='dispatch')
 class CampaignEditRecipientsView(CampaignMixin, UpdateView):
     model = Campaign
-    fields = ('mailing_list',)
+    form_class = CampaignRecipientsForm
     context_object_name = 'campaign'
+    template_name = 'campaigns/campaign_edit_recipients.html'
 
-    def get_context_data(self, **kwargs):
-        kwargs['title'] = _('Recipients')
-        return super().get_context_data(**kwargs)
+
+@login_required
+def load_list_tags(request):
+    list_id = request.GET.get('id')
+
+    try:
+        mailing_list = MailingList.objects.get(pk=list_id)
+        tags = mailing_list.tags.order_by('name')
+    except MailingList.DoesNotExist:
+        tags = list()
+
+    context = {
+        'tags': tags
+    }
+    options = render_to_string('campaigns/_campaign_list_tags_options.html', context, request)
+    return JsonResponse({'options': options})
 
 
 @method_decorator(login_required, name='dispatch')

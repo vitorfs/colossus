@@ -40,6 +40,14 @@ class Campaign(models.Model):
         null=True,
         blank=True
     )
+    tag = models.ForeignKey(
+        'subscribers.Tag',
+        on_delete=models.SET_NULL,
+        verbose_name=_('tag'),
+        related_name='campaigns',
+        null=True,
+        blank=True
+    )
     status = models.PositiveSmallIntegerField(
         _('status'),
         choices=CampaignStatus.CHOICES,
@@ -105,9 +113,15 @@ class Campaign(models.Model):
                 self.__cached_email = self.emails.order_by('id').first()
         return self.__cached_email
 
+    def get_recipients(self):
+        queryset = self.mailing_list.get_active_subscribers()
+        if self.tag is not None:
+            queryset = queryset.filter(tags=self.tag)
+        return queryset
+
     def send(self):
         with transaction.atomic():
-            self.recipients_count = self.mailing_list.get_active_subscribers().count()
+            self.recipients_count = self.get_recipients().count()
             self.send_date = timezone.now()
             self.status = CampaignStatus.QUEUED
             for email in self.emails.select_related('template').all():

@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
+from colossus.apps.subscribers.models import Tag
+
 from .api import send_campaign_email_test
 from .constants import CampaignStatus
 from .models import Campaign
@@ -12,6 +14,24 @@ class CreateCampaignForm(forms.ModelForm):
     class Meta:
         model = Campaign
         fields = ('name',)
+
+
+class CampaignRecipientsForm(forms.ModelForm):
+    class Meta:
+        model = Campaign
+        fields = ('mailing_list', 'tag')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['tag'].queryset = Tag.objects.none()
+        if 'tag' in self.data:
+            try:
+                mailing_list_id = int(self.data.get('mailing_list'))
+                self.fields['tag'].queryset = Tag.objects.filter(mailing_list_id=mailing_list_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['tag'].queryset = self.instance.mailing_list.tags.order_by('name')
 
 
 class ScheduleCampaignForm(forms.ModelForm):

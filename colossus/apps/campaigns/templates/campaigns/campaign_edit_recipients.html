@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_filters i18n %}
+
+{% block title %}{% trans 'Recipients' %}{% endblock %}
+
+{% block javascript %}
+  <script>
+    $(function () {
+      $("#id_mailing_list").change(function () {
+        var $form = $(this).closest("form");
+        var listId = $(this).val();
+        $.ajax({
+          url: $form.data("load-list-tags-url"),
+          data: {
+            'id': listId
+          },
+          success: function (data) {
+            $("#id_tag").html(data.options);
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_edit' campaign.pk %}">{{ campaign.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Recipients' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Recipients' %}</h2>
+      <form method="post" data-load-list-tags-url="{% url 'campaigns:load_list_tags' %}" novalidate>
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="col">
+            {{ form.mailing_list|as_crispy_field }}
+          </div>
+          <div class="col">
+            {{ form.tag|as_crispy_field }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
+        <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

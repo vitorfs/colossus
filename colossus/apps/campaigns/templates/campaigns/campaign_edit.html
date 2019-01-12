@@ -24,10 +24,19 @@
             <i data-feather="check-circle" class="mr-3 text-success"></i>
             <div>
               <h5 class="mb-1">{% trans 'To' %}</h5>
+              <p class="mb-1">
+                {% if campaign.tag %}
+                  {% blocktrans trimmed with campaign.mailing_list.name as name and campaign.tag.name as tag_name %}
+                    Subscribers in the list <strong>{{ name }}</strong> with tag <span class="badge badge-primary">{{ tag_name }}</span>.
+                  {% endblocktrans %}
+                {% else %}
+                  {% blocktrans trimmed with campaign.mailing_list.name as name %}
+                    All subscribers in the list <strong>{{ name }}</strong>.
+                  {% endblocktrans %}
+                {% endif %}
+              </p>
               <p class="mb-0">
-                {% blocktrans trimmed with campaign.mailing_list.name as name and campaign.mailing_list.get_active_subscribers.count as count %}
-                  All subscribers in the list <strong>{{ name }}</strong>. <a href="">{{ count }} recipients</a>
-                {% endblocktrans %}
+                <a href="javascript:void(0);">{% blocktrans trimmed with campaign.get_recipients.count as count %}{{ count }} recipients{% endblocktrans %}</a>.
               </p>
             </div>
           </div>

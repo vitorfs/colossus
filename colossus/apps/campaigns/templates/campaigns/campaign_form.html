@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags i18n static %}
+{% load crispy_forms_filters i18n static %}
 
 {% block title %}{% trans 'Create new campaign' %}{% endblock %}
 
@@ -42,7 +42,7 @@
       {% endif %}
     </ol>
   </nav>
-  <div class="card">
+  <div class="card mb-3">
     <div class="card-body">
       <h2 class="card-title">
         {% if campaign %}
