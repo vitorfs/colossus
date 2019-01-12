@@ -13,7 +13,8 @@ from django.utils.translation import gettext, gettext_lazy as _
 from colossus.apps.lists.constants import ImportFields, ImportStatus
 from colossus.apps.lists.tasks import import_subscribers
 from colossus.apps.subscribers.constants import ActivityTypes, Status
-from colossus.apps.subscribers.models import Domain, Subscriber
+from colossus.apps.subscribers.fields import MultipleEmailField
+from colossus.apps.subscribers.models import Domain, Subscriber, Tag
 
 from .models import MailingList, SubscriberImport
 
@@ -149,10 +150,9 @@ class ConfirmSubscriberImportForm(forms.ModelForm):
 
 
 class PasteImportSubscribersForm(forms.Form):
-    emails = forms.CharField(
+    emails = MultipleEmailField(
         label=_('Paste email addresses'),
         help_text=_('One email per line, or separated by comma. Duplicate emails will be suppressed.'),
-        widget=forms.Textarea()
     )
     status = forms.ChoiceField(
         label=_('Assign status to subscriber'),
@@ -160,30 +160,6 @@ class PasteImportSubscribersForm(forms.Form):
         initial=Status.SUBSCRIBED,
         widget=forms.Select(attrs={'class': 'w-50'})
     )
-
-    def clean(self):
-        """
-        First replace the commas with new lines, then split the text by lines.
-        This is done so to accept both a string of emails separated by new lines
-        or by commas.
-        Normalize the email addresses inside a loop and call the email validator
-        for each email.
-        Emails are added to a dictionary so to remove the duplicates and at the
-        same time preserve the case informed. The dictionary key is the lower
-        case of the email, and the value is its original form.
-        After the code iterates through all the emails, return only the values
-        of the dictionary.
-        """
-        cleaned_data = super().clean()
-        emails = self.cleaned_data.get('emails', '')
-        emails = emails.replace(',', '\n').splitlines()
-        cleaned_emails = dict()
-        for email in emails:
-            email = Subscriber.objects.normalize_email(email)
-            validate_email(email)
-            cleaned_emails[email.lower()] = email
-        cleaned_data['emails'] = cleaned_emails.values()
-        return cleaned_data
 
     def import_subscribers(self, mailing_list):
         cached_domains = dict()
@@ -245,3 +221,36 @@ class MailingListSMTPForm(forms.ModelForm):
         except SMTPAuthenticationError as err:
             raise ValidationError(str(err), code='auth_error')
         return cleaned_data
+
+
+class BulkTagForm(forms.Form):
+    tag = forms.ModelChoiceField(queryset=Tag.objects.none())
+    emails = MultipleEmailField(
+        label=_('Paste email addresses'),
+        help_text=_('One email per line, or separated by comma. '
+                    'Duplicate emails will be suppressed. '
+                    'Emails not matching any subscriber will be ignored.')
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.mailing_list = kwargs.pop('mailing_list')
+        super().__init__(*args, **kwargs)
+        self.fields['tag'].queryset = self.mailing_list.tags.all()
+
+    @transaction.atomic()
+    def tag_subscribers(self) -> int:
+        """
+        Process the form adding the valid subscribers to the given tag.
+        :return: The number of subscribers successfully tagged
+        """
+        tag = self.cleaned_data.get('tag')
+        emails = self.cleaned_data.get('emails')
+        success_count = 0
+        for email in emails:
+            try:
+                subscriber = Subscriber.objects.get(mailing_list=self.mailing_list, email__iexact=email)
+                subscriber.tags.add(tag)
+                success_count += 1
+            except Subscriber.DoesNotExist:
+                pass
+        return success_count

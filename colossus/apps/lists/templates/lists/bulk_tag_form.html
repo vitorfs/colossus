@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_filters i18n %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:tags' mailing_list.pk %}">{% trans 'Tags' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Bulk tag subscribers' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-10 col-lg-8">
+            {{ form|crispy }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Tag subscribers' %}</button>
+        <a href="{% url 'lists:tags' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

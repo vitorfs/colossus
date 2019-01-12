@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, Q
 from django.forms import modelform_factory
@@ -33,7 +34,7 @@ from .charts import (
     ListDomainsChart, ListLocationsChart, SubscriptionsSummaryChart,
 )
 from .forms import (
-    ConfirmSubscriberImportForm, MailingListSMTPForm,
+    BulkTagForm, ConfirmSubscriberImportForm, MailingListSMTPForm,
     PasteImportSubscribersForm,
 )
 from .mixins import FormTemplateMixin, MailingListMixin
@@ -278,6 +279,21 @@ class TagListView(TagMixin, MailingListMixin, ListView):
 
         queryset = queryset.annotate(subscribers_count=Count('subscribers'))
         return queryset.order_by('name')
+
+
+class BulkTagSubscribersView(LoginRequiredMixin, TagMixin, MailingListMixin, FormView):
+    form_class = BulkTagForm
+    context_object_name = 'tag'
+    template_name = 'lists/bulk_tag_form.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['mailing_list'] = self.mailing_list
+        return kwargs
+
+    def form_valid(self, form):
+        form.tag_subscribers()
+        return redirect('lists:tags', pk=self.mailing_list.pk)
 
 
 @method_decorator(login_required, name='dispatch')

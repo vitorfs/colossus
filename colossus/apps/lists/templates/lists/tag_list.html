@@ -28,6 +28,7 @@
         </form>
       </div>
       <div class="col-6 text-right">
+        <a href="{% url 'lists:bulk_tag' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Bulk tag subscribers' %}</a>
         <a href="{% url 'lists:new_tag' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add tag' %}</a>
       </div>
     </div>

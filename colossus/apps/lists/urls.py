@@ -27,6 +27,7 @@ urlpatterns = [
 
     path('<int:pk>/tags/', views.TagListView.as_view(), name='tags'),
     path('<int:pk>/tags/add/', views.TagCreateView.as_view(), name='new_tag'),
+    path('<int:pk>/tags/bulk-tag/', views.BulkTagSubscribersView.as_view(), name='bulk_tag'),
     path('<int:pk>/tags/<int:tag_pk>/edit/', views.TagUpdateView.as_view(), name='edit_tag'),
     path('<int:pk>/tags/<int:tag_pk>/delete/', views.TagDeleteView.as_view(), name='delete_tag'),
 
