@@ -1,8 +1,9 @@
 from django.urls import reverse
 
-from colossus.apps.accounts.tests.factories import UserFactory
 from colossus.apps.campaigns.models import Campaign
-from colossus.test.testcases import TestCase
+from colossus.apps.lists.tests.factories import MailingListFactory
+from colossus.apps.subscribers.tests.factories import TagFactory
+from colossus.test.testcases import AuthenticatedTestCase, TestCase
 
 from .factories import CampaignFactory
 
@@ -40,16 +41,15 @@ class CampaignsLoginRequiredTests(TestCase):
                 self.assertRedirectsLoginRequired(response, url)
 
 
-class CampaignListViewSuccessTests(TestCase):
+class CampaignListViewSuccessTests(AuthenticatedTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         CampaignFactory.create_batch(5)
 
     def setUp(self):
+        super().setUp()
         self.campaigns = Campaign.objects.all()
-        self.user = UserFactory(username='alex')
-        self.client.login(username='alex', password='123')
         self.url = reverse('campaigns:campaigns')
         self.response = self.client.get(self.url)
 
@@ -66,3 +66,29 @@ class CampaignListViewSuccessTests(TestCase):
         for content in contents:
             with self.subTest(content=content):
                 self.assertContains(self.response, content)
+
+
+class CampaignCreateViewTests(AuthenticatedTestCase):
+    def setUp(self):
+        super().setUp()
+        self.mailing_list_1 = MailingListFactory(name='list_1')
+        self.tag_1 = TagFactory(name='tag_1', mailing_list=self.mailing_list_1)
+        self.url = reverse('campaigns:campaign_add')
+
+    def test_initial_data(self):
+        url = '{0}?mailing_list={1}&tag={2}'.format(self.url, self.mailing_list_1.pk, self.tag_1.pk)
+        response = self.client.get(url)
+        form = response.context['form']
+        self.assertEqual(form.initial['mailing_list'], self.mailing_list_1.pk)
+        self.assertEqual(form.initial['tag'], self.tag_1.pk)
+
+    def test_invalid_initial_data(self):
+        url = '{0}?mailing_list=xxx&tag=yyyy'.format(self.url)
+        response = self.client.get(url)
+        form = response.context['form']
+        self.assertEqual(form.initial, {})
+
+    def test_html(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, '<input type="hidden"', 3)  # csrf_token, mailing_list, tag
+        self.assertContains(response, '<input type="text"', 1)  # name tag

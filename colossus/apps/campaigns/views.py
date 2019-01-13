@@ -71,6 +71,17 @@ class CampaignCreateView(CampaignMixin, CreateView):
     model = Campaign
     form_class = CreateCampaignForm
 
+    def get_initial(self):
+        initial = super().get_initial()
+        mailing_list_id = self.request.GET.get('mailing_list', '')
+        tag_id = self.request.GET.get('tag', '')
+        try:
+            initial['mailing_list'] = int(mailing_list_id)
+            initial['tag'] = int(tag_id)
+        except (TypeError, ValueError):
+            pass
+        return initial
+
 
 @method_decorator(login_required, name='dispatch')
 class CampaignEditView(CampaignMixin, DetailView):

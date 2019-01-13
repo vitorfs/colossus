@@ -13,7 +13,49 @@ from .models import Campaign
 class CreateCampaignForm(forms.ModelForm):
     class Meta:
         model = Campaign
-        fields = ('name',)
+        fields = ('name', 'mailing_list', 'tag')
+        widgets = {
+            'mailing_list': forms.HiddenInput(),
+            'tag': forms.HiddenInput()
+        }
+
+    def save(self, commit=True) -> Campaign:
+        """
+        Before saving check the mailing_list and tag data for consistency
+        This is done during the save method instead of the clean because
+        both fields are hidden fields, used when the user clicks the "Send"
+        button on a tag (as a shortcut to create and campaign for subscribers
+        in a given tag).
+
+        If the mailing_list + tag combo is invalid there is nothing the user
+        can do in the user interface, so just fallback to create a campaign
+        with the Name only. Later on the user can set the mailing_list and tag.
+
+        :param commit: Boolean to indicate if the data should be saved
+            on the database or not
+        :return: A new Campaign instance
+        """
+
+        campaign = super().save(commit=False)
+        mailing_list = self.cleaned_data.get('mailing_list')
+        tag = self.cleaned_data.get('tag')
+
+        if tag is not None and mailing_list is None:
+            # Remove the tag if there was no mailing list associated with
+            # This is just to keep the consistency of the data
+            # In normal cases this should never happen, unless the user is injecting/forging
+            # a POST request manually
+            campaign.tag = None
+
+        if tag is not None and mailing_list is not None:
+            # Remove the tag if it is not associated with the mailing list
+            if not mailing_list.tags.filter(pk=tag.pk).exists():
+                campaign.tag = None
+
+        if commit:
+            campaign.save()
+
+        return campaign
 
 
 class CampaignRecipientsForm(forms.ModelForm):

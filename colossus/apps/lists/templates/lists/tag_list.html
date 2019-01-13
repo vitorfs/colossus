@@ -60,7 +60,7 @@
                 <span class="sr-only">{% trans 'Toggle Dropdown' %}</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="#">{% trans 'Send' %}</a>
+                <a class="dropdown-item" href="{% url 'campaigns:campaign_add' %}?mailing_list={{ mailing_list.pk }}&tag={{ tag.pk }}">{% trans 'Send' %}</a>
                 <a class="dropdown-item" href="{% url 'lists:edit_tag' mailing_list.pk tag.pk %}">{% trans 'Edit' %}</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{% url 'lists:delete_tag' mailing_list.pk tag.pk %}">{% trans 'Delete' %}</a>
