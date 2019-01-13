@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_filters i18n tz %}
+
+{% block title %}{% trans 'Schedule campaign' %}{% endblock %}
+
+{% block javascript %}
+  <script>
+    $(function () {
+
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_edit' campaign.pk %}">{{ campaign.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Schedule campaign' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Schedule campaign' %}</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="form-group">
+          {% get_current_timezone as TIME_ZONE %}
+          <small class="text-muted">Current time: {{ time|localtime }}<br>Current time zone: {{ TIME_ZONE }}</small>
+        </div>
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Schedule' %}</button>
+        <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

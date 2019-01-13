@@ -13,12 +13,21 @@
 
   <div class="row">
     <div class="col-4">
-      <div class="card">
+      <div class="card mb-3">
+        <div class="card-header">
+          {% trans 'Personal settings' %}
+        </div>
+        <nav class="list-group list-group-flush">
+          <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">{% trans 'Profile' %}</a>
+          <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">{% trans 'Change password' %}</a>
+        </nav>
+      </div>
+      <div class="card mb-3">
         <div class="card-header">
           {% trans 'Application settings' %}
         </div>
         <nav class="list-group list-group-flush">
-          <a href="" class="list-group-item list-group-item-action active">Site domain</a>
+          <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">{% trans 'Site domain' %}</a>
         </nav>
       </div>
     </div>

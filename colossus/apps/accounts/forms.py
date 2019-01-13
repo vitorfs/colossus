@@ -1,7 +1,10 @@
-from django.contrib.auth import get_user_model
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import gettext_lazy as _
 
-User = get_user_model()
+import pytz
+
+from .models import User
 
 
 class AdminUserCreationForm(UserCreationForm):
@@ -16,3 +19,17 @@ class AdminUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class UserForm(forms.ModelForm):
+    TIMEZONE_CHOICES = (('', '---------'),) + tuple(map(lambda tz: (tz, tz), pytz.common_timezones))
+
+    timezone = forms.ChoiceField(
+        choices=TIMEZONE_CHOICES,
+        required=False,
+        label=_('Timezone')
+    )
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'timezone')

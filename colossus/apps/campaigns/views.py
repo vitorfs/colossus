@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext, gettext_lazy as _
@@ -356,12 +357,13 @@ class ScheduleCampaignView(CampaignMixin, UpdateView):
     model = Campaign
     context_object_name = 'campaign'
     form_class = ScheduleCampaignForm
+    template_name = 'campaigns/schedule_campaign_form.html'
 
     def get_queryset(self):
         return super().get_queryset().filter(status__in={CampaignStatus.DRAFT, CampaignStatus.SCHEDULED})
 
     def get_context_data(self, **kwargs):
-        kwargs['title'] = _('Schedule campaign')
+        kwargs['time'] = timezone.now()
         return super().get_context_data(**kwargs)
 
 

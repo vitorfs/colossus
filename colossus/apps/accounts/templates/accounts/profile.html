@@ -3,7 +3,6 @@
 {% load crispy_forms_filters i18n %}
 
 {% block settingscontent %}
-  <h2 class="card-title">{% trans 'Site domain' %}</h2>
   <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
