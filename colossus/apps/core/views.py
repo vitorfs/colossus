@@ -44,11 +44,6 @@ def dashboard(request):
     })
 
 
-@login_required
-def settings(request):
-    return render(request, 'core/settings.html', {'menu': 'settings'})
-
-
 def setup(request):
     if User.objects.exists() or MailingList.objects.exists():
         return redirect('dashboard')

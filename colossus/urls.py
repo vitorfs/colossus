@@ -4,10 +4,10 @@ from django.urls import include, path
 from colossus.apps.core import views as core_views
 
 urlpatterns = [
+    path('', core_views.dashboard, name='dashboard'),
     path('', include('colossus.apps.subscribers.urls', namespace='subscribers')),
     path('setup/', core_views.setup, name='setup'),
     path('setup/account/', core_views.setup_account, name='setup_account'),
-    path('dashboard/', core_views.dashboard, name='dashboard'),
     path('settings/', core_views.SiteUpdateView.as_view(), name='settings'),
     path('accounts/', include('colossus.apps.accounts.urls')),
     path('lists/', include('colossus.apps.lists.urls', namespace='lists')),

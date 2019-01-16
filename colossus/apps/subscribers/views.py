@@ -13,7 +13,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import (
     require_GET, require_http_methods, require_POST,
 )
-from django.views.generic import View
 
 import requests
 from ratelimit.decorators import ratelimit
@@ -28,11 +27,6 @@ from .forms import SubscribeForm, UnsubscribeForm
 from .models import Subscriber
 
 logger = logging.getLogger(__name__)
-
-
-class IndexView(View):
-    def get(self, request):
-        return HttpResponse('Hi there! :)', content_type='text/plain')
 
 
 @csrf_exempt
