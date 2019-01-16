@@ -7,8 +7,7 @@ from colossus.test.testcases import AuthenticatedTestCase, TestCase
 class CoreLoginRequiredTests(TestCase):
     """
     Test if all the urls from core's app are protected with login_required decorator
-    Perform a GET request to all urls. The expected outcome is a redirection
-    to the login page.
+    Perform a GET request to all urls. The expected outcome is a redirection to the login page.
     """
     def test_redirection(self):
         patterns = [
