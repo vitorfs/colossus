@@ -31,6 +31,8 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
     'crispy_forms',
+    'rest_framework',
+    'rest_framework.authtoken',
 
     'colossus.apps.accounts',
     'colossus.apps.campaigns',
@@ -211,6 +213,22 @@ else:
     MESSAGE_LEVEL = messages_constants.INFO
 
 GEOIP_PATH = os.path.join(BASE_DIR, 'bin/GeoLite2')
+
+
+# ==============================================================================
+# DJANGO REST FRAMEWORK SETTINGS
+# ==============================================================================
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
 
 # ==============================================================================

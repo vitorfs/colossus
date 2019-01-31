@@ -5,9 +5,10 @@ Django==2.1.5
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.11
 django-ratelimit==2.0.0
+djangorestframework==3.9.1
 geoip2==2.9.0
 html2text==2018.1.9
-psycopg2-binary==2.7.6.1
+psycopg2-binary==2.7.7
 python-decouple==3.1
 pytz==2018.9
 requests==2.21.0

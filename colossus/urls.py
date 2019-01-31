@@ -10,6 +10,7 @@ urlpatterns = [
     path('setup/account/', core_views.setup_account, name='setup_account'),
     path('settings/', core_views.SiteUpdateView.as_view(), name='settings'),
     path('accounts/', include('colossus.apps.accounts.urls')),
+    path('api/', include('colossus.api_urls', namespace='api')),
     path('lists/', include('colossus.apps.lists.urls', namespace='lists')),
     path('notifications/', include('colossus.apps.notifications.urls', namespace='notifications')),
     path('templates/', include('colossus.apps.templates.urls', namespace='templates')),
