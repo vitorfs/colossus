@@ -72,7 +72,7 @@ class CampaignRecipientsForm(forms.ModelForm):
                 self.fields['tag'].queryset = Tag.objects.filter(mailing_list_id=mailing_list_id).order_by('name')
             except (ValueError, TypeError):
                 pass
-        elif self.instance.pk:
+        elif self.instance.pk and self.instance.mailing_list:
             self.fields['tag'].queryset = self.instance.mailing_list.tags.order_by('name')
 
 
