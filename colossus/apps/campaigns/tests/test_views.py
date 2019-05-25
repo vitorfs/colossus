@@ -92,3 +92,14 @@ class CampaignCreateViewTests(AuthenticatedTestCase):
         response = self.client.get(self.url)
         self.assertContains(response, '<input type="hidden"', 3)  # csrf_token, mailing_list, tag
         self.assertContains(response, '<input type="text"', 1)  # name tag
+
+
+class TestCampaignEditRecipientsViewNoneMailingList(AuthenticatedTestCase):
+    def setUp(self):
+        super().setUp()
+        self.campaign = CampaignFactory(mailing_list=None)
+        self.url = reverse('campaigns:campaign_edit_recipients', kwargs={'pk': self.campaign.pk})
+        self.response = self.client.get(self.url)
+
+    def test_status_code(self):
+        self.assertEqual(200, self.response.status_code)
