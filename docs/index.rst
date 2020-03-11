@@ -1,4 +1,4 @@
-Colossus' documentation
+Colossus's documentation
 =======================
 
 Colossus is a free and open source email marketing application. It's a self-hosted Web application that can be used
