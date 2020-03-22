@@ -66,6 +66,55 @@ http://127.0.0.1:8000/setup/
 
 PS: Campaign scheduling will not work out-of-the-box. You need to install a message broker and [setup Celery](https://simpleisbetterthancomplex.com/tutorial/2017/08/20/how-to-use-celery-with-django.html) properly.
 
+## Using Docker
+
+### Building the image
+
+You can build you own image for Colossus as follows:
+
+```commandline
+docker build -f <image-name> .
+```
+
+There is a pre-built image available at: [abhas/colossus](https://hub.docker.com/r/abhas/colossus/).
+
+### Running Colossus via Docker
+
+You can colossus using Docker with the following commandline:
+
+```commandline
+$ docker run -ti --name colossus -p 127.0.0.1:8000:8000 abhas/colossus                                                                                                130 ↵
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 12, 2018 - 09:24:40
+Django version 2.1.3, using settings 'colossus.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C
+```
+Now connect to `http://127.0.0.1:8000/setup` and access the Colossus admin UI.
+
+### Running RabbitMQ
+
+RabbitMQ is installed within the docker container. To run it so that Colossus can deliver emails, do the following:
+
+```commandline
+$ docker exec -ti colossus bash
+root@7d9cea59b4cb:/home/colossus# rabbitmq-server
+
+  ##  ##
+  ##  ##      RabbitMQ 3.7.8. Copyright (C) 2007-2018 Pivotal Software, Inc.
+  ##########  Licensed under the MPL.  See http://www.rabbitmq.com/
+  ######  ##
+  ##########  Logs: /var/log/rabbitmq/rabbit@7d9cea59b4cb.log
+                    /var/log/rabbitmq/rabbit@7d9cea59b4cb_upgrade.log
+
+              Starting broker...
+ completed with 0 plugins.
+```
+
+Now configure Colossus inside the container to use this rabbitmq instance for email delivery.
+
 ## Tech Specs
 
 * Python 3.6
