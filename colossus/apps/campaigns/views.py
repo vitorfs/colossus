@@ -21,6 +21,7 @@ from colossus.apps.lists.models import MailingList
 from colossus.apps.subscribers.constants import ActivityTypes
 from colossus.apps.subscribers.models import Activity
 
+from ...utils import get_campaign_connection
 from .api import get_test_email_context
 from .constants import CampaignStatus, CampaignTypes
 from .forms import (
@@ -172,17 +173,17 @@ class CampaignReportsView(CampaignMixin, DetailView):
             .filter(campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.UNSUBSCRIBED) \
             .count()
 
-        subscriber_open_activities = Activity.objects \
-            .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
-            .values('subscriber__id', 'subscriber__email') \
-            .annotate(total_opens=Count('id')) \
-            .order_by('-total_opens')[:10]
+        subscriber_open_activities = Activity.objects.filter(email__campaign_id=self.kwargs.get('pk'),
+                                                             activity_type=ActivityTypes.OPENED) \
+                                                     .values('subscriber__id', 'subscriber__email') \
+                                                     .annotate(total_opens=Count('id')) \
+                                                     .order_by('-total_opens')[:10]
 
-        location_open_activities = Activity.objects \
-            .filter(email__campaign_id=self.kwargs.get('pk'), activity_type=ActivityTypes.OPENED) \
-            .values('location__country__code', 'location__country__name') \
-            .annotate(total_opens=Count('id')) \
-            .order_by('-total_opens')[:10]
+        location_open_activities = Activity.objects.filter(email__campaign_id=self.kwargs.get('pk'),
+                                                           activity_type=ActivityTypes.OPENED) \
+                                                   .values('location__country__code', 'location__country__name') \
+                                                   .annotate(total_opens=Count('id')) \
+                                                   .order_by('-total_opens')[:10]
 
         kwargs.update({
             'links': links,
@@ -416,10 +417,12 @@ def campaign_edit_content(request, pk):
 @login_required
 def campaign_test_email(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
+    connection = get_campaign_connection(campaign=campaign)
+
     if request.method == 'POST':
         form = CampaignTestEmailForm(request.POST)
         if form.is_valid():
-            form.send(campaign.email)
+            form.send(campaign.email, connection=connection)
             return redirect(campaign.get_absolute_url())
     else:
         form = CampaignTestEmailForm()

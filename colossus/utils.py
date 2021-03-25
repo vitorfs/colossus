@@ -3,8 +3,13 @@ import uuid
 from typing import Optional
 
 from django.conf import settings
+from django.conf.global_settings import (
+    EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT,
+    EMAIL_USE_TLS,
+)
 from django.contrib.gis.geoip2 import GeoIP2
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import get_connection
 from django.http import HttpRequest
 from django.urls import reverse
 
@@ -102,3 +107,32 @@ def get_absolute_url(urlname: str, kwargs: dict = None) -> str:
     path = reverse(urlname, kwargs=kwargs)
     absolute_url = '%s://%s%s' % (protocol, site.domain, path)
     return absolute_url
+
+
+def get_campaign_connection(campaign=None, *args, **kwargs):
+    if not campaign:
+        return get_connection()
+    smtp_username = campaign.mailing_list.smtp_username or EMAIL_HOST_USER
+    smtp_password = campaign.mailing_list.smtp_password or EMAIL_HOST_PASSWORD
+    smtp_host = campaign.mailing_list.smtp_host or EMAIL_HOST
+    smtp_port = campaign.mailing_list.smtp_port or EMAIL_PORT
+    use_tls = campaign.mailing_list.smtp_use_tls or EMAIL_USE_TLS
+    use_ssl = campaign.mailing_list.smtp_use_ssl
+    timeout = campaign.mailing_list.smtp_timeout
+    smtp_ssl_keyfile = campaign.mailing_list.smtp_ssl_keyfile
+    smtp_ssl_certfile = campaign.mailing_list.smtp_ssl_certfile
+    connection = get_connection(host=smtp_host,
+                                port=smtp_port,
+                                username=smtp_username,
+                                password=smtp_password
+                                )
+    if use_tls:
+        connection.use_tls = use_tls
+    if timeout:
+        connection.timeout = timeout
+    if use_ssl and smtp_ssl_certfile and smtp_ssl_keyfile:
+        connection.use_ssl = use_ssl
+        connection.ssl_keyfile = smtp_ssl_keyfile
+        connection.ssl_certfile = smtp_ssl_certfile
+
+    return connection
