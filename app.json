@@ -8,7 +8,7 @@
   },
   "logo": "https://colossus.simpleisbetterthancomplex.com/static/img/favicon.png",
   "addons": [
-    "heroku-postgresql:hobby-dev",
+    "heroku-postgresql:mini",
     "mailgun:starter"
   ],
   "env": {
