@@ -1,4 +1,19 @@
 services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   rabbitmq:
     image: rabbitmq:3-management
     hostname: rabbitmq
@@ -12,6 +27,22 @@ services:
       timeout: 10s
       retries: 5
 
+  kumomta:
+    image: ghcr.io/kumocorp/kumomta:latest
+    ports:
+      - "2525:25"
+      - "8000:8000"
+    volumes:
+      - ./kumomta-config:/opt/kumomta/etc/policy
+      - ./data/kumomta-data:/var/spool/kumomta/data
+      - ./data/kumomta-meta:/var/spool/kumomta/meta
+      - ./data/kumomta-logs:/var/log/kumomta
+      - ./data/kumomta-dkim:/opt/kumomta/etc/dkim
+    environment:
+      - KUMO_POLICY=/opt/kumomta/etc/policy/init.lua
+    restart: unless-stopped
+    user: "0:0"
+
   web:
     build:
       context: .
@@ -20,7 +51,15 @@ services:
     volumes:
       - ./data:/app/data
     ports:
-      - "8000:8000"
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kumomta:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
 
   worker:
     build:
@@ -31,8 +70,13 @@ services:
     entrypoint: []
     command: celery worker --app=colossus --loglevel=INFO
     depends_on:
-      - rabbitmq
-      - web
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      kumomta:
+        condition: service_started
+    restart: unless-stopped
 
   beat:
     build:
@@ -43,5 +87,13 @@ services:
     entrypoint: []
     command: celery beat --app=colossus --loglevel=INFO
     depends_on:
-      - rabbitmq
-      - web
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      kumomta:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
