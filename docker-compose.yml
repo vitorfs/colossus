@@ -42,6 +42,13 @@ services:
       - KUMO_POLICY=/opt/kumomta/etc/policy/init.lua
     restart: unless-stopped
     user: "0:0"
+    dns:
+        - 8.8.8.8
+        - 8.8.4.4
+    sysctls:
+        - net.ipv4.ip_forward=1
+    cap_add:
+        - NET_ADMIN
 
   web:
     build:
