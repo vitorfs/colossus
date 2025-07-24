@@ -6,10 +6,6 @@
 
 Self-hosted email marketing solution. Compatible with any SMTP email service.
 
-One-click deploy to Heroku:
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
 ## Screenshots
 
 ![Colossus new campaign](https://colossus.readthedocs.io/en/latest/_images/colossus-new-campaign.png)
@@ -31,72 +27,118 @@ One-click deploy to Heroku:
 * Reports with geolocation;
 * Compatible with Mailgun, SendGrid, Mandrill, or any other SMTP email service.
 
-## Quickstart
+## Requirements
 
-If you want to have a quick look or just run the project locally, you can get started by either forking this repository
-or just cloning it directly:
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [uv](https://github.com/astral-sh/uv) (required only for image build, installed inside the container)
+- [Make](https://www.gnu.org/software/make/) (optional, for convenient command execution)
 
-```commandline
+## Versions
+
+- **Python:** >=3.9
+- **Django:** 2.1.5
+- **Celery:** 4.2.1
+- **beautifulsoup4:** 4.7.1
+- **dj-database-url:** 0.5.0
+- **django-crispy-forms:** 1.7.2
+- **django-debug-toolbar:** 1.11
+- **django-ratelimit:** 2.0.0
+- **geoip2:** 2.9.0
+- **gunicorn:** 19.9.0
+- **html2text:** 2018.1.9
+- **psycopg2-binary:** 2.8.6
+- **python-decouple:** 3.1
+- **pytz:** 2018.9
+- **raven:** 6.10.0
+- **requests:** 2.21.0
+- **setuptools:** >=80.9.0
+- **whitenoise:** 4.1.2
+
+PostgreSQL and RabbitMQ are optional dependencies. You can use other databases supported by Django and other message brokers compatible with Celery.
+
+jQuery is mainly a Bootstrap dependency. There is very little JavaScript code in the project—mostly plain Django and HTML templates.
+
+All package versions are specified in [pyproject.toml](./pyproject.toml) and [uv.lock](./uv.lock).
+
+## Quickstart (Docker)
+
+1. Clone the repository:
+
+```sh
 git clone git@github.com:vitorfs/colossus.git
+cd colossus
 ```
 
-Ideally, create a [virtualenv](https://docs.python-guide.org/dev/virtualenvs/) and install the projects dependencies:
+2. Create a `.env` file in the project root and specify the required environment variables. You can use [.env.example](./.env.example) as a template for all required and optional variables.
 
-```commandline
-pip install -r requirements/development.txt
+3. Start the project using Docker Compose:
+
+- To run with SQLite (default):
+
+```sh
+make debug
+```
+or directly:
+```sh
+mkdir -p ./data
+docker compose up --build --detach
 ```
 
-Create a local database:
+- To run with PostgreSQL:
 
-```commandline
-python manage.py migrate
+```sh
+make release
+```
+or directly:
+```sh
+mkdir -p ./data
+docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build -d
 ```
 
-Start development server:
+4. Stop the services:
 
-```commandline
-python manage.py runserver
+```sh
+make stop
+```
+or
+```sh
+docker compose down
 ```
 
-Open your browser and access the setup page to create an admin account:
+5. Full cleanup (containers, images, volumes):
 
-```commandline
+```sh
+make clean
+```
+or
+```sh
+rm -rf ./data
+docker compose -f docker-compose.yml -f docker-compose.postgres.yml down --volumes --rmi all --remove-orphans
+```
+
+6. Open your browser and go to the admin setup page:
+
+```
 http://127.0.0.1:8000/setup/
 ```
+You can automate admin creation by defining the following variables in your .env file: ADMIN_LOGIN, ADMIN_PASS, and ADMIN_EMAIL.
 
-PS: Campaign scheduling will not work out-of-the-box. You need to install a message broker and [setup Celery](https://simpleisbetterthancomplex.com/tutorial/2017/08/20/how-to-use-celery-with-django.html) properly.
-
-## Tech Specs
-
-* Python 3.6
-* Django 2.1
-* PostgreSQL 10
-* Celery 4.2
-* RabbitMQ 3.7
-* Bootstrap 4 
-* jQuery 3.3
-
-PostgreSQL and RabbitMQ are soft dependencies. Other databases (supported by Django) can easily be used as well as other 
-message broker compatible with Celery.
-
-The jQuery library is more of a Bootstrap dependency. There is very little JavaScript code in the project. For the most 
-part the code base is just plain Django and HTML templates. 
-
-Complete list of Python dependencies can be found in the requirements files.
+> **Note:** For campaign scheduling to work, Celery and a message broker (RabbitMQ) are required. They are already configured in docker-compose.
 
 ## Documentation
 
-This is just a pre-release of the project and I still have to work on a proper documentation and user guides.
+This is a pre-release of the project; full documentation and user guides are in development.
 
-For now you will only find documentation of the internal APIs in the source code.
+For now, you will only find documentation of the internal APIs in the source code.
 
 [colossus.readthedocs.io](https://colossus.readthedocs.io)
 
 ## Who's using Colossus?
 
-Right now just myself. I'm currently using it for my blog newsletter at [simpleisbetterthancomplex.com](https://simpleisbetterthancomplex.com/).
+Currently, just the author. It is used for the [simpleisbetterthancomplex.com](https://simpleisbetterthancomplex.com/) blog newsletter.
 
-Here is how my sign up page looks like: [sibt.co/newsletter](https://sibt.co/newsletter)
+Example signup page: [sibt.co/newsletter](https://sibt.co/newsletter)
 
 ## License
 

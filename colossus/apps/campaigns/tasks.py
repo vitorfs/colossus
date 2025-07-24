@@ -31,7 +31,7 @@ def send_campaign_task(campaign_id):
 @shared_task
 def send_scheduled_campaigns_task():
     Campaign = apps.get_model('campaigns', 'Campaign')
-    campaigns = Campaign.objects.filter(status=CampaignStatus.SCHEDULED, send_date__gte=timezone.now())
+    campaigns = Campaign.objects.filter(status=CampaignStatus.SCHEDULED, send_date__lte=timezone.now())
     if campaigns.exists():
         for campaign in campaigns:
             campaign.send()

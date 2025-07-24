@@ -115,9 +115,9 @@ class CampaignTestEmailForm(forms.Form):
     class Meta:
         fields = ('email',)
 
-    def send(self, email):
+    def send(self, email, connection=None):
         recipient_email = self.cleaned_data.get('email')
-        send_campaign_email_test(email, recipient_email)
+        send_campaign_email_test(email, recipient_email, connection=connection)
 
 
 class EmailEditorForm(forms.Form):

@@ -144,7 +144,10 @@ class Subscriber(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__status = self.status
+        # Используй raw значения из kwargs вместо обращения к полям
+        self.__status = kwargs.get('status', self.status if hasattr(self,
+                                                                    '_state') and not self._state.adding else Status.PENDING)
+        self.__email = kwargs.get('email', '')
         self.__email = self.email
 
     def __str__(self):

@@ -1,5 +1,7 @@
 import os
 import string
+from pathlib import Path
+import urllib
 
 from django.contrib.messages import constants as messages_constants
 
@@ -7,7 +9,7 @@ import dj_database_url
 from celery.schedules import crontab
 from decouple import Csv, config
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # ==============================================================================
@@ -72,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'colossus.apps.accounts.middleware.UserTimezoneMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 
@@ -128,11 +131,13 @@ LOCALE_PATHS = (
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'colossus/static'),
+    BASE_DIR / 'colossus' / 'static',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # ==============================================================================
@@ -221,6 +226,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='amqp://localhost')
 
+CELERY_BROKER_HEARTBEAT = 3600
+
+CELERY_BROKER_HEARTBEAT_CHECKRATE = 2
+
 CELERY_BEAT_SCHEDULE = {
     'send-scheduled-campaigns': {
         'task': 'colossus.apps.campaigns.tasks.send_scheduled_campaigns_task',
@@ -234,7 +243,6 @@ CELERY_BEAT_SCHEDULE = {
 
 CELERY_TASK_ALWAYS_EAGER = config('CELERY_TASK_ALWAYS_EAGER', default=True, cast=bool)
 
-
 # ==============================================================================
 # FIRST-PARTY APPS SETTINGS
 # ==============================================================================
@@ -244,3 +252,12 @@ COLOSSUS_HTTPS_ONLY = config('COLOSSUS_HTTPS_ONLY', default=False, cast=bool)
 MAILGUN_API_KEY = config('MAILGUN_API_KEY', default='')
 
 MAILGUN_API_BASE_URL = config('MAILGUN_API_BASE_URL', default='')
+
+
+# ==============================================================================
+# ADMIN ACCOUNT SETTINGS
+# ==============================================================================
+
+ADMIN_LOGIN = config('ADMIN_LOGIN', default=None)
+ADMIN_PASS = config('ADMIN_PASS', default=None)
+ADMIN_EMAIL = config('ADMIN_EMAIL', default='')
