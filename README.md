@@ -43,7 +43,7 @@ git clone git@github.com:vitorfs/colossus.git
 Ideally, create a [virtualenv](https://docs.python-guide.org/dev/virtualenvs/) and install the projects dependencies:
 
 ```commandline
-pip install -r requirements/development.txt
+pip install -r requirements-dev.txt
 ```
 
 Create a local database:
@@ -82,7 +82,7 @@ message broker compatible with Celery.
 The jQuery library is more of a Bootstrap dependency. There is very little JavaScript code in the project. For the most 
 part the code base is just plain Django and HTML templates. 
 
-Complete list of Python dependencies can be found in the requirements files.
+Complete list of Python dependencies can be found in `requirements.txt` and `requirements-dev.txt`.
 
 ## Documentation
 

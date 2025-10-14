@@ -1,0 +1,12 @@
+-r requirements.txt
+coverage
+factory-boy
+flake8
+ipython
+isort
+mypy
+Sphinx
+pyenchant
+sphinxcontrib-spelling
+sphinx-rtd-theme
+tox
