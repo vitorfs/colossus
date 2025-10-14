@@ -1,10 +1,11 @@
 beautifulsoup4
 celery
 dj-database-url
-Django
+django
 django-crispy-forms
 django-debug-toolbar
 django-ratelimit
+crispy_bootstrap4
 geoip2
 html2text
 gunicorn

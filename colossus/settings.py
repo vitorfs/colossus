@@ -31,6 +31,7 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
     'crispy_forms',
+    'crispy_bootstrap4',
 
     'colossus.apps.accounts',
     'colossus.apps.campaigns',
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'colossus.apps.lists',
     'colossus.apps.notifications',
     'colossus.apps.subscribers',
+
+
 ]
 
 SITE_ID = 1
@@ -52,6 +55,8 @@ DATABASES = {
         default=config('DATABASE_URL', default='sqlite:///%s' % os.path.join(BASE_DIR, 'db.sqlite3'))
     )
 }
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 INTERNAL_IPS = [
     '127.0.0.1',
