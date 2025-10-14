@@ -13,7 +13,7 @@ Ideally, create a `virtualenv <https://docs.python-guide.org/dev/virtualenvs/>`_
 
 ::
 
-   pip install -r requirements/development.txt
+   pip install -r requirements-dev.txt
 
 
 Create a local database:
