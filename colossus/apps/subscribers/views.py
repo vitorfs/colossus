@@ -15,7 +15,7 @@ from django.views.decorators.http import (
 )
 
 import requests
-from ratelimit.decorators import ratelimit
+from django_ratelimit.decorators import ratelimit
 
 from colossus.apps.campaigns.models import Campaign, Email, Link
 from colossus.apps.core.models import Token

@@ -1,3 +1,17 @@
--r requirements/production.txt
-
-whitenoise==4.1.2
+beautifulsoup4
+celery
+dj-database-url
+django
+django-crispy-forms
+django-debug-toolbar
+django-ratelimit
+crispy_bootstrap4
+geoip2
+html2text
+gunicorn
+psycopg2-binary
+python-decouple
+pytz
+raven
+requests
+whitenoise
